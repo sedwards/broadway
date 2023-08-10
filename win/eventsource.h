@@ -1,5 +1,5 @@
 /* GDK - The GIMP Drawing Kit
- * Copyright (C) 1995-1997 Peter Mattis, Spencer Kimball and Josh MacDonald
+ * Copyright (C) 2009 Carlos Garnacho <carlosg@gnome.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -15,17 +15,18 @@
  * License along with this library. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * Modified by the GTK+ Team and others 1997-2000.  See the AUTHORS
- * file for a list of people on the GTK+ Team.  See the ChangeLog
- * files for a list of changes.  These files are distributed with
- * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
- */
+#ifndef __GDK_BROADWAY_EVENT_SOURCE_H__
+#define __GDK_BROADWAY_EVENT_SOURCE_H__
 
-#include "config.h"
+//#include "gdkprivate-broadway.h"
 
-#include "gdktypes.h"
-#include "gdkprivate-broadway.h"
+G_BEGIN_DECLS
 
-#include <stdio.h>
+typedef struct _GdkEventSource GdkEventSource;
 
+G_GNUC_INTERNAL
+GSource * _win_broadway_event_source_new            (GdkDisplay *display);
+
+G_END_DECLS
+
+#endif /* __GDK_BROADWAY_EVENT_SOURCE_H__ */

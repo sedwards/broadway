@@ -1,162 +1,57 @@
-// Protocol stuff
-
-const BROADWAY_NODE_TEXTURE = 0;
-const BROADWAY_NODE_CONTAINER = 1;
-const BROADWAY_NODE_COLOR = 2;
-const BROADWAY_NODE_BORDER = 3;
-const BROADWAY_NODE_OUTSET_SHADOW = 4;
-const BROADWAY_NODE_INSET_SHADOW = 5;
-const BROADWAY_NODE_ROUNDED_CLIP = 6;
-const BROADWAY_NODE_LINEAR_GRADIENT = 7;
-const BROADWAY_NODE_SHADOW = 8;
-const BROADWAY_NODE_OPACITY = 9;
-const BROADWAY_NODE_CLIP = 10;
-const BROADWAY_NODE_TRANSFORM = 11;
-const BROADWAY_NODE_DEBUG = 12;
-const BROADWAY_NODE_REUSE = 13;
-
-const BROADWAY_NODE_OP_INSERT_NODE = 0;
-const BROADWAY_NODE_OP_REMOVE_NODE = 1;
-const BROADWAY_NODE_OP_MOVE_AFTER_CHILD = 2;
-const BROADWAY_NODE_OP_PATCH_TEXTURE = 3;
-const BROADWAY_NODE_OP_PATCH_TRANSFORM = 4;
-
-const BROADWAY_OP_GRAB_POINTER = 0;
-const BROADWAY_OP_UNGRAB_POINTER = 1;
-const BROADWAY_OP_NEW_SURFACE = 2;
-const BROADWAY_OP_SHOW_SURFACE = 3;
-const BROADWAY_OP_HIDE_SURFACE = 4;
-const BROADWAY_OP_RAISE_SURFACE = 5;
-const BROADWAY_OP_LOWER_SURFACE = 6;
-const BROADWAY_OP_DESTROY_SURFACE = 7;
-const BROADWAY_OP_MOVE_RESIZE = 8;
-const BROADWAY_OP_SET_TRANSIENT_FOR = 9;
-const BROADWAY_OP_DISCONNECTED = 10;
-const BROADWAY_OP_SURFACE_UPDATE = 11;
-const BROADWAY_OP_SET_SHOW_KEYBOARD = 12;
-const BROADWAY_OP_UPLOAD_TEXTURE = 13;
-const BROADWAY_OP_RELEASE_TEXTURE = 14;
-const BROADWAY_OP_SET_NODES = 15;
-const BROADWAY_OP_ROUNDTRIP = 16;
-
-const BROADWAY_EVENT_ENTER = 0;
-const BROADWAY_EVENT_LEAVE = 1;
-const BROADWAY_EVENT_POINTER_MOVE = 2;
-const BROADWAY_EVENT_BUTTON_PRESS = 3;
-const BROADWAY_EVENT_BUTTON_RELEASE = 4;
-const BROADWAY_EVENT_TOUCH = 5;
-const BROADWAY_EVENT_SCROLL = 6;
-const BROADWAY_EVENT_KEY_PRESS = 7;
-const BROADWAY_EVENT_KEY_RELEASE = 8;
-const BROADWAY_EVENT_GRAB_NOTIFY = 9;
-const BROADWAY_EVENT_UNGRAB_NOTIFY = 10;
-const BROADWAY_EVENT_CONFIGURE_NOTIFY = 11;
-const BROADWAY_EVENT_SCREEN_SIZE_CHANGED = 12;
-const BROADWAY_EVENT_FOCUS = 13;
-const BROADWAY_EVENT_ROUNDTRIP_NOTIFY = 14;
-
-const DISPLAY_OP_REPLACE_CHILD = 0;
-const DISPLAY_OP_APPEND_CHILD = 1;
-const DISPLAY_OP_INSERT_AFTER_CHILD = 2;
-const DISPLAY_OP_APPEND_ROOT = 3;
-const DISPLAY_OP_SHOW_SURFACE = 4;
-const DISPLAY_OP_HIDE_SURFACE = 5;
-const DISPLAY_OP_DELETE_NODE = 6;
-const DISPLAY_OP_MOVE_NODE = 7;
-const DISPLAY_OP_RESIZE_NODE = 8;
-const DISPLAY_OP_RESTACK_SURFACES = 9;
-const DISPLAY_OP_DELETE_SURFACE = 10;
-const DISPLAY_OP_CHANGE_TEXTURE = 11;
-const DISPLAY_OP_CHANGE_TRANSFORM = 12;
-
-// GdkCrossingMode
-const GDK_CROSSING_NORMAL = 0;
-const GDK_CROSSING_GRAB = 1;
-const GDK_CROSSING_UNGRAB = 2;
-
-// GdkModifierType
-const GDK_SHIFT_MASK    = 1 << 0;
-const GDK_LOCK_MASK     = 1 << 1;
-const GDK_CONTROL_MASK  = 1 << 2;
-const GDK_ALT_MASK      = 1 << 3;
-const GDK_BUTTON1_MASK  = 1 << 8;
-const GDK_BUTTON2_MASK  = 1 << 9;
-const GDK_BUTTON3_MASK  = 1 << 10;
-const GDK_BUTTON4_MASK  = 1 << 11;
-const GDK_BUTTON5_MASK  = 1 << 12;
-const GDK_SUPER_MASK    = 1 << 26;
-const GDK_HYPER_MASK    = 1 << 27;
-const GDK_META_MASK     = 1 << 28;
-
-
-var useDataUrls = window.location.search.includes("datauri");
-
-/* This base64code is based on https://github.com/beatgammit/base64-js/blob/master/index.js which is MIT licensed */
-
-var b64_lookup = [];
-var base64_code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-for (var i = 0, len = base64_code.length; i < len; ++i) {
-    b64_lookup[i] = base64_code[i];
-}
-
-function tripletToBase64 (num) {
-    return b64_lookup[num >> 18 & 0x3F] +
-        b64_lookup[num >> 12 & 0x3F] +
-        b64_lookup[num >> 6 & 0x3F] +
-        b64_lookup[num & 0x3F];
-}
-
-function encodeBase64Chunk (uint8, start, end) {
-    var tmp;
-    var output = [];
-    for (var i = start; i < end; i += 3) {
-        tmp =
-            ((uint8[i] << 16) & 0xFF0000) +
-            ((uint8[i + 1] << 8) & 0xFF00) +
-            (uint8[i + 2] & 0xFF);
-        output.push(tripletToBase64(tmp));
+/* check if we are on Android and using Chrome */
+var isAndroidChrome = false;
+{
+    var ua = navigator.userAgent.toLowerCase();
+    if (ua.indexOf("android") > -1 && ua.indexOf("chrom") > -1) {
+	isAndroidChrome = true;
     }
-    return output.join('');
 }
-
-function bytesToDataUri(uint8) {
-    var tmp;
-    var len = uint8.length;
-    var extraBytes = len % 3; // if we have 1 byte left, pad 2 bytes
-    var parts = [];
-    var maxChunkLength = 16383; // must be multiple of 3
-
-    parts.push("data:image/png;base64,");
-
-    // go through the array every three bytes, we'll deal with trailing stuff later
-    for (var i = 0, len2 = len - extraBytes; i < len2; i += maxChunkLength) {
-        parts.push(encodeBase64Chunk(uint8, i, (i + maxChunkLength) > len2 ? len2 : (i + maxChunkLength)));
+/* check for the passive option for Event listener */
+let passiveSupported = false;
+try {
+  const options = {
+    get passive() { // This function will be called when the browser
+                    //   attempts to access the passive property.
+      passiveSupported = true;
+      return false;
     }
+  };
 
-    // pad the end with zeros, but make sure to not forget the extra bytes
-    if (extraBytes === 1) {
-        tmp = uint8[len - 1];
-        parts.push(b64_lookup[tmp >> 2] + b64_lookup[(tmp << 4) & 0x3F] + '==');
-    } else if (extraBytes === 2) {
-        tmp = (uint8[len - 2] << 8) + uint8[len - 1];
-        parts.push(b64_lookup[tmp >> 10] + b64_lookup[(tmp >> 4) & 0x3F] + b64_lookup[(tmp << 2) & 0x3F] + '=');
-    }
-
-    return parts.join('');
+  window.addEventListener("test", null, options);
+  window.removeEventListener("test", null, options);
+} catch(err) {
+  passiveSupported = false;
 }
-
 /* Helper functions for debugging */
 var logDiv = null;
 function log(str) {
     if (!logDiv) {
-        logDiv = document.createElement('pre');
-        document.body.appendChild(logDiv);
-        logDiv.style["position"] = "absolute";
-        logDiv.style["right"] = "0px";
-        logDiv.style["font-size"] = "small";
+	logDiv = document.createElement('div');
+	document.body.appendChild(logDiv);
+	logDiv.style["position"] = "absolute";
+	logDiv.style["right"] = "0px";
     }
-    logDiv.insertBefore(document.createElement('br'), logDiv.firstChild);
-    logDiv.insertBefore(document.createTextNode(str), logDiv.firstChild);
+    logDiv.appendChild(document.createTextNode(str));
+    logDiv.appendChild(document.createElement('br'));
+}
+/* Helper functions for touch identifier to make it unique on Android */
+var globalTouchIdentifier = Math.round(Date.now() / 1000);
+function touchIdentifierStart(tId)
+{
+    if (isAndroidChrome) {
+	if (tId == 0) {
+	    return ++globalTouchIdentifier;
+	}
+	return globalTouchIdentifier + tId;
+    }
+    return tId;
+}
+function touchIdentifier(tId)
+{
+    if (isAndroidChrome) {
+	return globalTouchIdentifier + tId;
+    }
+    return tId;
 }
 
 function getStackTrace()
@@ -164,44 +59,44 @@ function getStackTrace()
     var callstack = [];
     var isCallstackPopulated = false;
     try {
-        i.dont.exist+=0;
+	i.dont.exist+=0;
     } catch(e) {
-        if (e.stack) { // Firefox
-            var lines = e.stack.split("\n");
-            for (var i=0, len=lines.length; i<len; i++) {
-                if (lines[i].match(/^\s*[A-Za-z0-9\-_\$]+\(/)) {
-                    callstack.push(lines[i]);
-                }
-            }
-            // Remove call to getStackTrace()
-            callstack.shift();
-            isCallstackPopulated = true;
-        } else if (window.opera && e.message) { // Opera
-            var lines = e.message.split("\n");
-            for (var i=0, len=lines.length; i<len; i++) {
-                if (lines[i].match(/^\s*[A-Za-z0-9\-_\$]+\(/)) {
-                    var entry = lines[i];
-                    // Append next line also since it has the file info
-                    if (lines[i+1]) {
-                        entry += " at " + lines[i+1];
-                        i++;
-                    }
-                    callstack.push(entry);
-                }
-            }
-            // Remove call to getStackTrace()
-            callstack.shift();
-            isCallstackPopulated = true;
-        }
+	if (e.stack) { // Firefox
+	    var lines = e.stack.split("\n");
+	    for (var i=0, len=lines.length; i<len; i++) {
+		if (lines[i].match(/^\s*[A-Za-z0-9\-_\$]+\(/)) {
+		    callstack.push(lines[i]);
+		}
+	    }
+	    // Remove call to getStackTrace()
+	    callstack.shift();
+	    isCallstackPopulated = true;
+	} else if (window.opera && e.message) { // Opera
+	    var lines = e.message.split("\n");
+	    for (var i=0, len=lines.length; i<len; i++) {
+		if (lines[i].match(/^\s*[A-Za-z0-9\-_\$]+\(/)) {
+		    var entry = lines[i];
+		    // Append next line also since it has the file info
+		    if (lines[i+1]) {
+			entry += " at " + lines[i+1];
+			i++;
+		    }
+		    callstack.push(entry);
+		}
+	    }
+	    // Remove call to getStackTrace()
+	    callstack.shift();
+	    isCallstackPopulated = true;
+	}
     }
     if (!isCallstackPopulated) { //IE and Safari
-        var currentFunction = arguments.callee.caller;
-        while (currentFunction) {
-            var fn = currentFunction.toString();
-            var fname = fn.substring(fn.indexOf("function") + 8, fn.indexOf("(")) || "anonymous";
-            callstack.push(fname);
-            currentFunction = currentFunction.caller;
-        }
+	var currentFunction = arguments.callee.caller;
+	while (currentFunction) {
+	    var fn = currentFunction.toString();
+	    var fname = fn.substring(fn.indexOf("function") + 8, fn.indexOf("(")) || "anonymous";
+	    callstack.push(fname);
+	    currentFunction = currentFunction.caller;
+	}
     }
     return callstack;
 }
@@ -210,28 +105,46 @@ function logStackTrace(len) {
     var callstack = getStackTrace();
     var end = callstack.length;
     if (len > 0)
-        end = Math.min(len + 1, end);
+	end = Math.min(len + 1, end);
     for (var i = 1; i < end; i++)
-        log(callstack[i]);
+	log(callstack[i]);
+}
+
+function resizeCanvas(canvas, w, h)
+{
+    /* Canvas resize clears the data, so we need to save it first */
+    var tmpCanvas = canvas.ownerDocument.createElement("canvas");
+    tmpCanvas.width = canvas.width;
+    tmpCanvas.height = canvas.height;
+    var tmpContext = tmpCanvas.getContext("2d");
+    tmpContext.globalCompositeOperation = "copy";
+    tmpContext.drawImage(canvas, 0, 0, tmpCanvas.width, tmpCanvas.height);
+
+    canvas.width = w;
+    canvas.height = h;
+
+    var context = canvas.getContext("2d");
+
+    context.globalCompositeOperation = "copy";
+    context.drawImage(tmpCanvas, 0, 0, tmpCanvas.width, tmpCanvas.height);
 }
 
 var grab = new Object();
-grab.surface = null;
+grab.window = null;
 grab.ownerEvents = false;
 grab.implicit = false;
 var keyDownList = [];
+var inputList = [];
 var lastSerial = 0;
 var lastX = 0;
 var lastY = 0;
 var lastState;
 var lastTimeStamp = 0;
-var realSurfaceWithMouse = 0;
-var surfaceWithMouse = 0;
+var realWindowWithMouse = 0;
+var windowWithMouse = 0;
 var surfaces = {};
-var textures = {};
 var stackingOrder = [];
 var outstandingCommands = new Array();
-var outstandingDisplayCommands = null;
 var inputSocket = null;
 var debugDecoding = false;
 var fakeInput = null;
@@ -239,92 +152,139 @@ var showKeyboard = false;
 var showKeyboardChanged = false;
 var firstTouchDownId = null;
 
+var GDK_CROSSING_NORMAL = 0;
+var GDK_CROSSING_GRAB = 1;
+var GDK_CROSSING_UNGRAB = 2;
+
+// GdkModifierType
+var GDK_SHIFT_MASK = 1 << 0;
+var GDK_LOCK_MASK     = 1 << 1;
+var GDK_CONTROL_MASK  = 1 << 2;
+var GDK_MOD1_MASK     = 1 << 3;
+var GDK_MOD2_MASK     = 1 << 4;
+var GDK_MOD3_MASK     = 1 << 5;
+var GDK_MOD4_MASK     = 1 << 6;
+var GDK_MOD5_MASK     = 1 << 7;
+var GDK_BUTTON1_MASK  = 1 << 8;
+var GDK_BUTTON2_MASK  = 1 << 9;
+var GDK_BUTTON3_MASK  = 1 << 10;
+var GDK_BUTTON4_MASK  = 1 << 11;
+var GDK_BUTTON5_MASK  = 1 << 12;
+var GDK_SUPER_MASK    = 1 << 26;
+var GDK_HYPER_MASK    = 1 << 27;
+var GDK_META_MASK     = 1 << 28;
+var GDK_RELEASE_MASK  = 1 << 30;
+
 function getButtonMask (button) {
     if (button == 1)
-        return GDK_BUTTON1_MASK;
+	return GDK_BUTTON1_MASK;
     if (button == 2)
-        return GDK_BUTTON2_MASK;
+	return GDK_BUTTON2_MASK;
     if (button == 3)
-        return GDK_BUTTON3_MASK;
+	return GDK_BUTTON3_MASK;
     if (button == 4)
-        return GDK_BUTTON4_MASK;
+	return GDK_BUTTON4_MASK;
     if (button == 5)
-        return GDK_BUTTON5_MASK;
+	return GDK_BUTTON5_MASK;
     return 0;
-}
-
-function Texture(id, data) {
-    var url;
-    if (useDataUrls) {
-        url = bytesToDataUri(data);
-    } else {
-        var blob = new Blob([data],{type: "image/png"});
-        url = window.URL.createObjectURL(blob);
-    }
-
-    this.url = url;
-    this.refcount = 1;
-    this.id = id;
-
-    var image = new Image();
-    image.src = this.url;
-    this.image = image;
-    this.decoded = image.decode();
-    textures[id] = this;
-}
-
-Texture.prototype.ref = function() {
-    this.refcount += 1;
-    return this;
-}
-
-Texture.prototype.unref = function() {
-    this.refcount -= 1;
-    if (this.refcount == 0) {
-        if (this.url.startsWith("blob")) {
-            window.URL.revokeObjectURL(this.url);
-        }
-        delete textures[this.id];
-    }
 }
 
 function sendConfigureNotify(surface)
 {
-    sendInput(BROADWAY_EVENT_CONFIGURE_NOTIFY, [surface.id, surface.x, surface.y, surface.width, surface.height]);
+    sendInput("w", [surface.id, surface.x, surface.y, surface.width, surface.height]);
 }
 
-function cmdCreateSurface(id, x, y, width, height)
+var positionIndex = 0;
+function cmdCreateSurface(id, x, y, width, height, isTemp)
 {
-    var surface = { id: id, x: x, y:y, width: width, height: height };
+    var surface = { id: id, x: x, y:y, width: width, height: height, isTemp: isTemp };
+    surface.positioned = isTemp;
     surface.transientParent = 0;
     surface.visible = false;
     surface.imageData = null;
-    surface.nodes = {};
 
-    var div = document.createElement('div');
-    div.surface = surface;
-    surface.div = div;
+    var canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    canvas.surface = surface;
+    surface.canvas = canvas;
+    var toplevelElement;
 
-    div.style["position"] = "absolute";
-    div.style["left"] = surface.x + "px";
-    div.style["top"] = surface.y + "px";
-    div.style["width"] = surface.width + "px";
-    div.style["height"] = surface.height + "px";
-    div.style["display"] = "block";
-    div.style["visibility"] = "hidden";
+    toplevelElement = canvas;
+    document.body.appendChild(canvas);
+
+    surface.toplevelElement = toplevelElement;
+    toplevelElement.style["position"] = "absolute";
+    /* This positioning isn't strictly right for apps in another topwindow,
+     * but that will be fixed up when showing. */
+    toplevelElement.style["left"] = surface.x + "px";
+    toplevelElement.style["top"] = surface.y + "px";
+    toplevelElement.style["display"] = "inline";
+
+    toplevelElement.style["visibility"] = "hidden";
 
     surfaces[id] = surface;
     stackingOrder.push(surface);
 
     sendConfigureNotify(surface);
-
-    return div;
 }
 
-function restackSurfaces() {
+function cmdShowSurface(id)
+{
+    var surface = surfaces[id];
+
+    if (surface.visible)
+	return;
+    surface.visible = true;
+
+    var xOffset = surface.x;
+    var yOffset = surface.y;
+
+    surface.toplevelElement.style["left"] = xOffset + "px";
+    surface.toplevelElement.style["top"] = yOffset + "px";
+    surface.toplevelElement.style["visibility"] = "visible";
+
+    restackWindows();
+}
+
+function cmdHideSurface(id)
+{
+    if (grab.window == id)
+	doUngrab();
+
+    var surface = surfaces[id];
+
+    if (!surface.visible)
+	return;
+    surface.visible = false;
+
+    var element = surface.toplevelElement;
+
+    element.style["visibility"] = "hidden";
+}
+
+function cmdSetTransientFor(id, parentId)
+{
+    var surface = surfaces[id];
+
+    if (surface === undefined) return;
+    if (surface.transientParent == parentId)
+	return;
+
+    surface.transientParent = parentId;
+    if (parentId != 0 && surfaces[parentId]) {
+	moveToHelper(surface, stackingOrder.indexOf(surfaces[parentId])+1);
+    }
+
+    if (surface.visible) {
+	restackWindows();
+    }
+}
+
+function restackWindows() {
     for (var i = 0; i < stackingOrder.length; i++) {
-        var surface = stackingOrder[i];
-        surface.div.style.zIndex = i;
+	var surface = stackingOrder[i];
+	surface.toplevelElement.style.zIndex = i;
     }
 }
 
@@ -332,955 +292,466 @@ function moveToHelper(surface, position) {
     var i = stackingOrder.indexOf(surface);
     stackingOrder.splice(i, 1);
     if (position != undefined)
-        stackingOrder.splice(position, 0, surface);
+	stackingOrder.splice(position, 0, surface);
     else
-        stackingOrder.push(surface);
+	stackingOrder.push(surface);
 
     for (var cid in surfaces) {
-        var child = surfaces[cid];
-        if (child.transientParent == surface.id)
-            moveToHelper(child, stackingOrder.indexOf(surface) + 1);
+	var child = surfaces[cid];
+	if (child.transientParent == surface.id) {
+	    moveToHelper(child, stackingOrder.indexOf(surface) + 1);
+	}
     }
 }
 
-function cmdRoundtrip(id, tag)
+function cmdDeleteSurface(id)
 {
-    sendInput(BROADWAY_EVENT_ROUNDTRIP_NOTIFY, [id, tag]);
+    if (grab.window == id)
+	doUngrab();
+
+    var surface = surfaces[id];
+    var i = stackingOrder.indexOf(surface);
+    if (i >= 0)
+	stackingOrder.splice(i, 1);
+    var canvas = surface.canvas;
+    canvas.parentNode.removeChild(canvas);
+    if (id == windowWithMouse) {
+	windowWithMouse = 0;
+    }
+    if (id == realWindowWithMouse) {
+	realWindowWithMouse = 0;
+	firstTouchDownId = null;
+    }
+    delete surfaces[id];
+}
+
+function cmdMoveResizeSurface(id, has_pos, x, y, has_size, w, h)
+{
+    var surface = surfaces[id];
+    if (has_pos) {
+	surface.positioned = true;
+	surface.x = x;
+	surface.y = y;
+    }
+    if (has_size) {
+	surface.width = w;
+	surface.height = h;
+    }
+
+    if (has_size)
+	resizeCanvas(surface.canvas, w, h);
+
+    if (surface.visible) {
+	if (has_pos) {
+	    var xOffset = surface.x;
+	    var yOffset = surface.y;
+
+	    var element = surface.canvas;
+
+	    element.style["left"] = xOffset + "px";
+	    element.style["top"] = yOffset + "px";
+	}
+    }
+
+    sendConfigureNotify(surface);
 }
 
 function cmdRaiseSurface(id)
 {
     var surface = surfaces[id];
-    if (surface)
-        moveToHelper(surface);
+
+    if (surface === undefined) return;
+    moveToHelper(surface);
+    restackWindows();
 }
 
 function cmdLowerSurface(id)
 {
     var surface = surfaces[id];
-    if (surface)
-        moveToHelper(surface, 0);
+
+    if (surface === undefined) return;
+    moveToHelper(surface, 0);
+    restackWindows();
 }
 
-function TransformNodes(node_data, div, nodes, display_commands) {
-    this.node_data = node_data;
-    this.display_commands = display_commands;
-    this.data_pos = 0;
-    this.div = div;
-    this.outstanding = 1;
-    this.nodes = nodes;
-}
-
-TransformNodes.prototype.decode_uint32 = function() {
-    var v = this.node_data.getUint32(this.data_pos, true);
-    this.data_pos += 4;
-    return v;
-}
-
-TransformNodes.prototype.decode_int32 = function() {
-    var v = this.node_data.getInt32(this.data_pos, true);
-    this.data_pos += 4;
-    return v;
-}
-
-TransformNodes.prototype.decode_float = function() {
-    var v = this.node_data.getFloat32(this.data_pos, true);
-    this.data_pos += 4;
-    return v;
-}
-
-TransformNodes.prototype.decode_color = function() {
-    var rgba = this.decode_uint32();
-    var a = (rgba >> 24) & 0xff;
-    var r = (rgba >> 16) & 0xff;
-    var g = (rgba >> 8) & 0xff;
-    var b = (rgba >> 0) & 0xff;
-    var c;
-    if (a == 255)
-        c = "rgb(" + r + "," + g + "," + b + ")";
-    else
-        c = "rgba(" + r + "," + g + "," + b + "," + (a / 255.0) + ")";
-    return c;
-}
-
-TransformNodes.prototype.decode_size = function() {
-    var s = new Object();
-    s.width = this.decode_float ();
-    s.height = this.decode_float ();
-    return s;
-}
-
-TransformNodes.prototype.decode_point = function() {
-    var p = new Object();
-    p.x = this.decode_float ();
-    p.y = this.decode_float ();
-    return p;
-}
-
-TransformNodes.prototype.decode_rect = function() {
-    var r = new Object();
-    r.x = this.decode_float ();
-    r.y = this.decode_float ();
-    r.width = this.decode_float ();
-    r.height = this.decode_float ();
-    return r;
-}
-
-TransformNodes.prototype.decode_irect = function() {
-    var r = new Object();
-    r.x = this.decode_int32 ();
-    r.y = this.decode_int32 ();
-    r.width = this.decode_int32 ();
-    r.height = this.decode_int32 ();
-    return r;
-}
-
-TransformNodes.prototype.decode_rounded_rect = function() {
-    var r = new Object();
-    r.bounds = this.decode_rect();
-    r.sizes = [];
-    for (var i = 0; i < 4; i++)
-        r.sizes[i] = this.decode_size();
-    return r;
-}
-
-TransformNodes.prototype.decode_color_stop = function() {
-    var s = new Object();
-    s.offset = this.decode_float ();
-    s.color = this.decode_color ();
-    return s;
-}
-
-TransformNodes.prototype.decode_color_stops = function() {
-    var stops = [];
-    var len = this.decode_uint32();
-    for (var i = 0; i < len; i++)
-        stops[i] = this.decode_color_stop();
-    return stops;
-}
-
-function utf8_to_string(array) {
-    var out, i, len, c;
-    var char2, char3;
-
-    out = "";
-    len = array.length;
-    i = 0;
-    while(i < len) {
-    c = array[i++];
-    switch(c >> 4)
-        {
-        case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
-            // 0xxxxxxx
-            out += String.fromCharCode(c);
-            break;
-        case 12: case 13:
-            // 110x xxxx   10xx xxxx
-            char2 = array[i++];
-            out += String.fromCharCode(((c & 0x1F) << 6) | (char2 & 0x3F));
-            break;
-        case 14:
-            // 1110 xxxx  10xx xxxx  10xx xxxx
-            char2 = array[i++];
-            char3 = array[i++];
-            out += String.fromCharCode(((c & 0x0F) << 12) |
-                                       ((char2 & 0x3F) << 6) |
-                                       ((char3 & 0x3F) << 0));
-            break;
-        }
-    }
-
-    return out;
-}
-
-TransformNodes.prototype.decode_string = function() {
-    var len = this.decode_uint32();
-    var utf8 = new Array();
-    var b;
-    for (var i = 0; i < len; i++) {
-        if (i % 4 == 0) {
-            b = this.decode_uint32();
-        }
-        utf8[i] = b & 0xff;
-        b = b >> 8;
-    }
-
-    return utf8_to_string (utf8);
-}
-
-TransformNodes.prototype.decode_transform = function() {
-    var transform_type = this.decode_uint32();
-
-    if (transform_type == 0) {
-        var point = this.decode_point();
-        return "translate(" + px(point.x) + "," + px(point.y) + ")";
-    } else if (transform_type == 1) {
-        var m = new Array();
-        for (var i = 0; i < 16; i++) {
-            m[i] = this.decode_float ();
-        }
-
-        return "matrix3d(" +
-            m[0] + "," + m[1] + "," + m[2] + "," + m[3]+ "," +
-            m[4] + "," + m[5] + "," + m[6] + "," + m[7] + "," +
-            m[8] + "," + m[9] + "," + m[10] + "," + m[11] + "," +
-            m[12] + "," + m[13] + "," + m[14] + "," + m[15] + ")";
-    } else {
-        alert("Unexpected transform type " + transform_type);
-    }
-}
-
-function args() {
-    var argsLength = arguments.length;
-    var strings = [];
-    for (var i = 0; i < argsLength; ++i)
-        strings[i] = arguments[i];
-
-    return strings.join(" ");
-}
-
-function px(x) {
-    return x + "px";
-}
-
-function set_point_style (div, point) {
-    div.style["left"] = px(point.x);
-    div.style["top"] = px(point.y);
-}
-
-function set_rect_style (div, rect) {
-    div.style["left"] = px(rect.x);
-    div.style["top"] = px(rect.y);
-    div.style["width"] = px(rect.width);
-    div.style["height"] = px(rect.height);
-}
-
-function set_rrect_style (div, rrect) {
-    set_rect_style(div, rrect.bounds);
-    div.style["border-top-left-radius"] = args(px(rrect.sizes[0].width), px(rrect.sizes[0].height));
-    div.style["border-top-right-radius"] = args(px(rrect.sizes[1].width), px(rrect.sizes[1].height));
-    div.style["border-bottom-right-radius"] = args(px(rrect.sizes[2].width), px(rrect.sizes[2].height));
-    div.style["border-bottom-left-radius"] = args(px(rrect.sizes[3].width), px(rrect.sizes[3].height));
-}
-
-TransformNodes.prototype.createDiv = function(id)
+function copyRect(src, srcX, srcY, dest, destX, destY, width, height)
 {
-    var div = document.createElement('div');
-    div.node_id = id;
-    this.nodes[id] = div;
-    return div;
-}
+    // Clip to src
+    if (srcX + width > src.width)
+        width = src.width - srcX;
+    if (srcY + height > src.height)
+        height = src.height - srcY;
 
-TransformNodes.prototype.createImage = function(id)
-{
-    var image = new Image();
-    image.node_id = id;
-    this.nodes[id] = image;
-    return image;
-}
+    // Clip to dest
+    if (destX + width > dest.width)
+        width = dest.width - destX;
+    if (destY + height > dest.height)
+        height = dest.height - destY;
 
-TransformNodes.prototype.insertNode = function(parent, previousSibling, is_toplevel)
-{
-    var type = this.decode_uint32();
-    var id = this.decode_uint32();
-    var newNode = null;
-    var oldNode = null;
+    var srcRect = src.width * 4 * srcY + srcX * 4;
+    var destRect = dest.width * 4 * destY + destX * 4;
 
-    switch (type)
-    {
-        /* Reuse divs from last frame */
-        case BROADWAY_NODE_REUSE:
-        {
-            oldNode = this.nodes[id];
-        }
-        break;
-        /* Leaf nodes */
-
-        case BROADWAY_NODE_TEXTURE:
-        {
-            var rect = this.decode_rect();
-            var texture_id = this.decode_uint32();
-            var image = this.createImage(id);
-            image.width = rect.width;
-            image.height = rect.height;
-            image.style["position"] = "absolute";
-            set_rect_style(image, rect);
-            var texture = textures[texture_id].ref();
-            image.src = texture.url;
-            // Unref blob url when loaded
-            image.onload = function() { texture.unref(); };
-            newNode = image;
-        }
-        break;
-
-    case BROADWAY_NODE_COLOR:
-        {
-            var rect = this.decode_rect();
-            var c = this.decode_color ();
-            var div = this.createDiv(id);
-            div.style["position"] = "absolute";
-            set_rect_style(div, rect);
-            div.style["background-color"] = c;
-            newNode = div;
-        }
-        break;
-
-    case BROADWAY_NODE_BORDER:
-        {
-            var rrect = this.decode_rounded_rect();
-            var border_widths = [];
-            for (var i = 0; i < 4; i++)
-                border_widths[i] = this.decode_float();
-            var border_colors = [];
-            for (var i = 0; i < 4; i++)
-                border_colors[i] = this.decode_color();
-
-            var div = this.createDiv(id);
-            div.style["position"] = "absolute";
-            rrect.bounds.width -= border_widths[1] + border_widths[3];
-            rrect.bounds.height -= border_widths[0] + border_widths[2];
-            set_rrect_style(div, rrect);
-            div.style["border-style"] = "solid";
-            div.style["border-top-color"] = border_colors[0];
-            div.style["border-top-width"] = px(border_widths[0]);
-            div.style["border-right-color"] = border_colors[1];
-            div.style["border-right-width"] = px(border_widths[1]);
-            div.style["border-bottom-color"] = border_colors[2];
-            div.style["border-bottom-width"] = px(border_widths[2]);
-            div.style["border-left-color"] = border_colors[3];
-            div.style["border-left-width"] = px(border_widths[3]);
-            newNode = div;
-        }
-        break;
-
-    case BROADWAY_NODE_OUTSET_SHADOW:
-        {
-            var rrect = this.decode_rounded_rect();
-            var color = this.decode_color();
-            var dx = this.decode_float();
-            var dy = this.decode_float();
-            var spread = this.decode_float();
-            var blur = this.decode_float();
-
-            var div = this.createDiv(id);
-            div.style["position"] = "absolute";
-            set_rrect_style(div, rrect);
-            div.style["box-shadow"] = args(px(dx), px(dy), px(blur), px(spread), color);
-            newNode = div;
-        }
-        break;
-
-    case BROADWAY_NODE_INSET_SHADOW:
-        {
-            var rrect = this.decode_rounded_rect();
-            var color = this.decode_color();
-            var dx = this.decode_float();
-            var dy = this.decode_float();
-            var spread = this.decode_float();
-            var blur = this.decode_float();
-
-            var div = this.createDiv(id);
-            div.style["position"] = "absolute";
-            set_rrect_style(div, rrect);
-            div.style["box-shadow"] = args("inset", px(dx), px(dy), px(blur), px(spread), color);
-            newNode = div;
-        }
-        break;
-
-
-    case BROADWAY_NODE_LINEAR_GRADIENT:
-        {
-            var rect = this.decode_rect();
-            var start = this.decode_point ();
-            var end = this.decode_point ();
-            var stops = this.decode_color_stops ();
-            var div = this.createDiv(id);
-            div.style["position"] = "absolute";
-            set_rect_style(div, rect);
-
-            // direction:
-            var dx = end.x - start.x;
-            var dy = end.y - start.y;
-
-            // Angle in css coords (clockwise degrees, up = 0), note that y goes downwards so we have to invert
-            var angle = Math.atan2(dx, -dy) * 180.0 / Math.PI;
-
-            // Figure out which corner has offset == 0 in css
-            var start_corner_x, start_corner_y;
-            if (dx >= 0) // going right
-                start_corner_x = rect.x;
-            else
-                start_corner_x = rect.x + rect.width;
-            if (dy >= 0) // going down
-                start_corner_y = rect.y;
-            else
-                start_corner_y = rect.y + rect.height;
-
-            /* project start corner on the line */
-            var l2 = dx*dx + dy*dy;
-            var l = Math.sqrt(l2);
-            var offset = ((start_corner_x - start.x) * dx  + (start_corner_y - start.y) * dy) / l2;
-
-            var gradient = "linear-gradient(" + angle + "deg";
-            for (var i = 0; i < stops.length; i++) {
-                var stop = stops[i];
-                gradient = gradient + ", " + stop.color + " " + px(stop.offset * l - offset);
-            }
-            gradient = gradient + ")";
-
-            div.style["background-image"] = gradient;
-            newNode = div;
-        }
-        break;
-
-
-    /* Bin nodes */
-
-    case BROADWAY_NODE_TRANSFORM:
-        {
-            var transform_string = this.decode_transform();
-
-            var div = this.createDiv(id);
-            div.style["transform"] = transform_string;
-            div.style["transform-origin"] = "0px 0px";
-
-            this.insertNode(div, null, false);
-            newNode = div;
-        }
-        break;
-
-    case BROADWAY_NODE_CLIP:
-        {
-            var rect = this.decode_rect();
-            var div = this.createDiv(id);
-            div.style["position"] = "absolute";
-            set_rect_style(div, rect);
-            div.style["overflow"] = "hidden";
-            this.insertNode(div, null, false);
-            newNode = div;
-        }
-        break;
-
-    case BROADWAY_NODE_ROUNDED_CLIP:
-        {
-            var rrect = this.decode_rounded_rect();
-            var div = this.createDiv(id);
-            div.style["position"] = "absolute";
-            set_rrect_style(div, rrect);
-            div.style["overflow"] = "hidden";
-            this.insertNode(div, null, false);
-            newNode = div;
-        }
-        break;
-
-    case BROADWAY_NODE_OPACITY:
-        {
-            var opacity = this.decode_float();
-            var div = this.createDiv(id);
-            div.style["position"] = "absolute";
-            div.style["left"] = px(0);
-            div.style["top"] = px(0);
-            div.style["opacity"] = opacity;
-
-            this.insertNode(div, null, false);
-            newNode = div;
-        }
-        break;
-
-    case BROADWAY_NODE_SHADOW:
-        {
-            var len = this.decode_uint32();
-            var filters = "";
-            for (var i = 0; i < len; i++) {
-                var color = this.decode_color();
-                var dx = this.decode_float();
-                var dy = this.decode_float();
-                var blur = this.decode_float();
-                filters = filters + "drop-shadow(" + args (px(dx), px(dy), px(blur), color) + ")";
-            }
-            var div = this.createDiv(id);
-            div.style["position"] = "absolute";
-            div.style["left"] = px(0);
-            div.style["top"] = px(0);
-            div.style["filter"] = filters;
-
-            this.insertNode(div, null, false);
-            newNode = div;
-        }
-        break;
-
-    case BROADWAY_NODE_DEBUG:
-        {
-            var str = this.decode_string();
-            var div = this.createDiv(id);
-            div.setAttribute('debug', str);
-            this.insertNode(div, null, false);
-            newNode = div;
-        }
-        break;
-
-   /* Generic nodes */
-
-    case BROADWAY_NODE_CONTAINER:
-        {
-            var div = this.createDiv(id);
-            var len = this.decode_uint32();
-            var lastChild = null;
-            for (var i = 0; i < len; i++) {
-                lastChild = this.insertNode(div, lastChild, false);
-            }
-            newNode = div;
-        }
-        break;
-
-    default:
-        alert("Unexpected node type " + type);
-    }
-
-    if (newNode) {
-        if (is_toplevel)
-            this.display_commands.push([DISPLAY_OP_INSERT_AFTER_CHILD, parent, previousSibling, newNode]);
-        else // It is safe to display directly because we have not added the toplevel to the document yet
-            parent.appendChild(newNode);
-        return newNode;
-    } else if (oldNode) {
-        // This must be delayed until display ops, because it will remove from the old parent
-        this.display_commands.push([DISPLAY_OP_INSERT_AFTER_CHILD, parent, previousSibling, oldNode]);
-        return oldNode;
+    for (var i = 0; i < height; i++) {
+        var line = src.data.subarray(srcRect, srcRect + width *4);
+        dest.data.set(line, destRect);
+        srcRect += src.width * 4;
+        destRect += dest.width * 4;
     }
 }
 
-TransformNodes.prototype.execute = function(display_commands)
+
+function markRun(dest, start, length, r, g, b)
 {
-    var root = this.div;
+    for (var i = start; i < start + length * 4; i += 4) {
+        dest[i+0] = dest[i+0] / 2 | 0 + r;
+        dest[i+1] = dest[i+1] / 2 | 0 + g;
+        dest[i+2] = dest[i+2] / 2 | 0 + b;
+    }
+}
 
-    while (this.data_pos < this.node_data.byteLength) {
-        var op = this.decode_uint32();
-        var parentId, parent;
+function markRect(src, srcX, srcY, dest, destX, destY, width, height, r, g, b)
+{
+    // Clip to src
+    if (srcX + width > src.width)
+        width = src.width - srcX;
+    if (srcY + height > src.height)
+        height = src.height - srcY;
 
-        switch (op) {
-        case BROADWAY_NODE_OP_INSERT_NODE:
-            parentId = this.decode_uint32();
-            if (parentId == 0)
-                parent = root;
-            else {
-                parent = this.nodes[parentId];
-                if (parent == null)
-                    console.log("Wanted to insert into parent " + parentId + " but it is unknown");
+    // Clip to dest
+    if (destX + width > dest.width)
+        width = dest.width - destX;
+    if (destY + height > dest.height)
+        height = dest.height - destY;
+
+    var destRect = dest.width * 4 * destY + destX * 4;
+
+    for (var i = 0; i < height; i++) {
+        if (i == 0 || i == height-1)
+            markRun(dest.data, destRect, width, 0, 0, 0);
+        else {
+            markRun(dest.data, destRect, 1, 0 ,0, 0);
+            markRun(dest.data, destRect+4, width-2, r, g, b);
+            markRun(dest.data, destRect+4*width-4, 1, 0, 0, 0);
+        }
+        destRect += dest.width * 4;
+    }
+}
+
+function decodeBuffer(context, oldData, w, h, data, debug)
+{
+    var i, j;
+    var imageData = context.createImageData(w, h);
+
+    if (oldData != null) {
+        // Copy old frame into new buffer
+        copyRect(oldData, 0, 0, imageData, 0, 0, oldData.width, oldData.height);
+    }
+
+    var src = 0;
+    var dest = 0;
+
+    while (src < data.length)  {
+        var b = data[src++];
+        var g = data[src++];
+        var r = data[src++];
+        var alpha = data[src++];
+        var len, start;
+
+        if (alpha != 0) {
+            // Regular data is red
+            if (debug) {
+                r = r / 2 | 0 + 128;
+                g = g / 2 | 0;
+                b = r / 2 | 0;
             }
 
-            var previousChildId = this.decode_uint32();
-            var previousChild = null;
-            if (previousChildId != 0)
-                previousChild = this.nodes[previousChildId];
-            this.insertNode(parent, previousChild, true);
-            break;
-        case BROADWAY_NODE_OP_REMOVE_NODE:
-            var removeId = this.decode_uint32();
-            var remove = this.nodes[removeId];
-            delete this.nodes[removeId];
-            if (remove == null)
-                console.log("Wanted to delete node " + removeId + " but it is unknown");
+            imageData.data[dest++] = r;
+            imageData.data[dest++] = g;
+            imageData.data[dest++] = b;
+            imageData.data[dest++] = alpha;
+        } else {
+            var cmd = r & 0xf0;
+            switch (cmd) {
+            case 0x00: // Transparent pixel
+                //log("Got transparent");
+                imageData.data[dest++] = 0;
+                imageData.data[dest++] = 0;
+                imageData.data[dest++] = 0;
+                imageData.data[dest++] = 0;
+                break;
 
-            this.display_commands.push([DISPLAY_OP_DELETE_NODE, remove]);
-            break;
-        case BROADWAY_NODE_OP_MOVE_AFTER_CHILD:
-            parentId = this.decode_uint32();
-            if (parentId == 0)
-                parent = root;
-            else
-                parent = this.nodes[parentId];
-            var previousChildId = this.decode_uint32();
-            var previousChild = null;
-            if (previousChildId != 0)
-                previousChild = this.nodes[previousChildId];
-            var toMoveId = this.decode_uint32();
-            var toMove = this.nodes[toMoveId];
-            this.display_commands.push([DISPLAY_OP_INSERT_AFTER_CHILD, parent, previousChild, toMove]);
-            break;
-        case BROADWAY_NODE_OP_PATCH_TEXTURE:
-            var textureNodeId = this.decode_uint32();
-            var textureNode = this.nodes[textureNodeId];
-            var textureId = this.decode_uint32();
-            var texture = textures[textureId].ref();
-            this.display_commands.push([DISPLAY_OP_CHANGE_TEXTURE, textureNode, texture]);
-            break;
-        case BROADWAY_NODE_OP_PATCH_TRANSFORM:
-            var transformNodeId = this.decode_uint32();
-            var transformNode = this.nodes[transformNodeId];
-            var transformString = this.decode_transform();
-            this.display_commands.push([DISPLAY_OP_CHANGE_TRANSFORM, transformNode, transformString]);
-            break;
+            case 0x10: // Delta 0 run
+                len = (r & 0xf) << 16 | g << 8 | b;
+                //log("Got delta0, len: " + len);
+                dest += len * 4;
+                break;
+
+            case 0x20: // Block reference
+                var blockid = (r & 0xf) << 16 | g << 8 | b;
+
+                var block_stride = (oldData.width + 32 - 1) / 32 | 0;
+                var srcY = (blockid / block_stride | 0) * 32;
+                var srcX = (blockid % block_stride | 0) * 32;
+
+                b = data[src++];
+                g = data[src++];
+                r = data[src++];
+                alpha = data[src++];
+
+                var destX = alpha << 8 | r;
+                var destY = g << 8 | b;
+
+                copyRect(oldData, srcX, srcY, imageData, destX, destY, 32, 32);
+                if (debug) // blocks are green
+                    markRect(oldData, srcX, srcY, imageData, destX, destY, 32, 32, 0x00, 128, 0x00);
+
+                //log("Got block, id: " + blockid +  "(" + srcX +"," + srcY + ") at " + destX + "," + destY);
+
+                break;
+
+            case 0x30: // Color run
+                len = (r & 0xf) << 16 | g << 8 | b;
+                //log("Got color run, len: " + len);
+
+                b = data[src++];
+                g = data[src++];
+                r = data[src++];
+                alpha = data[src++];
+
+                start = dest;
+
+                for (i = 0; i < len; i++) {
+                    imageData.data[dest++] = r;
+                    imageData.data[dest++] = g;
+                    imageData.data[dest++] = b;
+                    imageData.data[dest++] = alpha;
+                }
+
+                if (debug) // Color runs are blue
+                    markRun(imageData.data, start, len, 0x00, 0x00, 128);
+
+                break;
+
+            case 0x40: // Delta run
+                len = (r & 0xf) << 16 | g << 8 | b;
+                //log("Got delta run, len: " + len);
+
+                b = data[src++];
+                g = data[src++];
+                r = data[src++];
+                alpha = data[src++];
+
+                start = dest;
+
+                for (i = 0; i < len; i++) {
+                    imageData.data[dest] = (imageData.data[dest] + r) & 0xff;
+                    dest++;
+                    imageData.data[dest] = (imageData.data[dest] + g) & 0xff;
+                    dest++;
+                    imageData.data[dest] = (imageData.data[dest] + b) & 0xff;
+                    dest++;
+                    imageData.data[dest] = (imageData.data[dest] + alpha) & 0xff;
+                    dest++;
+                }
+                if (debug) // Delta runs are violet
+                    markRun(imageData.data, start, len, 0xff, 0x00, 0xff);
+                break;
+
+            default:
+                alert("Unknown buffer commend " + cmd);
+            }
         }
-
     }
+
+    return imageData;
+}
+
+function cmdPutBuffer(id, w, h, compressed)
+{
+    var surface = surfaces[id];
+    var context = surface.canvas.getContext("2d");
+
+    var inflate = new Zlib.RawInflate(compressed);
+    var data = inflate.decompress();
+
+    var imageData = decodeBuffer (context, surface.imageData, w, h, data, debugDecoding);
+    context.imageSmoothingEnabled = false;
+    context.putImageData(imageData, 0, 0);
+
+    if (debugDecoding)
+        imageData = decodeBuffer (context, surface.imageData, w, h, data, false);
+
+    surface.imageData = imageData;
 }
 
 function cmdGrabPointer(id, ownerEvents)
 {
     doGrab(id, ownerEvents, false);
-    sendInput (BROADWAY_EVENT_GRAB_NOTIFY, []);
+    sendInput ("g", []);
 }
 
 function cmdUngrabPointer()
 {
-    sendInput (BROADWAY_EVENT_UNGRAB_NOTIFY, []);
-    if (grab.surface)
-        doUngrab();
+    sendInput ("u", []);
+    if (grab.window)
+	doUngrab();
 }
 
-function handleDisplayCommands(display_commands)
+var active = false;
+function handleCommands(cmd)
 {
-    var div, parent;
-    var len = display_commands.length;
-    for (var i = 0; i < len; i++) {
-        var cmd = display_commands[i];
-
-        switch (cmd[0]) {
-        case DISPLAY_OP_REPLACE_CHILD:
-            cmd[1].replaceChild(cmd[2], cmd[3]);
-            break;
-        case DISPLAY_OP_APPEND_CHILD:
-            cmd[1].appendChild(cmd[2]);
-            break;
-        case DISPLAY_OP_INSERT_AFTER_CHILD:
-            parent = cmd[1];
-            var afterThis = cmd[2];
-            div = cmd[3];
-            if (afterThis == null) // First
-                parent.insertBefore(div, parent.firstChild);
-            else
-                parent.insertBefore(div, afterThis.nextSibling);
-            break;
-        case DISPLAY_OP_APPEND_ROOT:
-            document.body.appendChild(cmd[1]);
-            break;
-        case DISPLAY_OP_SHOW_SURFACE:
-            div = cmd[1];
-            var xOffset = cmd[2];
-            var yOffset = cmd[3];
-            div.style["left"] = xOffset + "px";
-            div.style["top"] = yOffset + "px";
-            div.style["visibility"] = "visible";
-            break;
-        case DISPLAY_OP_HIDE_SURFACE:
-            div = cmd[1];
-            div.style["visibility"] = "hidden";
-            break;
-        case DISPLAY_OP_DELETE_NODE:
-            div = cmd[1];
-            div.parentNode.removeChild(div);
-            break;
-        case DISPLAY_OP_MOVE_NODE:
-            div = cmd[1];
-            div.style["left"] = cmd[2] + "px";
-            div.style["top"] = cmd[3] + "px";
-            break;
-        case DISPLAY_OP_RESIZE_NODE:
-            div = cmd[1];
-            div.style["width"] = cmd[2] + "px";
-            div.style["height"] = cmd[3] + "px";
-            break;
-
-        case DISPLAY_OP_RESTACK_SURFACES:
-            restackSurfaces();
-            break;
-        case DISPLAY_OP_DELETE_SURFACE:
-            var id = cmd[1];
-            delete surfaces[id];
-            break;
-        case DISPLAY_OP_CHANGE_TEXTURE:
-            var image = cmd[1];
-            var texture = cmd[2];
-            // We need a new closure here to have a separate copy of "texture" for each iteration in the onload callback...
-            var block = function(t) {
-                image.src = t.url;
-                // Unref blob url when loaded
-                image.onload = function() { t.unref(); };
-            };
-            block(texture);
-            break;
-        case DISPLAY_OP_CHANGE_TRANSFORM:
-            var div = cmd[1];
-            var transform_string = cmd[2];
-            div.style["transform"] = transform_string;
-            break;
-        default:
-            alert("Unknown display op " + command);
-        }
+    if (!active) {
+        start();
+        active = true;
     }
-}
 
-function handleCommands(cmd, display_commands, new_textures, modified_trees)
-{
-    var res = true;
-    var need_restack = false;
+    while (cmd.pos < cmd.length) {
+	var id, x, y, w, h, q;
+	var command = cmd.get_char();
+	lastSerial = cmd.get_32();
+	switch (command) {
+	case 'D':
+	    alert ("disconnected");
+	    inputSocket = null;
+	    break;
 
-    while (res && cmd.pos < cmd.length) {
-        var id, x, y, w, h, q, surface;
-        var saved_pos = cmd.pos;
-        var command = cmd.get_uint8();
-        lastSerial = cmd.get_32();
-        switch (command) {
-        case BROADWAY_OP_DISCONNECTED:
-            alert ("disconnected");
-            inputSocket = null;
-            break;
+	case 's': // create new surface
+	    id = cmd.get_16();
+	    x = cmd.get_16s();
+	    y = cmd.get_16s();
+	    w = cmd.get_16();
+	    h = cmd.get_16();
+	    var isTemp = cmd.get_bool();
+	    cmdCreateSurface(id, x, y, w, h, isTemp);
+	    break;
 
-        case BROADWAY_OP_NEW_SURFACE:
-            id = cmd.get_16();
-            x = cmd.get_16s();
-            y = cmd.get_16s();
-            w = cmd.get_16();
-            h = cmd.get_16();
-            var div = cmdCreateSurface(id, x, y, w, h);
-            display_commands.push([DISPLAY_OP_APPEND_ROOT, div]);
-            need_restack = true;
-            break;
+	case 'S': // Show a surface
+	    id = cmd.get_16();
+	    cmdShowSurface(id);
+	    break;
 
-        case BROADWAY_OP_SHOW_SURFACE:
-            id = cmd.get_16();
-            surface = surfaces[id];
-            if (!surface.visible) {
-                surface.visible = true;
-                display_commands.push([DISPLAY_OP_SHOW_SURFACE, surface.div, surface.x, surface.y]);
-                need_restack = true;
-            }
-           break;
+	case 'H': // Hide a surface
+	    id = cmd.get_16();
+	    cmdHideSurface(id);
+	    break;
 
-        case BROADWAY_OP_HIDE_SURFACE:
-            id = cmd.get_16();
-            if (grab.surface == id)
-                doUngrab();
-            surface = surfaces[id];
-            if (surface.visible) {
-                surface.visible = false;
-                display_commands.push([DISPLAY_OP_HIDE_SURFACE, surface.div]);
-            }
-            break;
+	case 'p': // Set transient parent
+	    id = cmd.get_16();
+	    var parentId = cmd.get_16();
+	    cmdSetTransientFor(id, parentId);
+	    break;
 
-        case BROADWAY_OP_SET_TRANSIENT_FOR:
-            id = cmd.get_16();
-            var parentId = cmd.get_16();
-            surface = surfaces[id];
-            if (surface.transientParent !== parentId) {
-                surface.transientParent = parentId;
-                if (parentId != 0 && surfaces[parentId]) {
-                    moveToHelper(surface, stackingOrder.indexOf(surfaces[parentId])+1);
-                }
-                need_restack = true;
-            }
-            break;
+	case 'd': // Delete surface
+	    id = cmd.get_16();
+	    cmdDeleteSurface(id);
+	    break;
 
-        case BROADWAY_OP_DESTROY_SURFACE:
-            id = cmd.get_16();
+	case 'm': // Move a surface
+	    id = cmd.get_16();
+	    var ops = cmd.get_flags();
+	    var has_pos = ops & 1;
+	    if (has_pos) {
+		x = cmd.get_16s();
+		y = cmd.get_16s();
+	    }
+	    var has_size = ops & 2;
+	    if (has_size) {
+		w = cmd.get_16();
+		h = cmd.get_16();
+	    }
+	    cmdMoveResizeSurface(id, has_pos, x, y, has_size, w, h);
+	    break;
 
-            if (grab.surface == id)
-                doUngrab();
+	case 'r': // Raise a surface
+	    id = cmd.get_16();
+	    cmdRaiseSurface(id);
+	    break;
 
-            surface = surfaces[id];
-            var i = stackingOrder.indexOf(surface);
-            if (i >= 0)
-                stackingOrder.splice(i, 1);
-            var div = surface.div;
+	case 'R': // Lower a surface
+	    id = cmd.get_16();
+	    cmdLowerSurface(id);
+	    break;
 
-            display_commands.push([DISPLAY_OP_DELETE_NODE, div]);
-            // We need to delay this until its really deleted because we can still get events to it
-            display_commands.push([DISPLAY_OP_DELETE_SURFACE, id]);
-            break;
-
-        case BROADWAY_OP_ROUNDTRIP:
-            id = cmd.get_16();
-            var tag = cmd.get_32();
-            cmdRoundtrip(id, tag);
-            break;
-
-        case BROADWAY_OP_MOVE_RESIZE:
-            id = cmd.get_16();
-            var ops = cmd.get_flags();
-            var has_pos = ops & 1;
-            var has_size = ops & 2;
-            surface = surfaces[id];
-            if (has_pos) {
-                surface.x = cmd.get_16s();
-                surface.y = cmd.get_16s();
-                display_commands.push([DISPLAY_OP_MOVE_NODE, surface.div, surface.x, surface.y]);
-            }
-            if (has_size) {
-                surface.width = cmd.get_16();
-                surface.height = cmd.get_16();
-                display_commands.push([DISPLAY_OP_RESIZE_NODE, surface.div, surface.width, surface.height]);
-
-            }
-            sendConfigureNotify(surface);
-            break;
-
-        case BROADWAY_OP_RAISE_SURFACE:
-            id = cmd.get_16();
-            cmdRaiseSurface(id);
-            need_restack = true;
-            break;
-
-        case BROADWAY_OP_LOWER_SURFACE:
-            id = cmd.get_16();
-            cmdLowerSurface(id);
-            need_restack = true;
-            break;
-
-        case BROADWAY_OP_UPLOAD_TEXTURE:
-            id = cmd.get_32();
+	case 'b': // Put image buffer
+	    id = cmd.get_16();
+	    w = cmd.get_16();
+	    h = cmd.get_16();
             var data = cmd.get_data();
-            var texture = new Texture (id, data); // Stores a ref in global textures array
-            new_textures.push(texture);
+            cmdPutBuffer(id, w, h, data);
             break;
 
-        case BROADWAY_OP_RELEASE_TEXTURE:
-            id = cmd.get_32();
-            textures[id].unref();
-            break;
+	case 'g': // Grab
+	    id = cmd.get_16();
+	    var ownerEvents = cmd.get_bool ();
 
-        case BROADWAY_OP_SET_NODES:
-            id = cmd.get_16();
-            if (id in modified_trees) {
-                // Can't modify the same dom tree in the same loop, bail out and do the first one
-                cmd.pos = saved_pos;
-                res = false;
-            } else {
-                modified_trees[id] = true;
+	    cmdGrabPointer(id, ownerEvents);
+	    break;
 
-                var node_data = cmd.get_nodes ();
-                surface = surfaces[id];
-                var transform_nodes = new TransformNodes (node_data, surface.div, surface.nodes, display_commands);
-                transform_nodes.execute();
-            }
-            break;
+	case 'u': // Ungrab
+	    cmdUngrabPointer();
+	    break;
 
-        case BROADWAY_OP_GRAB_POINTER:
-            id = cmd.get_16();
-            var ownerEvents = cmd.get_bool ();
-
-            cmdGrabPointer(id, ownerEvents);
-            break;
-
-        case BROADWAY_OP_UNGRAB_POINTER:
-            cmdUngrabPointer();
-            break;
-
-        case BROADWAY_OP_SET_SHOW_KEYBOARD:
+        case 'k': // show keyboard
             showKeyboard = cmd.get_16() != 0;
             showKeyboardChanged = true;
             break;
 
-        default:
-            alert("Unknown op " + command);
-        }
+	default:
+	    alert("Unknown op " + command);
+	}
     }
-
-    if (need_restack)
-        display_commands.push([DISPLAY_OP_RESTACK_SURFACES]);
-
-    return res;
+    return true;
 }
 
-function handleOutstandingDisplayCommands()
-{
-    if (outstandingDisplayCommands) {
-        window.requestAnimationFrame(
-            function () {
-                handleDisplayCommands(outstandingDisplayCommands);
-                outstandingDisplayCommands = null;
-
-                if (outstandingCommands.length > 0)
-                    setTimeout(handleOutstanding);
-            });
-    } else {
-        if (outstandingCommands.length > 0)
-            handleOutstanding ();
-    }
-}
-
-/* Mode of operation.
- * We run all outstandingCommands, until either we run out of things
- * to process, or we update the dom nodes of the same surface twice.
- * Then we wait for all textures to load, and then we request am
- * animation frame and apply the display changes. Then we loop back and
- * handle outstanding commands again.
- *
- * The reason for stopping if we update the same tree twice is that
- * the delta operations generally assume that the previous dom tree
- * is in pristine condition.
- */
 function handleOutstanding()
 {
-    var display_commands = new Array();
-    var new_textures = new Array();
-    var modified_trees = {};
-
-    if (outstandingDisplayCommands != null)
-        return;
-
     while (outstandingCommands.length > 0) {
-        var cmd = outstandingCommands.shift();
-        if (!handleCommands(cmd, display_commands, new_textures, modified_trees)) {
-            outstandingCommands.unshift(cmd);
-            break;
-        }
+	var cmd = outstandingCommands.shift();
+	if (!handleCommands(cmd)) {
+	    outstandingCommands.unshift(cmd);
+	    return;
+	}
     }
-
-    if (display_commands.length > 0)
-        outstandingDisplayCommands = display_commands;
-
-    if (new_textures.length > 0) {
-        var decodes = [];
-        for (var i = 0; i < new_textures.length; i++) {
-            decodes.push(new_textures[i].decoded);
-        }
-        Promise.allSettled(decodes).then(
-            () => {
-                handleOutstandingDisplayCommands();
-            });
-    } else {
-        handleOutstandingDisplayCommands();
-    }
-
 }
 
 function BinCommands(message) {
     this.arraybuffer = message;
-    this.dataview = new DataView(message);
-    this.length = this.arraybuffer.byteLength;
+    this.u8 = new Uint8Array(message);
+    this.length = this.u8.length;
     this.pos = 0;
 }
 
-BinCommands.prototype.get_uint8 = function() {
-    return this.dataview.getUint8(this.pos++);
+BinCommands.prototype.get_char = function() {
+    return String.fromCharCode(this.u8[this.pos++]);
 };
 BinCommands.prototype.get_bool = function() {
-    return this.dataview.getUint8(this.pos++) != 0;
+    return this.u8[this.pos++] != 0;
 };
 BinCommands.prototype.get_flags = function() {
-    return this.dataview.getUint8(this.pos++);
+    return this.u8[this.pos++];
 }
 BinCommands.prototype.get_16 = function() {
-    var v = this.dataview.getUint16(this.pos, true);
+    var v =
+	this.u8[this.pos] +
+	(this.u8[this.pos+1] << 8);
     this.pos = this.pos + 2;
     return v;
 };
 BinCommands.prototype.get_16s = function() {
-    var v = this.dataview.getInt16(this.pos, true);
-    this.pos = this.pos + 2;
-    return v;
+    var v = this.get_16 ();
+    if (v > 32767)
+	return v - 65536;
+    else
+	return v;
 };
 BinCommands.prototype.get_32 = function() {
-    var v = this.dataview.getUint32(this.pos, true);
+    var v =
+	this.u8[this.pos] +
+	(this.u8[this.pos+1] << 8) +
+	(this.u8[this.pos+2] << 16) +
+	(this.u8[this.pos+3] << 24);
     this.pos = this.pos + 4;
     return v;
-};
-BinCommands.prototype.get_nodes = function() {
-    var len = this.get_32();
-    var node_data = new DataView(this.arraybuffer, this.pos, len * 4);
-    this.pos = this.pos + len * 4;
-    return node_data;
 };
 BinCommands.prototype.get_data = function() {
     var size = this.get_32();
@@ -1289,30 +760,20 @@ BinCommands.prototype.get_data = function() {
     return data;
 };
 
-var active = false;
 function handleMessage(message)
 {
-    if (!active) {
-        start();
-        active = true;
-    }
-
     var cmd = new BinCommands(message);
     outstandingCommands.push(cmd);
     if (outstandingCommands.length == 1) {
-        handleOutstanding();
+	handleOutstanding();
     }
 }
 
 function getSurfaceId(ev) {
-    var target = ev.target;
-    while (target.surface == undefined) {
-        if (target == document)
-            return 0;
-        target = target.parentNode;
-    }
-
-    return target.surface.id;
+    var surface = ev.target.surface;
+    if (surface != undefined)
+	return surface.id;
+    return 0;
 }
 
 function sendInput(cmd, args)
@@ -1320,7 +781,7 @@ function sendInput(cmd, args)
     if (inputSocket == null)
         return;
 
-    var fullArgs = [cmd, lastSerial, lastTimeStamp].concat(args);
+    var fullArgs = [cmd.charCodeAt(0), lastSerial, lastTimeStamp].concat(args);
     var buffer = new ArrayBuffer(fullArgs.length * 4);
     var view = new DataView(buffer);
     fullArgs.forEach(function(arg, i) {
@@ -1338,9 +799,9 @@ function getPositionsFromAbsCoord(absX, absY, relativeId) {
     res.winX = absX;
     res.winY = absY;
     if (relativeId != 0) {
-        var surface = surfaces[relativeId];
-        res.winX = res.winX - surface.x;
-        res.winY = res.winY - surface.y;
+	var surface = surfaces[relativeId];
+	res.winX = res.winX - surface.x;
+	res.winY = res.winY - surface.y;
     }
 
     return res;
@@ -1359,11 +820,11 @@ function getPositionsFromEvent(ev, relativeId) {
 }
 
 function getEffectiveEventTarget (id) {
-    if (grab.surface != null) {
-        if (!grab.ownerEvents)
-            return grab.surface;
-        if (id == 0)
-            return grab.surface;
+    if (grab.window != null) {
+	if (!grab.ownerEvents)
+	    return grab.window;
+	if (id == 0)
+	    return grab.window;
     }
     return id;
 }
@@ -1371,21 +832,28 @@ function getEffectiveEventTarget (id) {
 function updateKeyboardStatus() {
     if (fakeInput != null && showKeyboardChanged) {
         showKeyboardChanged = false;
-        if (showKeyboard)
+        if (showKeyboard) {
+	    if (isAndroidChrome) {
+		fakeInput.blur();
+		fakeInput.value = ' '.repeat(80); // TODO: Should be exchange with broadway server
+		                                  // to bring real value here.
+	    }
             fakeInput.focus();
+	    //if (isAndroidChrome) fakeInput.click();
+	}
         else
             fakeInput.blur();
     }
 }
 
 function updateForEvent(ev) {
-    lastState &= ~(GDK_SHIFT_MASK|GDK_CONTROL_MASK|GDK_ALT_MASK);
+    lastState &= ~(GDK_SHIFT_MASK|GDK_CONTROL_MASK|GDK_MOD1_MASK);
     if (ev.shiftKey)
-        lastState |= GDK_SHIFT_MASK;
+	lastState |= GDK_SHIFT_MASK;
     if (ev.ctrlKey)
-        lastState |= GDK_CONTROL_MASK;
+	lastState |= GDK_CONTROL_MASK;
     if (ev.altKey)
-        lastState |= GDK_ALT_MASK;
+	lastState |= GDK_MOD1_MASK;
 
     lastTimeStamp = ev.timeStamp;
 }
@@ -1395,19 +863,19 @@ function onMouseMove (ev) {
     var id = getSurfaceId(ev);
     id = getEffectiveEventTarget (id);
     var pos = getPositionsFromEvent(ev, id);
-    sendInput (BROADWAY_EVENT_POINTER_MOVE, [realSurfaceWithMouse, id, pos.rootX, pos.rootY, pos.winX, pos.winY, lastState]);
+    sendInput ("m", [realWindowWithMouse, id, pos.rootX, pos.rootY, pos.winX, pos.winY, lastState]);
 }
 
 function onMouseOver (ev) {
     updateForEvent(ev);
 
     var id = getSurfaceId(ev);
-    realSurfaceWithMouse = id;
+    realWindowWithMouse = id;
     id = getEffectiveEventTarget (id);
     var pos = getPositionsFromEvent(ev, id);
-    surfaceWithMouse = id;
-    if (surfaceWithMouse != 0) {
-        sendInput (BROADWAY_EVENT_ENTER, [realSurfaceWithMouse, id, pos.rootX, pos.rootY, pos.winX, pos.winY, lastState, GDK_CROSSING_NORMAL]);
+    windowWithMouse = id;
+    if (windowWithMouse != 0) {
+	sendInput ("e", [realWindowWithMouse, id, pos.rootX, pos.rootY, pos.winX, pos.winY, lastState, GDK_CROSSING_NORMAL]);
     }
 }
 
@@ -1419,44 +887,44 @@ function onMouseOut (ev) {
     var pos = getPositionsFromEvent(ev, id);
 
     if (id != 0) {
-        sendInput (BROADWAY_EVENT_LEAVE, [realSurfaceWithMouse, id, pos.rootX, pos.rootY, pos.winX, pos.winY, lastState, GDK_CROSSING_NORMAL]);
+	sendInput ("l", [realWindowWithMouse, id, pos.rootX, pos.rootY, pos.winX, pos.winY, lastState, GDK_CROSSING_NORMAL]);
     }
-    realSurfaceWithMouse = 0;
-    surfaceWithMouse = 0;
+    realWindowWithMouse = 0;
+    windowWithMouse = 0;
 }
 
 function doGrab(id, ownerEvents, implicit) {
     var pos;
 
-    if (surfaceWithMouse != id) {
-        if (surfaceWithMouse != 0) {
-            pos = getPositionsFromAbsCoord(lastX, lastY, surfaceWithMouse);
-            sendInput (BROADWAY_EVENT_LEAVE, [realSurfaceWithMouse, surfaceWithMouse, pos.rootX, pos.rootY, pos.winX, pos.winY, lastState, GDK_CROSSING_GRAB]);
-        }
-        pos = getPositionsFromAbsCoord(lastX, lastY, id);
-        sendInput (BROADWAY_EVENT_ENTER, [realSurfaceWithMouse, id, pos.rootX, pos.rootY, pos.winX, pos.winY, lastState, GDK_CROSSING_GRAB]);
-        surfaceWithMouse = id;
+    if (windowWithMouse != id) {
+	if (windowWithMouse != 0) {
+	    pos = getPositionsFromAbsCoord(lastX, lastY, windowWithMouse);
+	    sendInput ("l", [realWindowWithMouse, windowWithMouse, pos.rootX, pos.rootY, pos.winX, pos.winY, lastState, GDK_CROSSING_GRAB]);
+	}
+	pos = getPositionsFromAbsCoord(lastX, lastY, id);
+	sendInput ("e", [realWindowWithMouse, id, pos.rootX, pos.rootY, pos.winX, pos.winY, lastState, GDK_CROSSING_GRAB]);
+	windowWithMouse = id;
     }
 
-    grab.surface = id;
+    grab.window = id;
     grab.ownerEvents = ownerEvents;
     grab.implicit = implicit;
 }
 
 function doUngrab() {
     var pos;
-    if (realSurfaceWithMouse != surfaceWithMouse) {
-        if (surfaceWithMouse != 0) {
-            pos = getPositionsFromAbsCoord(lastX, lastY, surfaceWithMouse);
-            sendInput (BROADWAY_EVENT_LEAVE, [realSurfaceWithMouse, surfaceWithMouse, pos.rootX, pos.rootY, pos.winX, pos.winY, lastState, GDK_CROSSING_UNGRAB]);
-        }
-        if (realSurfaceWithMouse != 0) {
-            pos = getPositionsFromAbsCoord(lastX, lastY, realSurfaceWithMouse);
-            sendInput (BROADWAY_EVENT_ENTER, [realSurfaceWithMouse, realSurfaceWithMouse, pos.rootX, pos.rootY, pos.winX, pos.winY, lastState, GDK_CROSSING_UNGRAB]);
-        }
-        surfaceWithMouse = realSurfaceWithMouse;
+    if (realWindowWithMouse != windowWithMouse) {
+	if (windowWithMouse != 0) {
+	    pos = getPositionsFromAbsCoord(lastX, lastY, windowWithMouse);
+	    sendInput ("l", [realWindowWithMouse, windowWithMouse, pos.rootX, pos.rootY, pos.winX, pos.winY, lastState, GDK_CROSSING_UNGRAB]);
+	}
+	if (realWindowWithMouse != 0) {
+	    pos = getPositionsFromAbsCoord(lastX, lastY, realWindowWithMouse);
+	    sendInput ("e", [realWindowWithMouse, realWindowWithMouse, pos.rootX, pos.rootY, pos.winX, pos.winY, lastState, GDK_CROSSING_UNGRAB]);
+	}
+	windowWithMouse = realWindowWithMouse;
     }
-    grab.surface = null;
+    grab.window = null;
 }
 
 function onMouseDown (ev) {
@@ -1467,9 +935,9 @@ function onMouseDown (ev) {
     id = getEffectiveEventTarget (id);
 
     var pos = getPositionsFromEvent(ev, id);
-    if (grab.surface == null)
-        doGrab (id, false, true);
-    sendInput (BROADWAY_EVENT_BUTTON_PRESS, [realSurfaceWithMouse, id, pos.rootX, pos.rootY, pos.winX, pos.winY, lastState, button]);
+    if (grab.window == null)
+	doGrab (id, false, true);
+    sendInput ("b", [realWindowWithMouse, id, pos.rootX, pos.rootY, pos.winX, pos.winY, lastState, button]);
     return false;
 }
 
@@ -1481,10 +949,10 @@ function onMouseUp (ev) {
     id = getEffectiveEventTarget (evId);
     var pos = getPositionsFromEvent(ev, id);
 
-    sendInput (BROADWAY_EVENT_BUTTON_RELEASE, [realSurfaceWithMouse, id, pos.rootX, pos.rootY, pos.winX, pos.winY, lastState, button]);
+    sendInput ("B", [realWindowWithMouse, id, pos.rootX, pos.rootY, pos.winX, pos.winY, lastState, button]);
 
-    if (grab.surface != null && grab.implicit)
-        doUngrab();
+    if (grab.window != null && grab.implicit)
+	doUngrab();
 
     return false;
 }
@@ -2797,7 +2265,7 @@ var specialKeyTable = {
 
 function getEventKeySym(ev) {
     if (typeof ev.which !== "undefined" && ev.which > 0)
-        return ev.which;
+	return ev.which;
     return ev.keyCode;
 }
 
@@ -2808,19 +2276,19 @@ function getEventKeySym(ev) {
 // translated keysym.
 function getKeysymSpecial(ev) {
     if (ev.keyCode in specialKeyTable) {
-        var r = specialKeyTable[ev.keyCode];
-        var flags = 0;
-        if (typeof r != 'number') {
-            flags = r[1];
-            r = r[0];
-        }
-        if (ev.type === 'keydown' || flags & ON_KEYDOWN)
-            return r;
+	var r = specialKeyTable[ev.keyCode];
+	var flags = 0;
+	if (typeof r != 'number') {
+	    flags = r[1];
+	    r = r[0];
+	}
+	if (ev.type === 'keydown' || flags & ON_KEYDOWN)
+	    return r;
     }
     // If we don't hold alt or ctrl, then we should be safe to pass
     // on to keypressed and look at the translated data
     if (!ev.ctrlKey && !ev.altKey)
-        return null;
+	return null;
 
     var keysym = getEventKeySym(ev);
 
@@ -2830,9 +2298,9 @@ function getKeysymSpecial(ev) {
     case 187 : keysym = 61; break; // = (IE)
     case 188 : keysym = 44; break; // , (Mozilla, IE)
     case 109 : // - (Mozilla, Opera)
-        if (true /* TODO: check if browser is firefox or opera */)
-            keysym = 45;
-        break;
+	if (true /* TODO: check if browser is firefox or opera */)
+	    keysym = 45;
+	break;
     case 189 : keysym = 45; break; // - (IE)
     case 190 : keysym = 46; break; // . (Mozilla, IE)
     case 191 : keysym = 47; break; // / (Mozilla, IE)
@@ -2845,49 +2313,49 @@ function getKeysymSpecial(ev) {
 
     /* Remap shifted and unshifted keys */
     if (!!ev.shiftKey) {
-        switch (keysym) {
-        case 48 : keysym = 41 ; break; // ) (shifted 0)
-        case 49 : keysym = 33 ; break; // ! (shifted 1)
-        case 50 : keysym = 64 ; break; // @ (shifted 2)
-        case 51 : keysym = 35 ; break; // # (shifted 3)
-        case 52 : keysym = 36 ; break; // $ (shifted 4)
-        case 53 : keysym = 37 ; break; // % (shifted 5)
-        case 54 : keysym = 94 ; break; // ^ (shifted 6)
-        case 55 : keysym = 38 ; break; // & (shifted 7)
-        case 56 : keysym = 42 ; break; // * (shifted 8)
-        case 57 : keysym = 40 ; break; // ( (shifted 9)
-        case 59 : keysym = 58 ; break; // : (shifted `)
-        case 61 : keysym = 43 ; break; // + (shifted ;)
-        case 44 : keysym = 60 ; break; // < (shifted ,)
-        case 45 : keysym = 95 ; break; // _ (shifted -)
-        case 46 : keysym = 62 ; break; // > (shifted .)
-        case 47 : keysym = 63 ; break; // ? (shifted /)
-        case 96 : keysym = 126; break; // ~ (shifted `)
-        case 91 : keysym = 123; break; // { (shifted [)
-        case 92 : keysym = 124; break; // | (shifted \)
-        case 93 : keysym = 125; break; // } (shifted ])
-        case 39 : keysym = 34 ; break; // " (shifted ')
-        }
+	switch (keysym) {
+	case 48 : keysym = 41 ; break; // ) (shifted 0)
+	case 49 : keysym = 33 ; break; // ! (shifted 1)
+	case 50 : keysym = 64 ; break; // @ (shifted 2)
+	case 51 : keysym = 35 ; break; // # (shifted 3)
+	case 52 : keysym = 36 ; break; // $ (shifted 4)
+	case 53 : keysym = 37 ; break; // % (shifted 5)
+	case 54 : keysym = 94 ; break; // ^ (shifted 6)
+	case 55 : keysym = 38 ; break; // & (shifted 7)
+	case 56 : keysym = 42 ; break; // * (shifted 8)
+	case 57 : keysym = 40 ; break; // ( (shifted 9)
+	case 59 : keysym = 58 ; break; // : (shifted `)
+	case 61 : keysym = 43 ; break; // + (shifted ;)
+	case 44 : keysym = 60 ; break; // < (shifted ,)
+	case 45 : keysym = 95 ; break; // _ (shifted -)
+	case 46 : keysym = 62 ; break; // > (shifted .)
+	case 47 : keysym = 63 ; break; // ? (shifted /)
+	case 96 : keysym = 126; break; // ~ (shifted `)
+	case 91 : keysym = 123; break; // { (shifted [)
+	case 92 : keysym = 124; break; // | (shifted \)
+	case 93 : keysym = 125; break; // } (shifted ])
+	case 39 : keysym = 34 ; break; // " (shifted ')
+	}
     } else if ((keysym >= 65) && (keysym <=90)) {
-        /* Remap unshifted A-Z */
-        keysym += 32;
+	/* Remap unshifted A-Z */
+	keysym += 32;
     } else if (ev.keyLocation === 3) {
-        // numpad keys
-        switch (keysym) {
-        case 96 : keysym = 48; break; // 0
-        case 97 : keysym = 49; break; // 1
-        case 98 : keysym = 50; break; // 2
-        case 99 : keysym = 51; break; // 3
-        case 100: keysym = 52; break; // 4
-        case 101: keysym = 53; break; // 5
-        case 102: keysym = 54; break; // 6
-        case 103: keysym = 55; break; // 7
-        case 104: keysym = 56; break; // 8
-        case 105: keysym = 57; break; // 9
-        case 109: keysym = 45; break; // -
-        case 110: keysym = 46; break; // .
-        case 111: keysym = 47; break; // /
-        }
+	// numpad keys
+	switch (keysym) {
+	case 96 : keysym = 48; break; // 0
+	case 97 : keysym = 49; break; // 1
+	case 98 : keysym = 50; break; // 2
+	case 99 : keysym = 51; break; // 3
+	case 100: keysym = 52; break; // 4
+	case 101: keysym = 53; break; // 5
+	case 102: keysym = 54; break; // 6
+	case 103: keysym = 55; break; // 7
+	case 104: keysym = 56; break; // 8
+	case 105: keysym = 57; break; // 9
+	case 109: keysym = 45; break; // -
+	case 110: keysym = 46; break; // .
+	case 111: keysym = 47; break; // /
+	}
     }
 
     return keysym;
@@ -2900,10 +2368,10 @@ function getKeysym(ev) {
     keysym = getEventKeySym(ev);
 
     if ((keysym > 255) && (keysym < 0xFF00)) {
-        // Map Unicode outside Latin 1 to gdk keysyms
-        keysym = unicodeTable[keysym];
-        if (typeof keysym === 'undefined')
-            keysym = 0;
+	// Map Unicode outside Latin 1 to gdk keysyms
+	keysym = unicodeTable[keysym];
+	if (typeof keysym === 'undefined')
+	    keysym = 0;
     }
 
     return keysym;
@@ -2911,11 +2379,11 @@ function getKeysym(ev) {
 
 function copyKeyEvent(ev) {
     var members = ['type', 'keyCode', 'charCode', 'which',
-                   'altKey', 'ctrlKey', 'shiftKey',
-                   'keyLocation', 'keyIdentifier'], i, obj = {};
+		   'altKey', 'ctrlKey', 'shiftKey',
+		   'keyLocation', 'keyIdentifier'], i, obj = {};
     for (i = 0; i < members.length; i++) {
-        if (typeof ev[members[i]] !== "undefined")
-            obj[members[i]] = ev[members[i]];
+	if (typeof ev[members[i]] !== "undefined")
+	    obj[members[i]] = ev[members[i]];
     }
     return obj;
 }
@@ -2924,16 +2392,29 @@ function pushKeyEvent(fev) {
     keyDownList.push(fev);
 }
 
+function copyInputEvent(ev) {
+    var members = ['inputType', 'data'], i, obj = {};
+    for (i = 0; i < members.length; i++) {
+	if (typeof ev[members[i]] !== "undefined")
+	    obj[members[i]] = ev[members[i]];
+    }
+    return obj;
+}
+
+function pushInputEvent(fev) {
+    inputList.push(fev);
+}
+
 function getKeyEvent(keyCode, pop) {
     var i, fev = null;
     for (i = keyDownList.length-1; i >= 0; i--) {
-        if (keyDownList[i].keyCode === keyCode) {
-            if ((typeof pop !== "undefined") && pop)
-                fev = keyDownList.splice(i, 1)[0];
-            else
-                fev = keyDownList[i];
-            break;
-        }
+	if (keyDownList[i].keyCode === keyCode) {
+	    if ((typeof pop !== "undefined") && pop)
+		fev = keyDownList.splice(i, 1)[0];
+	    else
+		fev = keyDownList[i];
+	    break;
+	}
     }
     return fev;
 }
@@ -2941,10 +2422,10 @@ function getKeyEvent(keyCode, pop) {
 function ignoreKeyEvent(ev) {
     // Blarg. Some keys have a different keyCode on keyDown vs keyUp
     if (ev.keyCode === 229) {
-        // French AZERTY keyboard dead key.
-        // Lame thing is that the respective keyUp is 219 so we can't
-        // properly ignore the keyUp event
-        return true;
+	// French AZERTY keyboard dead key.
+	// Lame thing is that the respective keyUp is 219 so we can't
+	// properly ignore the keyUp event
+	return true;
     }
     return false;
 }
@@ -2958,22 +2439,23 @@ function handleKeyDown(e) {
     // Save keysym decoding for use in keyUp
     fev.keysym = keysym;
     if (keysym) {
-        // If it is a key or key combination that might trigger
-        // browser behaviors or it has no corresponding keyPress
-        // event, then send it immediately
-        if (!ignoreKeyEvent(ev))
-            sendInput(BROADWAY_EVENT_KEY_PRESS, [keysym, lastState]);
-        suppress = true;
+	// If it is a key or key combination that might trigger
+	// browser behaviors or it has no corresponding keyPress
+	// event, then send it immediately
+	if (!ignoreKeyEvent(ev)) {
+	    sendInput("k", [keysym, lastState]);
+	}
+	suppress = true;
     }
 
     if (! ignoreKeyEvent(ev)) {
-        // Add it to the list of depressed keys
-        pushKeyEvent(fev);
+	// Add it to the list of depressed keys
+	pushKeyEvent(fev);
     }
 
     if (suppress) {
-        // Suppress bubbling/default actions
-        return cancelEvent(ev);
+	// Suppress bubbling/default actions
+	return cancelEvent(ev);
     }
 
     // Allow the event to bubble and become a keyPress event which
@@ -2985,13 +2467,13 @@ function handleKeyPress(e) {
     var ev = (e ? e : window.event), kdlen = keyDownList.length, keysym = null;
 
     if (((ev.which !== "undefined") && (ev.which === 0)) ||
-        getKeysymSpecial(ev)) {
-        // Firefox and Opera generate a keyPress event even if keyDown
-        // is suppressed. But the keys we want to suppress will have
-        // either:
-        // - the which attribute set to 0
-        // - getKeysymSpecial() will identify it
-        return cancelEvent(ev);
+	getKeysymSpecial(ev)) {
+	// Firefox and Opera generate a keyPress event even if keyDown
+	// is suppressed. But the keys we want to suppress will have
+	// either:
+	// - the which attribute set to 0
+	// - getKeysymSpecial() will identify it
+	return cancelEvent(ev);
     }
 
     keysym = getKeysym(ev);
@@ -3000,14 +2482,15 @@ function handleKeyPress(e) {
     // that the keyUp event will be able to have the character code
     // translation available.
     if (kdlen > 0) {
-        keyDownList[kdlen-1].keysym = keysym;
+	keyDownList[kdlen-1].keysym = keysym;
     } else {
-        //log("keyDownList empty when keyPress triggered");
+	//log("keyDownList empty when keyPress triggered");
     }
 
     // Send the translated keysym
-    if (keysym > 0)
-        sendInput (BROADWAY_EVENT_KEY_PRESS, [keysym, lastState]);
+    if (keysym > 0) {
+	sendInput ("k", [keysym, lastState]);
+    }
 
     // Stop keypress events just in case
     return cancelEvent(ev);
@@ -3019,14 +2502,48 @@ function handleKeyUp(e) {
     fev = getKeyEvent(ev.keyCode, true);
 
     if (fev)
-        keysym = fev.keysym;
+	keysym = fev.keysym;
     else {
-        //log("Key event (keyCode = " + ev.keyCode + ") not found on keyDownList");
-        keysym = 0;
+	//log("Key event (keyCode = " + ev.keyCode + ") not found on keyDownList");
+	if (isAndroidChrome && (ev.keyCode == 229)) {
+	    var i, fev = null, len = inputList.length, str;
+	    for (i = 0; i < len; i++) {
+		fev = inputList[i];
+		switch(fev.inputType) {
+		case "deleteContentBackward":
+		    sendInput ("k", [65288, lastState]);
+		    sendInput ("K", [65288, lastState]);
+		    break;
+		case "insertText":
+		    if (fev.data !== undefined) {
+			for (let sym of fev.data) {
+			    sendInput ("k", [sym.codePointAt(0), lastState]);
+			    sendInput ("K", [sym.codePointAt(0), lastState]);
+			}
+		    }
+		    break;
+		default:
+		    break;
+		}
+	    }
+	    inputList.splice(0, len);
+	}
+	keysym = 0;
     }
 
-    if (keysym > 0)
-        sendInput (BROADWAY_EVENT_KEY_RELEASE, [keysym, lastState]);
+    if (keysym > 0) {
+	sendInput ("K", [keysym, lastState]);
+    }
+    return cancelEvent(ev);
+}
+
+function handleInput (e)  {
+    var fev = null, ev = (e ? e : window.event), keysym = null, suppress = false;
+
+    fev = copyInputEvent(ev);
+    pushInputEvent(fev);
+
+    // Stop keypress events just in case
     return cancelEvent(ev);
 }
 
@@ -3045,13 +2562,18 @@ function onKeyUp (ev) {
     return handleKeyUp(ev);
 }
 
+function onInput (ev) {
+    updateForEvent(ev);
+    return handleInput(ev);
+}
+
 function cancelEvent(ev)
 {
     ev = ev ? ev : window.event;
     if (ev.stopPropagation)
-        ev.stopPropagation();
+	ev.stopPropagation();
     if (ev.preventDefault)
-        ev.preventDefault();
+	ev.preventDefault();
     ev.cancelBubble = true;
     ev.cancel = true;
     ev.returnValue = false;
@@ -3069,20 +2591,21 @@ function onMouseWheel(ev)
     var offset = ev.detail ? ev.detail : -ev.wheelDelta;
     var dir = 0;
     if (offset > 0)
-        dir = 1;
-    sendInput (BROADWAY_EVENT_SCROLL, [realSurfaceWithMouse, id, pos.rootX, pos.rootY, pos.winX, pos.winY, lastState, dir]);
+	dir = 1;
+    sendInput ("s", [realWindowWithMouse, id, pos.rootX, pos.rootY, pos.winX, pos.winY, lastState, dir]);
 
     return cancelEvent(ev);
 }
 
 function onTouchStart(ev) {
-    event.preventDefault();
+    ev.preventDefault();
 
     updateKeyboardStatus();
     updateForEvent(ev);
 
     for (var i = 0; i < ev.changedTouches.length; i++) {
         var touch = ev.changedTouches.item(i);
+	var touchId = touchIdentifierStart(touch.identifier);
 
         var origId = getSurfaceId(touch);
         var id = getEffectiveEventTarget (origId);
@@ -3090,67 +2613,69 @@ function onTouchStart(ev) {
         var isEmulated = 0;
 
         if (firstTouchDownId == null) {
-            firstTouchDownId = touch.identifier;
+            firstTouchDownId = touchId;
             isEmulated = 1;
 
-            if (realSurfaceWithMouse != origId || id != surfaceWithMouse) {
+            if (realWindowWithMouse != origId || id != windowWithMouse) {
                 if (id != 0) {
-                    sendInput (BROADWAY_EVENT_LEAVE, [realSurfaceWithMouse, id, pos.rootX, pos.rootY, pos.winX, pos.winY, lastState, GDK_CROSSING_NORMAL]);
+                    sendInput ("l", [realWindowWithMouse, id, pos.rootX, pos.rootY, pos.winX, pos.winY, lastState, GDK_CROSSING_NORMAL]);
                 }
 
-                surfaceWithMouse = id;
-                realSurfaceWithMouse = origId;
+                windowWithMouse = id;
+                realWindowWithMouse = origId;
 
-                sendInput (BROADWAY_EVENT_ENTER, [origId, id, pos.rootX, pos.rootY, pos.winX, pos.winY, lastState, GDK_CROSSING_NORMAL]);
+                sendInput ("e", [origId, id, pos.rootX, pos.rootY, pos.winX, pos.winY, lastState, GDK_CROSSING_NORMAL]);
             }
         }
 
-        sendInput (BROADWAY_EVENT_TOUCH, [0, id, touch.identifier, isEmulated, pos.rootX, pos.rootY, pos.winX, pos.winY, lastState]);
+        sendInput ("t", [0, id, touchId, isEmulated, pos.rootX, pos.rootY, pos.winX, pos.winY, lastState]);
     }
 }
 
 function onTouchMove(ev) {
-    event.preventDefault();
+    ev.preventDefault();
 
     updateKeyboardStatus();
     updateForEvent(ev);
 
     for (var i = 0; i < ev.changedTouches.length; i++) {
         var touch = ev.changedTouches.item(i);
+	var touchId = touchIdentifier(touch.identifier);
 
         var origId = getSurfaceId(touch);
         var id = getEffectiveEventTarget (origId);
         var pos = getPositionsFromEvent(touch, id);
 
         var isEmulated = 0;
-        if (firstTouchDownId == touch.identifier) {
+        if (firstTouchDownId == touchId) {
             isEmulated = 1;
         }
 
-        sendInput (BROADWAY_EVENT_TOUCH, [1, id, touch.identifier, isEmulated, pos.rootX, pos.rootY, pos.winX, pos.winY, lastState]);
+        sendInput ("t", [1, id, touchId, isEmulated, pos.rootX, pos.rootY, pos.winX, pos.winY, lastState]);
     }
 }
 
 function onTouchEnd(ev) {
-    event.preventDefault();
+    ev.preventDefault();
 
     updateKeyboardStatus();
     updateForEvent(ev);
 
     for (var i = 0; i < ev.changedTouches.length; i++) {
         var touch = ev.changedTouches.item(i);
+	var touchId = touchIdentifier(touch.identifier);
 
         var origId = getSurfaceId(touch);
         var id = getEffectiveEventTarget (origId);
         var pos = getPositionsFromEvent(touch, id);
 
         var isEmulated = 0;
-        if (firstTouchDownId == touch.identifier) {
+        if (firstTouchDownId == touchId) {
             isEmulated = 1;
             firstTouchDownId = null;
         }
 
-        sendInput (BROADWAY_EVENT_TOUCH, [2, id, touch.identifier, isEmulated, pos.rootX, pos.rootY, pos.winX, pos.winY, lastState]);
+        sendInput ("t", [2, id, touchId, isEmulated, pos.rootX, pos.rootY, pos.winX, pos.winY, lastState]);
     }
 }
 
@@ -3167,42 +2692,30 @@ function setupDocument(document)
     document.onkeyup = onKeyUp;
 
     if (document.addEventListener) {
-      document.addEventListener('DOMMouseScroll', onMouseWheel, false);
-      document.addEventListener('mousewheel', onMouseWheel, false);
-      document.addEventListener('touchstart', onTouchStart, false);
-      document.addEventListener('touchmove', onTouchMove, false);
-      document.addEventListener('touchend', onTouchEnd, false);
+	document.addEventListener('DOMMouseScroll', onMouseWheel, passiveSupported ? { passive: false, capture: false } : false);
+	document.addEventListener('mousewheel', onMouseWheel, passiveSupported ? { passive: false, capture: false } : false);
+	document.addEventListener('touchstart', onTouchStart, passiveSupported ? { passive: false, capture: false } : false);
+	document.addEventListener('touchmove', onTouchMove, passiveSupported ? { passive: false, capture: false } : false);
+	document.addEventListener('touchend', onTouchEnd, passiveSupported ? { passive: false, capture: false } : false);
     } else if (document.attachEvent) {
       element.attachEvent("onmousewheel", onMouseWheel);
     }
-}
-
-function sendScreenSizeChanged() {
-    var w, h, s;
-    w = window.innerWidth;
-    h = window.innerHeight;
-    s = Math.round(window.devicePixelRatio);
-    sendInput (BROADWAY_EVENT_SCREEN_SIZE_CHANGED, [w, h, s]);
 }
 
 function start()
 {
     setupDocument(document);
 
+    var w, h;
+    w = window.innerWidth;
+    h = window.innerHeight;
     window.onresize = function(ev) {
-        sendScreenSizeChanged();
+	var w, h;
+	w = window.innerWidth;
+	h = window.innerHeight;
+	sendInput ("d", [w, h]);
     };
-    window.matchMedia('screen and (min-resolution: 2dppx)').
-        addListener(function(e) {
-                        if (e.matches) {
-                            /* devicePixelRatio >= 2 */
-                            sendScreenSizeChanged();
-                        } else {
-                            /* devicePixelRatio < 2 */
-                            sendScreenSizeChanged();
-                        }
-                    });
-    sendScreenSizeChanged();
+    sendInput ("d", [w, h]);
 }
 
 function connect()
@@ -3210,7 +2723,7 @@ function connect()
     var url = window.location.toString();
     var query_string = url.split("?");
     if (query_string.length > 1) {
-        var params = query_string[1].split("&");
+	var params = query_string[1].split("&");
 
         for (var i=0; i<params.length; i++) {
             var pair = params[i].split("=");
@@ -3225,24 +2738,26 @@ function connect()
     ws.binaryType = "arraybuffer";
 
     ws.onopen = function() {
-        inputSocket = ws;
+	inputSocket = ws;
     };
     ws.onclose = function() {
-        if (inputSocket != null)
-            alert ("disconnected");
-        inputSocket = null;
+	if (inputSocket != null)
+	    alert ("disconnected");
+	inputSocket = null;
     };
     ws.onmessage = function(event) {
-        handleMessage(event.data);
+	handleMessage(event.data);
     };
 
     var iOS = /(iPad|iPhone|iPod)/g.test( navigator.userAgent );
-    if (iOS) {
+    if (iOS || isAndroidChrome) {
         fakeInput = document.createElement("input");
         fakeInput.type = "text";
         fakeInput.style.position = "absolute";
         fakeInput.style.left = "-1000px";
         fakeInput.style.top = "-1000px";
         document.body.appendChild(fakeInput);
+	if (isAndroidChrome)
+	    fakeInput.addEventListener('input', onInput, passiveSupported ? { passive: false, capture: false } : false);
     }
 }

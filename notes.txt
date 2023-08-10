@@ -1,0 +1,49 @@
+./broadwayd-gtk3 :1
+Listening on /run/user/1000/broadway2.socket
+
+Tested with clients with GTK3
+
+GDK_BACKEND=broadway BROADWAY_DISPLAY=:1 gtk3-demo
+
+When running broadway-gtk4, window movement for gtk3 applications fails to work
+TODO: Diff the broadway code in gtk3 and gtk4, we may need to update
+
+-------------------------------------------------------------------------------------
+
+
+GdkDisplay *
+_gdk_broadway_display_open (const gchar *display_name)
+{
+  GdkDisplay *display;
+  GdkBroadwayDisplay *broadway_display;
+  GError *error = NULL;
+
+  display = g_object_new (GDK_TYPE_BROADWAY_DISPLAY, NULL);
+  broadway_display = GDK_BROADWAY_DISPLAY (display);
+
+  /* initialize the display's screens */
+  broadway_display->screens = g_new (GdkScreen *, 1);
+  broadway_display->screens[0] = _gdk_broadway_screen_new (display, 0);
+
+  /* We need to initialize events after we have the screen
+   * structures in places
+   */
+  _gdk_broadway_screen_events_init (broadway_display->screens[0]);
+
+  /*set the default screen */
+  broadway_display->default_screen = broadway_display->screens[0];
+
+  display->device_manager = _gdk_broadway_device_manager_new (display);
+
+  gdk_event_init (display);
+
+  _gdk_broadway_display_init_dnd (display);
+
+  _gdk_broadway_screen_setup (broadway_display->screens[0]);
+
+  if (display_name == NULL)
+    display_name = g_getenv ("BROADWAY_DISPLAY");
+
+  broadway_display->server = _gdk_broadway_server_new (display_name, &error);
+  if (broadway_display->server == NULL)
+

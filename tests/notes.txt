@@ -1,0 +1,3 @@
+GDK_BACKEND=broadway BROADWAY_DISPLAY=:1 thunar
+
+GDK_BACKEND=broadway BROADWAY_DISPLAY=:1 testwhatever

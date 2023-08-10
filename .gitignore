@@ -1,0 +1,7 @@
+*.a
+*.o
+gdk3/*.o
+gdk4/*.o
+wine/*.o
+broadwayd-gtk3
+broadwayd-gtk4

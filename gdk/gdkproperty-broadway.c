@@ -19,31 +19,52 @@
  * Modified by the GTK+ Team and others 1997-2000.  See the AUTHORS
  * file for a list of people on the GTK+ Team.  See the ChangeLog
  * files for a list of changes.  These files are distributed with
- * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
+ * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
 #include "config.h"
 
-/* needs to be first because any header might include gdk-pixbuf.h otherwise */
-#define GDK_PIXBUF_ENABLE_BACKEND
-#include <gdk-pixbuf/gdk-pixbuf.h>
+#include "gdkproperty.h"
 
-#include "gdkcursor.h"
-#include "gdkcursorprivate.h"
-
-#include "gdkprivate-broadway.h"
+#include "gdkmain.h"
+#include "gdkprivate.h"
+#include "gdkinternals.h"
 #include "gdkdisplay-broadway.h"
+#include "gdkscreen-broadway.h"
+#include "gdkselection.h"
 
-/* Called by gdk_display_broadway_finalize to flush any cached cursors
- * for a dead display.
- */
-void
-_gdk_broadway_cursor_display_finalize (GdkDisplay *display)
+#include <string.h>
+
+gboolean
+_gdk_broadway_window_get_property (GdkWindow   *window,
+				   GdkAtom      property,
+				   GdkAtom      type,
+				   gulong       offset,
+				   gulong       length,
+				   gint         pdelete,
+				   GdkAtom     *actual_property_type,
+				   gint        *actual_format_type,
+				   gint        *actual_length,
+				   guchar     **data)
 {
+  return FALSE;
 }
 
 void
-_gdk_broadway_cursor_update_theme (GdkCursor *cursor)
+_gdk_broadway_window_change_property (GdkWindow    *window,
+				      GdkAtom       property,
+				      GdkAtom       type,
+				      gint          format,
+				      GdkPropMode   mode,
+				      const guchar *data,
+				      gint          nelements)
 {
-  g_return_if_fail (cursor != NULL);
+  g_return_if_fail (!window || GDK_WINDOW_IS_BROADWAY (window));
+}
+
+void
+_gdk_broadway_window_delete_property (GdkWindow *window,
+				      GdkAtom    property)
+{
+  g_return_if_fail (!window || GDK_WINDOW_IS_BROADWAY (window));
 }

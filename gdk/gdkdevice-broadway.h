@@ -15,7 +15,8 @@
  * License along with this library. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
+#ifndef __GDK_DEVICE_BROADWAY_H__
+#define __GDK_DEVICE_BROADWAY_H__
 
 #include <gdk/gdkdeviceprivate.h>
 
@@ -44,11 +45,6 @@ struct _GdkBroadwayDeviceClass
 G_GNUC_INTERNAL
 GType gdk_broadway_device_get_type (void) G_GNUC_CONST;
 
-void gdk_broadway_device_query_state (GdkDevice        *device,
-                                      GdkSurface       *surface,
-                                      double           *win_x,
-                                      double           *win_y,
-                                      GdkModifierType  *mask);
-
 G_END_DECLS
 
+#endif /* __GDK_DEVICE_BROADWAY_H__ */

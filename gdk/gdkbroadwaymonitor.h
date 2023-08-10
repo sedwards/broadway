@@ -19,10 +19,11 @@
  * License along with this library. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
+#ifndef __GDK_BROADWAY_MONITOR_H__
+#define __GDK_BROADWAY_MONITOR_H__
 
-#if !defined (__GDKBROADWAY_H_INSIDE__) && !defined (GTK_COMPILATION)
-#error "Only <gdk/broadway/gdkbroadway.h> can be included directly."
+#if !defined (__GDKBROADWAY_H_INSIDE__) && !defined (GDK_COMPILATION)
+#error "Only <gdk/gdkbroadway.h> can be included directly."
 #endif
 
 #include <gdk/gdkmonitor.h>
@@ -36,9 +37,10 @@ G_BEGIN_DECLS
 typedef struct _GdkBroadwayMonitor      GdkBroadwayMonitor;
 typedef struct _GdkBroadwayMonitorClass GdkBroadwayMonitorClass;
 
-GDK_AVAILABLE_IN_ALL
+GDK_AVAILABLE_IN_3_22
 GType             gdk_broadway_monitor_get_type            (void) G_GNUC_CONST;
 
 G_END_DECLS
 
+#endif  /* __GDK_BROADWAY_MONITOR_H__ */
 

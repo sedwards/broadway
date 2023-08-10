@@ -25,6 +25,7 @@
 #include "config.h"
 
 #include "gdkprivate-broadway.h"
+#include "gdkinternals.h"
 #include "gdkdisplay-broadway.h"
 #include "gdkkeysprivate.h"
 #include "gdkkeysyms.h"
@@ -122,16 +123,17 @@ gdk_broadway_keymap_get_scroll_lock_state (GdkKeymap *keymap)
 
 static gboolean
 gdk_broadway_keymap_get_entries_for_keyval (GdkKeymap     *keymap,
-                                            guint          keyval,
-                                            GArray        *retval)
+					    guint          keyval,
+					    GdkKeymapKey **keys,
+					    gint          *n_keys)
 {
-  GdkKeymapKey key;
-
-  key.keycode = keyval;
-  key.group = 0;
-  key.level = 0;
-
-  g_array_append_val (retval, key);
+  if (n_keys)
+    *n_keys = 1;
+  if (keys)
+    {
+      *keys = g_new0 (GdkKeymapKey, 1);
+      (*keys)->keycode = keyval;
+    }
 
   return TRUE;
 }
@@ -141,7 +143,7 @@ gdk_broadway_keymap_get_entries_for_keycode (GdkKeymap     *keymap,
 					     guint          hardware_keycode,
 					     GdkKeymapKey **keys,
 					     guint        **keyvals,
-					     int           *n_entries)
+					     gint          *n_entries)
 {
   if (n_entries)
     *n_entries = 1;
@@ -170,10 +172,10 @@ static gboolean
 gdk_broadway_keymap_translate_keyboard_state (GdkKeymap       *keymap,
 					      guint            hardware_keycode,
 					      GdkModifierType  state,
-					      int              group,
+					      gint             group,
 					      guint           *keyval,
-					      int             *effective_group,
-					      int             *level,
+					      gint            *effective_group,
+					      gint            *level,
 					      GdkModifierType *consumed_modifiers)
 {
   if (keyval)
@@ -182,6 +184,19 @@ gdk_broadway_keymap_translate_keyboard_state (GdkKeymap       *keymap,
     *effective_group = 0;
   if (level)
     *level = 0;
+  return TRUE;
+}
+
+static void
+gdk_broadway_keymap_add_virtual_modifiers (GdkKeymap       *keymap,
+					   GdkModifierType *state)
+{
+}
+
+static gboolean
+gdk_broadway_keymap_map_virtual_modifiers (GdkKeymap       *keymap,
+					   GdkModifierType *state)
+{
   return TRUE;
 }
 
@@ -202,5 +217,7 @@ gdk_broadway_keymap_class_init (GdkBroadwayKeymapClass *klass)
   keymap_class->get_entries_for_keycode = gdk_broadway_keymap_get_entries_for_keycode;
   keymap_class->lookup_key = gdk_broadway_keymap_lookup_key;
   keymap_class->translate_keyboard_state = gdk_broadway_keymap_translate_keyboard_state;
+  keymap_class->add_virtual_modifiers = gdk_broadway_keymap_add_virtual_modifiers;
+  keymap_class->map_virtual_modifiers = gdk_broadway_keymap_map_virtual_modifiers;
 }
 

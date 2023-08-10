@@ -19,13 +19,16 @@
  * License along with this library. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
+#ifndef __GDK_BROADWAY_DISPLAY__
+#define __GDK_BROADWAY_DISPLAY__
 
 #include "gdkbroadwaydisplay.h"
 
 #include "gdkdisplayprivate.h"
 #include "gdkkeys.h"
-#include "gdksurface.h"
+#include "gdkwindow.h"
+#include "gdkinternals.h"
+#include "gdkmain.h"
 #include "gdkbroadway-server.h"
 #include "gdkmonitorprivate.h"
 
@@ -34,32 +37,28 @@ G_BEGIN_DECLS
 struct _GdkBroadwayDisplay
 {
   GdkDisplay parent_instance;
+  GdkScreen *default_screen;
+  GdkScreen **screens;
 
   GHashTable *id_ht;
   GList *toplevels;
-
-  GdkDevice *core_pointer;
-  GdkDevice *core_keyboard;
-  GdkDevice *pointer;
-  GdkDevice *keyboard;
-  GdkDevice *touchscreen;
 
   GSource *event_source;
 
   /* Keyboard related information */
   GdkKeymap *keymap;
 
+  /* drag and drop information */
+  GdkDragContext *current_dest_drag;
+
+  /* The offscreen window that has the pointer in it (if any) */
+  GdkWindow *active_offscreen_window;
+
   GdkBroadwayServer *server;
+
   gpointer move_resize_data;
 
-  GListStore *monitors;
   GdkMonitor *monitor;
-  int scale_factor;
-  gboolean fixed_scale;
-
-  GHashTable *texture_cache;
-
-  guint idle_flush_id;
 };
 
 struct _GdkBroadwayDisplayClass
@@ -69,3 +68,4 @@ struct _GdkBroadwayDisplayClass
 
 G_END_DECLS
 
+#endif				/* __GDK_BROADWAY_DISPLAY__ */

@@ -22,16 +22,19 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
  */
 
-#pragma once
+#ifndef __GDK_BROADWAY_H__
+#define __GDK_BROADWAY_H__
 
 #include <gdk/gdk.h>
 
 #define __GDKBROADWAY_H_INSIDE__
 
 #include <gdk/broadway/gdkbroadwaydisplay.h>
-#include <gdk/broadway/gdkbroadwaysurface.h>
+#include <gdk/broadway/gdkbroadwaywindow.h>
 #include <gdk/broadway/gdkbroadwaycursor.h>
 #include <gdk/broadway/gdkbroadwaymonitor.h>
+#include <gdk/broadway/gdkbroadwayvisual.h>
 
 #undef __GDKBROADWAY_H_INSIDE__
 
+#endif /* __GDK_BROADWAY_H__ */

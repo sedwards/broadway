@@ -15,17 +15,18 @@
  * License along with this library. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
+#ifndef __GDK_BROADWAY_DISPLAY_H__
+#define __GDK_BROADWAY_DISPLAY_H__
 
-#if !defined (__GDKBROADWAY_H_INSIDE__) && !defined (GTK_COMPILATION)
-#error "Only <gdk/broadway/gdkbroadway.h> can be included directly."
+#if !defined (__GDKBROADWAY_H_INSIDE__) && !defined (GDK_COMPILATION)
+#error "Only <gdk/gdkbroadway.h> can be included directly."
 #endif
 
 #include <gdk/gdk.h>
 
 G_BEGIN_DECLS
 
-#ifdef GTK_COMPILATION
+#ifdef GDK_COMPILATION
 typedef struct _GdkBroadwayDisplay GdkBroadwayDisplay;
 #else
 typedef GdkDisplay GdkBroadwayDisplay;
@@ -42,16 +43,11 @@ typedef struct _GdkBroadwayDisplayClass GdkBroadwayDisplayClass;
 GDK_AVAILABLE_IN_ALL
 GType                   gdk_broadway_display_get_type            (void);
 
-GDK_AVAILABLE_IN_ALL
+GDK_AVAILABLE_IN_3_12
 void                    gdk_broadway_display_show_keyboard       (GdkBroadwayDisplay *display);
-GDK_AVAILABLE_IN_ALL
+GDK_AVAILABLE_IN_3_12
 void                    gdk_broadway_display_hide_keyboard       (GdkBroadwayDisplay *display);
-
-GDK_AVAILABLE_IN_4_4
-int                     gdk_broadway_display_get_surface_scale   (GdkDisplay *display);
-GDK_AVAILABLE_IN_4_4
-void                    gdk_broadway_display_set_surface_scale   (GdkDisplay *display,
-                                                                  int         scale);
 
 G_END_DECLS
 
+#endif /* __GDK_BROADWAY_DISPLAY_H__ */

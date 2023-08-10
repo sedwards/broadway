@@ -15,22 +15,23 @@
  * License along with this library. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
+#include "config.h"
 
 #include <glib.h>
 #include <gio/gio.h>
 
-#include "gdkmonitorprivate.h"
+#include "gdkmonitor-broadway.h"
+#include "gdkscreen-broadway.h"
 
-#include "gdkbroadwaymonitor.h"
 
+G_DEFINE_TYPE (GdkBroadwayMonitor, gdk_broadway_monitor, GDK_TYPE_MONITOR)
 
-struct _GdkBroadwayMonitor
+static void
+gdk_broadway_monitor_init (GdkBroadwayMonitor *monitor)
 {
-  GdkMonitor parent;
-};
+}
 
-struct _GdkBroadwayMonitorClass {
-  GdkMonitorClass parent_class;
-};
-
+static void
+gdk_broadway_monitor_class_init (GdkBroadwayMonitorClass *class)
+{
+}

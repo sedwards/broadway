@@ -6,4 +6,4 @@ wine/*.o
 broadwayd-gtk3
 broadwayd-gtk4
 tests/connection-proto
-
+tests/gtk/testsocket

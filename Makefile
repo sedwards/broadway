@@ -1,6 +1,6 @@
 CC=gcc
-CFLAGS=`pkg-config --libs --cflags gio-2.0 gobject-2.0 cairo glib-2.0 gtk+-3.0` -fPIC -Wall -O2 -I. -I./include
-CFLAGS_GTK=`pkg-config --libs --cflags gio-2.0 gobject-2.0 cairo glib-2.0 gtk+-3.0` -fPIC -Wall -O2 -I. -I./include
+CFLAGS=`pkg-config --libs --cflags gio-2.0 gobject-2.0 cairo glib-2.0 gtk+-3.0` -fPIC -Wall -g -I. -I./include
+CFLAGS_GTK=`pkg-config --libs --cflags gio-2.0 gobject-2.0 cairo glib-2.0 gtk+-3.0` -fPIC -Wall -g -I. -I./include
 
 LIBBROADWAY=libbroadway.a
 #LIBBROADWAY-GDK3=libbroadway-gdk3.a
@@ -20,7 +20,7 @@ BROADWAYD_SRC = \
 #### Broadway Standalone Daemon
 
 broadwayd-gtk3 :
-	gcc -o $@ $(BROADWAYD_SRC) `pkg-config --libs --cflags gio-2.0 gobject-2.0 cairo glib-2.0` -fPIC -Wall
+	gcc -o $@ $(BROADWAYD_SRC) `pkg-config --libs --cflags gio-2.0 gobject-2.0 cairo glib-2.0` -fPIC -Wall -g
 
 broadwayd-gtk4 :
 	gcc -o $@ $(BROADWAYD_SRC) `pkg-config --libs --cflags gtk4` -fPIC -DGTK_MAJOR_VERSION=4 -Wall

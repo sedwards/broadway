@@ -57,7 +57,7 @@ int main(void)
     cairo_surface_t *surface;
 
     char *client_port;
-    client_port = ":1";
+    client_port = ":2";
 
     //dir = g_dir_open(target.c_str(), 0, &error);
     broadway_server = _win_broadway_server_new(client_port, &error);

@@ -1,4 +1,7 @@
 #include "config.h"
+#ifndef G_OS_UNIX
+#define G_OS_UNIX
+#endif
 
 #ifdef HAVE_SYS_MMAN_H
 #include <sys/mman.h>
@@ -7,22 +10,22 @@
 #include <fcntl.h>
 #include <glib.h>
 #include <glib/gprintf.h>
-#ifdef G_OS_UNIX
+//#ifdef G_OS_UNIX
 #include <gio/gunixsocketaddress.h>
-#endif
+//#endif
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#ifdef HAVE_UNISTD_H
+//#ifdef HAVE_UNISTD_H
 #include <unistd.h>
-#elif defined (G_OS_WIN32)
-#include <io.h>
-#define ftruncate _chsize_s
-#endif
+//#elif defined (G_OS_WIN32)
+//#include <io.h>
+//#define ftruncate _chsize_s
+//#endif
 #include <sys/types.h>
-#ifdef G_OS_WIN32
-#include <windows.h>
-#endif
+//#ifdef G_OS_WIN32
+//#include <windows.h>
+//#endif
 
 #include "port.h"
 
@@ -32,7 +35,7 @@ void _win_broadway_events_got_input (BroadwayInputMsg *message);
 
 typedef struct BroadwayInput BroadwayInput;
 
-struct _BroadwayServer {
+struct _WinBroadwayServer {
   GObject parent_instance;
 
   guint32 next_serial;
@@ -45,7 +48,7 @@ struct _BroadwayServer {
   GList *incomming;
 };
 
-struct _BroadwayServerClass
+struct _WinBroadwayServerClass
 {
   GObjectClass parent_class;
 };
@@ -54,10 +57,10 @@ static gboolean input_available_cb (gpointer stream, gpointer user_data);
 
 static GType win_broadway_server_get_type (void);
 
-G_DEFINE_TYPE (BroadwayServer, win_broadway_server, G_TYPE_OBJECT)
+G_DEFINE_TYPE (WinBroadwayServer, win_broadway_server, G_TYPE_OBJECT)
 
 static void
-win_broadway_server_init (BroadwayServer *server)
+win_broadway_server_init (WinBroadwayServer *server)
 {
   server->next_serial = 1;
 }
@@ -69,7 +72,7 @@ win_broadway_server_finalize (GObject *object)
 }
 
 static void
-win_broadway_server_class_init (BroadwayServerClass * class)
+win_broadway_server_class_init (WinBroadwayServerClass * class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
 
@@ -77,7 +80,7 @@ win_broadway_server_class_init (BroadwayServerClass * class)
 }
 
 gboolean
-_win_broadway_server_lookahead_event (BroadwayServer  *server,
+_win_broadway_server_lookahead_event (WinBroadwayServer  *server,
 				      const char         *types)
 {
 
@@ -85,15 +88,15 @@ _win_broadway_server_lookahead_event (BroadwayServer  *server,
 }
 
 gulong
-_win_broadway_server_get_next_serial (BroadwayServer *server)
+_win_broadway_server_get_next_serial (WinBroadwayServer *server)
 {
   return (gulong)server->next_serial;
 }
 
-BroadwayServer *
+WinBroadwayServer *
 _win_broadway_server_new (const char *display, GError **error)
 {
-  BroadwayServer *server;
+  WinBroadwayServer *server;
   GSocketClient *client;
   GSocketConnection *connection;
   GInetAddress *inet;
@@ -106,12 +109,12 @@ _win_broadway_server_new (const char *display, GError **error)
 
   if (display == NULL)
     {
-#ifdef G_OS_UNIX
-      if (g_unix_socket_address_abstract_names_supported ())
+//#ifdef G_OS_UNIX
+//      if (g_unix_socket_address_abstract_names_supported ())
         display = ":0";
-      else
-#endif
-        display = ":tcp";
+//      else
+//#endif
+//        display = ":tcp";
     }
 
   if (g_str_has_prefix (display, ":tcp"))
@@ -121,6 +124,7 @@ _win_broadway_server_new (const char *display, GError **error)
       inet = g_inet_address_new_from_string ("127.0.0.1");
       address = g_inet_socket_address_new (inet, port);
       g_object_unref (inet);
+      printf("tcp\n");
     }
 #ifdef G_OS_UNIX
   else if (display[0] == ':' && g_ascii_isdigit(display[1]))
@@ -135,6 +139,7 @@ _win_broadway_server_new (const char *display, GError **error)
       address = g_unix_socket_address_new_with_type (path, -1,
 						     G_UNIX_SOCKET_ADDRESS_ABSTRACT);
       g_free (path);
+      printf("else if\n");
     }
 #endif
   else
@@ -143,7 +148,6 @@ _win_broadway_server_new (const char *display, GError **error)
 		   "Broadway display type not supported: %s", display);
       return NULL;
     }
-
   g_free (local_socket_type);
 
   client = g_socket_client_new ();
@@ -154,7 +158,10 @@ _win_broadway_server_new (const char *display, GError **error)
   g_object_unref (client);
 
   if (connection == NULL)
+  {
+    printf("connection is NULL for some reason\n");
     return NULL;
+  }
 
   server = g_object_new (GDK_TYPE_BROADWAY_SERVER, NULL);
   server->connection = connection;
@@ -166,17 +173,18 @@ _win_broadway_server_new (const char *display, GError **error)
   g_source_attach (source, NULL);
   g_source_set_callback (source, (GSourceFunc)input_available_cb, server, NULL);
 
+  printf("about to return server information\n");
   return server;
 }
 
 guint32
-_win_broadway_server_get_last_seen_time (BroadwayServer *server)
+_win_broadway_server_get_last_seen_time (WinBroadwayServer *server)
 {
   return 0;
 }
 
 static guint32
-win_broadway_server_send_message_with_size (BroadwayServer *server, BroadwayRequestBase *base,
+win_broadway_server_send_message_with_size (WinBroadwayServer *server, BroadwayRequestBase *base,
 					    gsize size, guint32 type)
 {
   GOutputStream *out;
@@ -203,7 +211,7 @@ win_broadway_server_send_message_with_size (BroadwayServer *server, BroadwayRequ
   win_broadway_server_send_message_with_size(_server, (BroadwayRequestBase *)&_msg, sizeof (_msg), _type)
 
 static void
-parse_all_input (BroadwayServer *server)
+parse_all_input (WinBroadwayServer *server)
 {
   guint8 *p, *end;
   guint32 size;
@@ -230,7 +238,7 @@ parse_all_input (BroadwayServer *server)
 }
 
 static void
-read_some_input_blocking (BroadwayServer *server)
+read_some_input_blocking (WinBroadwayServer *server)
 {
   GInputStream *in;
   gssize res;
@@ -252,7 +260,7 @@ read_some_input_blocking (BroadwayServer *server)
 }
 
 static void
-read_some_input_nonblocking (BroadwayServer *server)
+read_some_input_nonblocking (WinBroadwayServer *server)
 {
   GInputStream *in;
   GPollableInputStream *pollable;
@@ -283,7 +291,7 @@ read_some_input_nonblocking (BroadwayServer *server)
 }
 
 static BroadwayReply *
-find_response_by_serial (BroadwayServer *server, guint32 serial)
+find_response_by_serial (WinBroadwayServer *server, guint32 serial)
 {
   GList *l;
 
@@ -299,7 +307,7 @@ find_response_by_serial (BroadwayServer *server, guint32 serial)
 }
 
 static void
-process_input_messages (BroadwayServer *server)
+process_input_messages (WinBroadwayServer *server)
 {
   BroadwayReply *reply;
 
@@ -325,7 +333,7 @@ process_input_messages (BroadwayServer *server)
 }
 
 static gboolean
-process_input_idle_cb (BroadwayServer *server)
+process_input_idle_cb (WinBroadwayServer *server)
 {
   server->process_input_idle = 0;
   process_input_messages (server);
@@ -333,7 +341,7 @@ process_input_idle_cb (BroadwayServer *server)
 }
 
 static void
-queue_process_input_at_idle (BroadwayServer *server)
+queue_process_input_at_idle (WinBroadwayServer *server)
 {
   if (server->process_input_idle == 0)
     server->process_input_idle =
@@ -343,7 +351,7 @@ queue_process_input_at_idle (BroadwayServer *server)
 static gboolean
 input_available_cb (gpointer stream, gpointer user_data)
 {
-  BroadwayServer *server = user_data;
+  WinBroadwayServer *server = user_data;
 
   read_some_input_nonblocking (server);
   parse_all_input (server);
@@ -354,7 +362,7 @@ input_available_cb (gpointer stream, gpointer user_data)
 }
 
 static BroadwayReply *
-win_broadway_server_wait_for_reply (BroadwayServer *server,
+win_broadway_server_wait_for_reply (WinBroadwayServer *server,
 				    guint32 serial)
 {
   BroadwayReply *reply;
@@ -377,7 +385,7 @@ win_broadway_server_wait_for_reply (BroadwayServer *server,
 }
 
 void
-_win_broadway_server_flush (BroadwayServer *server)
+_win_broadway_server_flush (WinBroadwayServer *server)
 {
   BroadwayRequestFlush msg;
 
@@ -385,7 +393,7 @@ _win_broadway_server_flush (BroadwayServer *server)
 }
 
 void
-_win_broadway_server_sync (BroadwayServer *server)
+_win_broadway_server_sync (WinBroadwayServer *server)
 {
   BroadwayRequestSync msg;
   guint32 serial;
@@ -403,7 +411,7 @@ _win_broadway_server_sync (BroadwayServer *server)
 }
 
 void
-_win_broadway_server_query_mouse (BroadwayServer *server,
+_win_broadway_server_query_mouse (WinBroadwayServer *server,
 				  guint32            *toplevel,
 				  gint32             *root_x,
 				  gint32             *root_y,
@@ -432,13 +440,15 @@ _win_broadway_server_query_mouse (BroadwayServer *server,
 }
 
 guint32
-_win_broadway_server_new_window (BroadwayServer *server,
+_win_broadway_server_new_window (WinBroadwayServer *server,
 				 int x,
 				 int y,
 				 int width,
 				 int height,
 				 gboolean is_temp)
 {
+  printf("win_broadway_server_new_window requested\n");
+
   BroadwayRequestNewWindow msg;
   guint32 serial, id;
   BroadwayReply *reply;
@@ -463,7 +473,7 @@ _win_broadway_server_new_window (BroadwayServer *server,
 }
 
 void
-_win_broadway_server_destroy_window (BroadwayServer *server,
+_win_broadway_server_destroy_window (WinBroadwayServer *server,
 				     gint id)
 {
   BroadwayRequestDestroyWindow msg;
@@ -474,9 +484,10 @@ _win_broadway_server_destroy_window (BroadwayServer *server,
 }
 
 gboolean
-_win_broadway_server_window_show (BroadwayServer *server,
+_win_broadway_server_window_show (WinBroadwayServer *server,
 				  gint id)
 {
+  printf("Requested server show window\n");
   BroadwayRequestShowWindow msg;
 
   msg.id = id;
@@ -487,7 +498,7 @@ _win_broadway_server_window_show (BroadwayServer *server,
 }
 
 gboolean
-_win_broadway_server_window_hide (BroadwayServer *server,
+_win_broadway_server_window_hide (WinBroadwayServer *server,
 				  gint id)
 {
   BroadwayRequestHideWindow msg;
@@ -500,7 +511,7 @@ _win_broadway_server_window_hide (BroadwayServer *server,
 }
 
 void
-_win_broadway_server_window_focus (BroadwayServer *server,
+_win_broadway_server_window_focus (WinBroadwayServer *server,
 				   gint id)
 {
   BroadwayRequestFocusWindow msg;
@@ -511,7 +522,7 @@ _win_broadway_server_window_focus (BroadwayServer *server,
 }
 
 void
-_win_broadway_server_window_set_transient_for (BroadwayServer *server,
+_win_broadway_server_window_set_transient_for (WinBroadwayServer *server,
 					       gint id, gint parent)
 {
   BroadwayRequestSetTransientFor msg;
@@ -557,7 +568,7 @@ map_named_shm (char *name, gsize size, gboolean *is_shm)
   res = ftruncate (fd, size);
   g_assert (res != -1);
 
-#ifdef HAVE_POSIX_FALLOCATE
+//#ifdef HAVE_POSIX_FALLOCATE
   res = posix_fallocate (fd, 0, size);
   if (res != 0 && errno == ENOSPC)
     {
@@ -567,7 +578,7 @@ map_named_shm (char *name, gsize size, gboolean *is_shm)
 	shm_unlink (name);
       g_error ("Not enough shared memory for window surface");
     }
-#endif
+//#endif
 
   ptr = mmap(0, size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
 
@@ -582,7 +593,7 @@ map_named_shm (char *name, gsize size, gboolean *is_shm)
   char *shmpath;
   void *map = ((void *)-1);
   int res;
-
+/*
   if (*name == '/')
     ++name;
   shmpath = g_build_filename (g_get_tmp_dir (), name, NULL);
@@ -614,7 +625,7 @@ map_named_shm (char *name, gsize size, gboolean *is_shm)
   (void) close(fd);
 
   return ptr;
-
+*/
 #else
 #error "No shm mapping supported"
 
@@ -728,7 +739,7 @@ _win_broadway_server_create_surface (int                 width,
 }
 
 void
-_win_broadway_server_window_update (BroadwayServer *server,
+_win_broadway_server_window_update (WinBroadwayServer *server,
 				    gint id,
 				    cairo_surface_t *surface)
 {
@@ -751,7 +762,7 @@ _win_broadway_server_window_update (BroadwayServer *server,
 }
 
 gboolean
-_win_broadway_server_window_move_resize (BroadwayServer *server,
+_win_broadway_server_window_move_resize (WinBroadwayServer *server,
 					 gint id,
 					 gboolean with_move,
 					 int x,
@@ -775,7 +786,7 @@ _win_broadway_server_window_move_resize (BroadwayServer *server,
 }
 
 GrabStatus
-_win_broadway_server_grab_pointer (BroadwayServer *server,
+_win_broadway_server_grab_pointer (WinBroadwayServer *server,
 				   gint id,
 				   gboolean owner_events,
 				   guint32 event_mask,
@@ -804,7 +815,7 @@ _win_broadway_server_grab_pointer (BroadwayServer *server,
 }
 
 guint32
-_win_broadway_server_ungrab_pointer (BroadwayServer *server,
+_win_broadway_server_ungrab_pointer (WinBroadwayServer *server,
 				     guint32    time_)
 {
   BroadwayRequestUngrabPointer msg;
@@ -827,7 +838,7 @@ _win_broadway_server_ungrab_pointer (BroadwayServer *server,
 }
 
 void
-_win_broadway_server_set_show_keyboard (BroadwayServer *server,
+_win_broadway_server_set_show_keyboard (WinBroadwayServer *server,
                                         gboolean show)
 {
   BroadwayRequestSetShowKeyboard msg;

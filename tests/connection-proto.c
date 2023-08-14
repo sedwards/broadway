@@ -2,6 +2,8 @@
 #include <glib.h>
 #include <gio/gunixsocketaddress.h>
 
+#include <cairo.h>
+
 struct _BroadwayServer {
   GObject parent_instance;
 
@@ -38,14 +40,21 @@ _win_broadway_server_new_window (BroadwayServer *server,
 
 gboolean _win_broadway_server_window_show (BroadwayServer *server, gint id);
 
+cairo_surface_t *
+_win_broadway_server_create_surface (int width, int height);
+
+void _win_broadway_server_window_update (BroadwayServer *server, gint id,
+                                    cairo_surface_t *surface);
+
 
 int main(void)
 {
     GError *error;
     error = NULL;
-    guint32 retval;
+    guint32 id;
 
     BroadwayServer *broadway_server;
+    cairo_surface_t *surface;
 
     char *client_port;
     client_port = ":1";
@@ -62,13 +71,19 @@ int main(void)
     //printf("_win_broadway_server_new function did something: %s", error-> message);
     printf("_win_broadway_server_new function did something\n");
 
-    retval = _win_broadway_server_new_window(broadway_server,100,100,100,100,0);
+    id = _win_broadway_server_new_window(broadway_server,100,100,100,100,0);
     
     printf("_win_broadway_server_new_window function did something\n");
 
-    _win_broadway_server_window_show (broadway_server, retval);
+    _win_broadway_server_window_show (broadway_server, id);
+
+    surface = _win_broadway_server_create_surface(100,100);
+
+    _win_broadway_server_window_update (broadway_server, id, surface);
+
+    _win_broadway_server_window_show (broadway_server, id);
     
-    return retval;
+    //return id;
 }
 
 

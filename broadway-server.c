@@ -1280,6 +1280,7 @@ handle_incoming_connection (GSocketService    *service,
 
   g_data_input_stream_read_line_async (request->data, 0, NULL,
 				       (GAsyncReadyCallback)got_http_request_line, request);
+  printf("Did something with an incomming connection request\n");
   return TRUE;
 }
 
@@ -1341,6 +1342,7 @@ broadway_server_new (char        *address,
 
   g_signal_connect (server->service, "incoming",
 		    G_CALLBACK (handle_incoming_connection), NULL);
+  printf("New server was requested");
   return server;
 }
 
@@ -1435,6 +1437,7 @@ void
 broadway_server_destroy_window (BroadwayServer *server,
 				gint id)
 {
+  printf("server destro window called \n");
   BroadwayWindow *window;
 
   if (server->mouse_in_toplevel_id == id)
@@ -1470,6 +1473,7 @@ gboolean
 broadway_server_window_show (BroadwayServer *server,
 			     gint id)
 {
+  printf("New window show called\n");
   BroadwayWindow *window;
   gboolean sent = FALSE;
 
@@ -1592,6 +1596,7 @@ broadway_server_window_set_transient_for (BroadwayServer *server,
 gboolean
 broadway_server_has_client (BroadwayServer *server)
 {
+  g_print("Have new client\n");
   return server->output != NULL;
 }
 
@@ -1838,6 +1843,7 @@ broadway_server_new_window (BroadwayServer *server,
 			    int height,
 			    gboolean is_temp)
 {
+  printf("New window requested\n");
   BroadwayWindow *window;
 
   window = g_new0 (BroadwayWindow, 1);

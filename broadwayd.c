@@ -69,6 +69,7 @@ client_free (BroadwayClient *client)
 static void
 client_disconnected (BroadwayClient *client)
 {
+  printf("Client disconnected\n");
   GList *l;
 
   if (client->disconnect_idle != 0)
@@ -121,6 +122,7 @@ send_reply (BroadwayClient *client,
   if (!g_output_stream_write_all (output, reply, size, NULL, NULL, NULL))
     {
       g_printerr ("can't write to client");
+      g_print ("can't write to client");
       client_disconnect_in_idle (client);
     }
 }
@@ -206,6 +208,7 @@ client_handle_request (BroadwayClient *client,
   switch (request->base.type)
     {
     case BROADWAY_REQUEST_NEW_WINDOW:
+      g_print("New window requested in Daemon\n");
       reply_new_window.id =
 	broadway_server_new_window (server,
 				    request->new_window.x,
@@ -299,6 +302,7 @@ client_handle_request (BroadwayClient *client,
       broadway_server_focus_window (server, request->focus_window.id);
       break;
     case BROADWAY_REQUEST_SET_SHOW_KEYBOARD:
+      g_print("Server receved REQ set_show_keyboard\n");
       broadway_server_set_show_keyboard (server, request->set_show_keyboard.show_keyboard);
       break;
     default:
@@ -400,6 +404,7 @@ incoming_client (GSocketService    *service,
 				   &ev.screen_resize_notify.width,
 				   &ev.screen_resize_notify.height);
 
+  g_print("New connection incoming\n");
   broadway_events_got_input (&ev,
 			     client->id);
 
@@ -457,11 +462,11 @@ main (int argc, char *argv[])
 
   if (display == NULL)
     {
-#ifdef G_OS_UNIX
+//#ifdef G_OS_UNIX
       if (g_unix_socket_address_abstract_names_supported ())
         display = ":0";
       else
-#endif
+//#endif
         display = ":tcp";
     }
 

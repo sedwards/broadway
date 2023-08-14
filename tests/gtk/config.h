@@ -18,4 +18,6 @@
 
 #define GETTEXT_PACKAGE 0
 
-#define GDK_WINDOWING_X11 1
+//#ifndef GDK_WINDOWING_X11
+//#define GDK_WINDOWING_X11 1
+//#endif

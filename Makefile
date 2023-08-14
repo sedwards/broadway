@@ -1,12 +1,12 @@
 CC=gcc
-CFLAGS=`pkg-config --libs --cflags gio-2.0 gobject-2.0 cairo glib-2.0` -fPIC -Wall -O2 -I. -I./include
+CFLAGS=`pkg-config --libs --cflags gio-2.0 gobject-2.0 cairo glib-2.0 gtk+-3.0` -fPIC -Wall -O2 -I. -I./include
 CFLAGS_GTK=`pkg-config --libs --cflags gio-2.0 gobject-2.0 cairo glib-2.0 gtk+-3.0` -fPIC -Wall -O2 -I. -I./include
 
 LIBBROADWAY=libbroadway.a
 #LIBBROADWAY-GDK3=libbroadway-gdk3.a
 LIBBROADWAY-WIN=libbroadway-win.a
 
-all: broadwayd-gtk3 broadwayd-gtk4 libbroadway-win.a
+all: broadwayd-gtk3 broadwayd-gtk4 libbroadway-win.a testsocket connection-proto
 
 SERVER_SRC = \
        broadway-server.c \
@@ -93,10 +93,10 @@ $(LIBBROADWAY-GDK3) : $(SERVER_OBJS) $(GDK3_BROADWAY_OBJS)
 ###
 
 testsocket : 
-	gcc -o tests/$@ tests/testsocket.c tests/testsocket_common.c $(CFLAGS_GTK) 
+	gcc -o tests/gtk/$@ tests/gtk/testsocket.c tests/gtk/testsocket_common.c $(CFLAGS_GTK)
 
-testsocket_child :
-	gcc -o tests/$@ tests/testsocket_child.c tests/testsocket_common.c $(CFLAGS_GTK)
+connection-proto :
+	gcc -o tests/$@ tests/connection-proto.c libbroadway-win.a $(CFLAGS)
 
 ###
 ### Clean target, other useful targets
@@ -105,5 +105,5 @@ testsocket_child :
 clean:
 	rm -f broadwayd-gtk3 broadwayd-gtk4 
 	rm -f win/*.o *.o *.a 
-	rm -f tests/testsocket tests/testsocket_child
+	rm -f tests/gtk/testsocket tests/connection-proto
 

@@ -3,7 +3,7 @@
 
 /* Actually, start with some types first */
 
-/* Public
+/* Public 
 typedef enum
 {
   GDK_GRAB_SUCCESS         = 0,
@@ -62,6 +62,11 @@ typedef enum
 } GdkModifierType;
 */
 
+#define GDK_TYPE_DEVICE         (gdk_device_get_type ())
+#define GDK_DEVICE(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), GDK_TYPE_DEVICE, GdkDevice))
+#define GDK_IS_DEVICE(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), GDK_TYPE_DEVICE))
+
+typedef struct _GdkDeviceClass GdkDeviceClass;
 typedef struct _GdkDeviceKey GdkDeviceKey;
 
 struct _GdkDeviceKey
@@ -118,6 +123,25 @@ typedef enum {
   GDK_RENDERING_MODE_RECORDING
 } GdkRenderingMode;
 
+/* Tracks information about the device grab on this display */
+typedef struct
+{
+  GdkWindow *window;
+  GdkWindow *native_window;
+  gulong serial_start;
+  gulong serial_end; /* exclusive, i.e. not active on serial_end */
+  guint event_mask;
+  guint32 time;
+  GdkGrabOwnership ownership;
+
+  guint activated : 1;
+  guint implicit_ungrab : 1;
+  guint owner_events : 1;
+  guint implicit : 1;
+} GdkDeviceGrabInfo;
+
+typedef struct _GdkDisplay GdkDisplay;
+//typedef struct _GdkDisplay2 _GdkDisplay;
 struct _GdkDisplay
 {
   GObject parent_instance;
@@ -167,6 +191,13 @@ struct _GdkDisplayClass
   /* Stub a lot missing */
 };
 
+#define GDK_DEVICE_CLASS(c)     (G_TYPE_CHECK_CLASS_CAST ((c), GDK_TYPE_DEVICE, GdkDeviceClass))
+#define GDK_IS_DEVICE_CLASS(c)  (G_TYPE_CHECK_CLASS_TYPE ((c), GDK_TYPE_DEVICE))
+#define GDK_DEVICE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), GDK_TYPE_DEVICE, GdkDeviceClass))
+
+typedef struct _GdkDeviceClass GdkDeviceClass;
+typedef struct _GdkDeviceKey GdkDeviceKey;
+
 struct _GdkDevice
 {
   GObject parent_instance;
@@ -196,12 +227,93 @@ struct _GdkDevice
   GdkDeviceTool *last_tool;
 };
 
+struct _GdkDeviceClass
+{
+  GObjectClass parent_class;
+
+  gboolean (* get_history)   (GdkDevice      *device,
+                              GdkWindow      *window,
+                              guint32         start,
+                              guint32         stop,
+                              GdkTimeCoord ***events,
+                              gint           *n_events);
+
+  void (* get_state)         (GdkDevice       *device,
+                              GdkWindow       *window,
+                              gdouble         *axes,
+                              GdkModifierType *mask);
+
+  void (* set_window_cursor) (GdkDevice *device,
+                              GdkWindow *window,
+                              GdkCursor *cursor);
+
+  void (* warp)              (GdkDevice  *device,
+                              GdkScreen  *screen,
+                              gdouble     x,
+                              gdouble     y);
+  void (* query_state)       (GdkDevice       *device,
+                              GdkWindow       *window,
+                              GdkWindow      **root_window,
+                              GdkWindow      **child_window,
+                              gdouble          *root_x,
+                              gdouble          *root_y,
+                              gdouble          *win_x,
+                              gdouble          *win_y,
+                              GdkModifierType  *mask);
+  GdkGrabStatus (* grab)     (GdkDevice        *device,
+                              GdkWindow        *window,
+                              gboolean          owner_events,
+                              GdkEventMask      event_mask,
+                              GdkWindow        *confine_to,
+                              GdkCursor        *cursor,
+                              guint32           time_);
+  void          (*ungrab)    (GdkDevice        *device,
+                              guint32           time_);
+
+  GdkWindow * (* window_at_position) (GdkDevice       *device,
+                                      double          *win_x,
+                                      double          *win_y,
+                                      GdkModifierType *mask,
+                                      gboolean         get_toplevel);
+  void (* select_window_events)      (GdkDevice       *device,
+                                      GdkWindow       *window,
+                                      GdkEventMask     event_mask);
+};
+
+
+
+
+#define GDK_DEVICE_MANAGER_CLASS(c)     (G_TYPE_CHECK_CLASS_CAST ((c), GDK_TYPE_DEVICE_MANAGER, GdkDeviceManagerClass))
+#define GDK_IS_DEVICE_MANAGER_CLASS(c)  (G_TYPE_CHECK_CLASS_TYPE ((c), GDK_TYPE_DEVICE_MANAGER))
+#define GDK_DEVICE_MANAGER_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), GDK_TYPE_DEVICE_MANAGER, GdkDeviceManagerClass))
+
+
+typedef struct _GdkDeviceManagerClass GdkDeviceManagerClass;
+
 struct _GdkDeviceManager
 {
   GObject parent_instance;
 
   /*< private >*/
   GdkDisplay *display;
+};
+
+struct _GdkDeviceManagerClass
+{
+  GObjectClass parent_class;
+
+  /* Signals */
+  void (* device_added)   (GdkDeviceManager *device_manager,
+                           GdkDevice        *device);
+  void (* device_removed) (GdkDeviceManager *device_manager,
+                           GdkDevice        *device);
+  void (* device_changed) (GdkDeviceManager *device_manager,
+                           GdkDevice        *device);
+
+  /* VMethods */
+  GList *     (* list_devices)       (GdkDeviceManager *device_manager,
+                                      GdkDeviceType     type);
+  GdkDevice * (* get_client_pointer) (GdkDeviceManager *device_manager);
 };
 
 /* Public
@@ -291,12 +403,45 @@ typedef enum
 } GdkCursorType;
 */
 
+#define GDK_CURSOR_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), GDK_TYPE_CURSOR, GdkCursorClass))
+#define GDK_IS_CURSOR_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), GDK_TYPE_CURSOR))
+#define GDK_CURSOR_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), GDK_TYPE_CURSOR, GdkCursorClass))
+
+typedef struct _GdkCursorClass GdkCursorClass;
+
+struct _GdkCursor
+{
+  GObject parent_instance;
+
+  GdkDisplay *display;
+  GdkCursorType type;
+};
+
+struct _GdkCursorClass
+{
+  GObjectClass parent_class;
+
+  cairo_surface_t * (* get_surface) (GdkCursor *cursor,
+                                     gdouble   *x_hot,
+                                     gdouble   *y_hot);
+};
+
+/* dkwindowimpl.h */
 typedef enum
 {
   GDK_TITLEBAR_GESTURE_DOUBLE_CLICK   = 1,
   GDK_TITLEBAR_GESTURE_RIGHT_CLICK    = 2,
   GDK_TITLEBAR_GESTURE_MIDDLE_CLICK   = 3
 } GdkTitlebarGesture;
+
+typedef struct _GdkWindowClass GdkWindowClass;
+
+#define GDK_TYPE_WINDOW_IMPL           (gdk_window_impl_get_type ())
+#define GDK_WINDOW_IMPL(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GDK_TYPE_WINDOW_IMPL, GdkWindowImpl))
+#define GDK_WINDOW_IMPL_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), GDK_TYPE_WINDOW_IMPL, GdkWindowImplClass))
+#define GDK_IS_WINDOW_IMPL(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), GDK_TYPE_WINDOW_IMPL))
+#define GDK_IS_WINDOW_IMPL_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), GDK_TYPE_WINDOW_IMPL))
+#define GDK_WINDOW_IMPL_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), GDK_TYPE_WINDOW_IMPL, GdkWindowImplClass))
 
 typedef struct _GdkWindowImpl       GdkWindowImpl;
 typedef struct _GdkWindowImplClass  GdkWindowImplClass;
@@ -580,5 +725,136 @@ struct _GdkWindowImplClass
   gboolean (* titlebar_gesture) (GdkWindow          *window,
                                  GdkTitlebarGesture  gesture);
 };
+
+
+struct GdkWindow2
+{
+  GObject parent_instance;
+
+  GdkWindowImpl *impl; /* window-system-specific delegate object */
+
+  GdkWindow *parent;
+  GdkWindow *transient_for;
+  GdkVisual *visual;
+
+  gpointer user_data;
+
+  gint x;
+  gint y;
+
+  GdkEventMask event_mask;
+  guint8 window_type;
+
+  guint8 depth;
+  guint8 resize_count;
+
+  gint8 toplevel_window_type;
+
+  GList *filters;
+  GList *children;
+  GList children_list_node;
+  GList *native_children;
+
+  cairo_pattern_t *background;
+
+  struct {
+    /* The temporary surface that we're painting to. This will be composited
+     * back into the window when we call end_paint. This is our poor-man's
+     * way of doing double buffering. */
+    cairo_surface_t *surface;
+
+    cairo_region_t *region;
+    cairo_region_t *flushed_region;
+    cairo_region_t *need_blend_region;
+
+    gboolean surface_needs_composite;
+    gboolean use_gl;
+  } current_paint;
+  GdkGLContext *gl_paint_context;
+
+  cairo_region_t *update_area;
+  guint update_freeze_count;
+  /* This is the update_area that was in effect when the current expose
+     started. It may be smaller than the expose area if we'e painting
+     more than we have to, but it represents the "true" damage. */
+  cairo_region_t *active_update_area;
+  /* We store the old expose areas to support buffer-age optimizations */
+  cairo_region_t *old_updated_area[2];
+
+  GdkWindowState old_state;
+  GdkWindowState state;
+
+  guint synthesized_crossing_event_id;
+
+  guint8 alpha;
+  guint8 fullscreen_mode;
+
+  guint input_only : 1;
+  guint pass_through : 1;
+  guint modal_hint : 1;
+  guint composited : 1;
+  guint has_alpha_background : 1;
+
+  guint destroyed : 2;
+
+  guint accept_focus : 1;
+  guint focus_on_map : 1;
+  guint shaped : 1;
+  guint support_multidevice : 1;
+  guint effective_visibility : 2;
+  guint visibility : 2; /* The visibility wrt the toplevel (i.e. based on clip_region) */
+  guint native_visibility : 2; /* the native visibility of a impl windows */
+  guint viewable : 1; /* mapped and all parents mapped */
+  guint applied_shape : 1;
+  guint in_update : 1;
+  guint geometry_dirty : 1;
+  guint event_compression : 1;
+  guint frame_clock_events_paused : 1;
+
+  /* The GdkWindow that has the impl, ref:ed if another window.
+   * This ref is required to keep the wrapper of the impl window alive
+   * for as long as any GdkWindow references the impl. */
+  GdkWindow *impl_window;
+
+  guint update_and_descendants_freeze_count;
+
+  gint abs_x, abs_y; /* Absolute offset in impl */
+  gint width, height;
+  gint shadow_top;
+  gint shadow_left;
+  gint shadow_right;
+  gint shadow_bottom;
+
+  guint num_offscreen_children;
+
+  /* The clip region is the part of the window, in window coordinates
+     that is fully or partially (i.e. semi transparently) visible in
+     the window hierarchy from the toplevel and down */
+  cairo_region_t *clip_region;
+
+  GdkCursor *cursor;
+  GHashTable *device_cursor;
+
+  cairo_region_t *shape;
+  cairo_region_t *input_shape;
+
+  GList *devices_inside;
+  GHashTable *device_events;
+
+  GHashTable *source_event_masks;
+  gulong device_added_handler_id;
+  gulong device_changed_handler_id;
+
+  GdkFrameClock *frame_clock; /* NULL to use from parent or default */
+  GdkWindowInvalidateHandlerFunc invalidate_handler;
+
+  GdkDrawingContext *drawing_context;
+
+  cairo_region_t *opaque_region;
+};
+
+#define GDK_WINDOW_TYPE(d) ((((GdkWindow *)(d)))->window_type)
+#define GDK_WINDOW_DESTROYED(d) (((GdkWindow *)(d))->destroyed)
+
 
 #endif /* _GDK_STRUCTS_H */

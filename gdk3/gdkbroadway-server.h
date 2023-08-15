@@ -1,6 +1,7 @@
 #ifndef __GDK_BROADWAY_SERVER__
 #define __GDK_BROADWAY_SERVER__
 
+#include <gdk/gdktypes.h>
 #include "broadway-protocol.h"
 
 typedef struct _GdkBroadwayServer GdkBroadwayServer;

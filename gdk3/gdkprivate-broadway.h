@@ -29,9 +29,9 @@
 #ifndef __GDK_PRIVATE_BROADWAY_H__
 #define __GDK_PRIVATE_BROADWAY_H__
 
-#include <gdk/gdk.h>
-#include "gdk_structs.h"
-
+#include <gdk/gdkcursor.h>
+#include <gdk/gdkprivate.h>
+#include <gdk/gdkinternals.h>
 #include "gdkwindow-broadway.h"
 #include "gdkdisplay-broadway.h"
 

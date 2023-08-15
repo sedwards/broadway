@@ -1,12 +1,12 @@
 CC=gcc
-CFLAGS=`pkg-config --libs --cflags gio-2.0 gobject-2.0 cairo glib-2.0 gtk+-3.0` -fPIC -Wall -g -I. -I./include
+CFLAGS=`pkg-config --libs --cflags gio-2.0 gobject-2.0 cairo glib-2.0 gtk+-3.0` -fPIC -Wall -g -I. -I./include -I./include/public
 CFLAGS_GTK=`pkg-config --libs --cflags gio-2.0 gobject-2.0 cairo glib-2.0 gtk+-3.0` -fPIC -Wall -g -I. -I./include
 
 LIBBROADWAY=libbroadway.a
-#LIBBROADWAY-GDK3=libbroadway-gdk3.a
+LIBBROADWAY-GDK3=libbroadway-gdk3.a
 LIBBROADWAY-WIN=libbroadway-win.a
 
-all: broadwayd-gtk3 broadwayd-gtk4 libbroadway-win.a testsocket connection-proto
+all: broadwayd-gtk3 broadwayd-gtk4 libbroadway-win.a libbroadway-gdk3.a testsocket connection-proto
 
 SERVER_SRC = \
        broadway-server.c \
@@ -28,15 +28,13 @@ broadwayd-gtk4 :
 ##############################################################################################################
 ###ls -l win/*.c | awk '{print "\t" $9 " \/"}' | awk '{sub(/.$/,"")}1'
 
-#GDK3_BROADWAY_SRC = \
+GDK3_BROADWAY_SRC = \
 	gdk3/gdkbroadway-server.c \
-	gdk3/gdkcairocontext-broadway.c \
 	gdk3/gdkcursor-broadway.c \
 	gdk3/gdkdevice-broadway.c \
 	gdk3/gdkdevicemanager-broadway.c \
 	gdk3/gdkdisplay-broadway.c \
 	gdk3/gdkdnd-broadway.c \
-	gdk3/gdkdrawcontext-broadway.c \
 	gdk3/gdkeventsource.c \
 	gdk3/gdkglobals-broadway.c \
 	gdk3/gdkkeys-broadway.c \
@@ -44,10 +42,9 @@ broadwayd-gtk4 :
 	gdk3/gdkproperty-broadway.c \
 	gdk3/gdkscreen-broadway.c \
 	gdk3/gdkselection-broadway.c \
-	gdk3/gdksurface-broadway.c \
 	gdk3/gdktestutils-broadway.c \
-	gdk3/gdkvisual-broadway.c 
-#	gdk3/gdkwindow-broadway.c \
+	gdk3/gdkvisual-broadway.c \
+	gdk3/gdkwindow-broadway.c
 
 WIN_BROADWAY_SRC = \
 	win/eventsource.c \
@@ -74,10 +71,10 @@ WIN_BROADWAY_SRC = \
 	win/winbroadway-server.c \
 
 GDK3_BROADWAY_OBJS = $(patsubst %.c, %.o, $(GDK3_BROADWAY_SRC))
-GDK4_BROADWAY_OBJS = $(patsubst %.c, %.o, $(GDK4_BROADWAY_SRC))
 WIN_BROADWAY_OBJS = $(patsubst %.c, %.o, $(WIN_BROADWAY_SRC))
 BROADWAYD_OBJS = $(patsubst %.c, %.o, $(BROADWAYD_SRC))
 SERVER_OBJS = $(patsubst %.c, %.o, $(SERVER_SRC))
+
 
 $(LIBBROADWAY) : $(SERVER_OBJS)
 	ar rcs $@ $^
@@ -87,6 +84,7 @@ $(LIBBROADWAY-WIN) : $(SERVER_OBJS) $(WIN_BROADWAY_OBJS)
 
 $(LIBBROADWAY-GDK3) : $(SERVER_OBJS) $(GDK3_BROADWAY_OBJS)
 	ar rcs $@ $^
+
 
 ###
 ### Clean target, other useful targets
@@ -104,6 +102,6 @@ connection-proto :
 
 clean:
 	rm -f broadwayd-gtk3 broadwayd-gtk4 
-	rm -f win/*.o *.o *.a 
+	rm -f win/*.o gdk3/*.o *.a 
 	rm -f tests/gtk/testsocket tests/connection-proto
 

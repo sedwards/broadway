@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=`pkg-config --libs --cflags gio-2.0 gobject-2.0 cairo glib-2.0 gtk+-3.0` -fPIC -Wall -g -I. -I./include -I./include/public
+CFLAGS=`pkg-config --libs --cflags gio-2.0 gobject-2.0 cairo glib-2.0 gtk+-3.0` -fPIC -Wall -g -I. -I./include -I./include/gdk -I./include/public
 CFLAGS_GTK=`pkg-config --libs --cflags gio-2.0 gobject-2.0 cairo glib-2.0 gtk+-3.0` -fPIC -Wall -g -I. -I./include
 
 LIBBROADWAY=libbroadway.a

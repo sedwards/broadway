@@ -18,19 +18,19 @@
 #ifndef __GDK_BROADWAY_DISPLAY_H__
 #define __GDK_BROADWAY_DISPLAY_H__
 
-#if !defined (__GDKBROADWAY_H_INSIDE__) && !defined (GDK_COMPILATION)
-#error "Only <gdk/gdkbroadway.h> can be included directly."
-#endif
+//#if !defined (__GDKBROADWAY_H_INSIDE__) && !defined (GDK_COMPILATION)
+//#error "Only <gdk/gdkbroadway.h> can be included directly."
+//#endif
 
 #include <gdk/gdk.h>
 
 G_BEGIN_DECLS
 
-#ifdef GDK_COMPILATION
+//#ifdef GDK_COMPILATION
 typedef struct _GdkBroadwayDisplay GdkBroadwayDisplay;
-#else
-typedef GdkDisplay GdkBroadwayDisplay;
-#endif
+//#else
+//typedef GdkDisplay GdkBroadwayDisplay;
+//#endif
 typedef struct _GdkBroadwayDisplayClass GdkBroadwayDisplayClass;
 
 #define GDK_TYPE_BROADWAY_DISPLAY              (gdk_broadway_display_get_type())

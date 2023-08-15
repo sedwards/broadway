@@ -18,7 +18,9 @@
 #ifndef __GDK_DEVICE_MANAGER_BROADWAY_H__
 #define __GDK_DEVICE_MANAGER_BROADWAY_H__
 
-#include <gdk/gdkdevicemanagerprivate.h>
+//#include <gdk/gdkdevicemanagerprivate.h>
+#include <gdk/gdk.h>
+#include "gdk_structs.h"
 
 G_BEGIN_DECLS
 

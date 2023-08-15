@@ -19,12 +19,8 @@
 
 #include "gdkdevicemanager-broadway.h"
 
-#include "gdktypes.h"
-#include "gdkdevicemanager.h"
 #include "gdkdevice-broadway.h"
-#include "gdkkeysyms.h"
 #include "gdkprivate-broadway.h"
-#include "gdkseatdefaultprivate.h"
 
 #define HAS_FOCUS(toplevel)                           \
   ((toplevel)->has_focus || (toplevel)->has_pointer_focus)

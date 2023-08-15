@@ -26,11 +26,9 @@
 
 #include "gdkdisplay.h"
 #include "gdkeventsource.h"
-#include "gdkscreen.h"
 #include "gdkscreen-broadway.h"
 #include "gdkmonitor-broadway.h"
 #include "gdkinternals.h"
-#include "gdkdeviceprivate.h"
 #include "gdkdevicemanager-broadway.h"
 
 #include <glib.h>

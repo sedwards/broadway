@@ -68,14 +68,14 @@ typedef enum
 
 typedef struct _GdkDeviceClass GdkDeviceClass;
 typedef struct _GdkDeviceKey GdkDeviceKey;
-
+/*
 struct _GdkDeviceKey
 {
   guint keyval;
   GdkModifierType modifiers;
 };
 
-/* Public
+ Public
 typedef enum {
   GDK_DEVICE_TOOL_TYPE_UNKNOWN,
   GDK_DEVICE_TOOL_TYPE_PEN,
@@ -115,14 +115,15 @@ struct _GdkSeat
 {
   GObject parent_instance;
 };
-*/
 
 typedef enum {
   GDK_RENDERING_MODE_SIMILAR = 0,
   GDK_RENDERING_MODE_IMAGE,
   GDK_RENDERING_MODE_RECORDING
 } GdkRenderingMode;
+*/
 
+#if 0
 /* Tracks information about the device grab on this display */
 typedef struct
 {
@@ -190,6 +191,7 @@ struct _GdkDisplayClass
   GType window_type;          /* type for native windows for this display, set in class_init */
   /* Stub a lot missing */
 };
+#endif
 
 #define GDK_DEVICE_CLASS(c)     (G_TYPE_CHECK_CLASS_CAST ((c), GDK_TYPE_DEVICE, GdkDeviceClass))
 #define GDK_IS_DEVICE_CLASS(c)  (G_TYPE_CHECK_CLASS_TYPE ((c), GDK_TYPE_DEVICE))
@@ -198,6 +200,7 @@ struct _GdkDisplayClass
 typedef struct _GdkDeviceClass GdkDeviceClass;
 typedef struct _GdkDeviceKey GdkDeviceKey;
 
+#if 0
 struct _GdkDevice
 {
   GObject parent_instance;
@@ -279,9 +282,7 @@ struct _GdkDeviceClass
                                       GdkWindow       *window,
                                       GdkEventMask     event_mask);
 };
-
-
-
+#endif
 
 #define GDK_DEVICE_MANAGER_CLASS(c)     (G_TYPE_CHECK_CLASS_CAST ((c), GDK_TYPE_DEVICE_MANAGER, GdkDeviceManagerClass))
 #define GDK_IS_DEVICE_MANAGER_CLASS(c)  (G_TYPE_CHECK_CLASS_TYPE ((c), GDK_TYPE_DEVICE_MANAGER))
@@ -426,6 +427,7 @@ struct _GdkCursorClass
                                      gdouble   *y_hot);
 };
 
+#if 0
 /* dkwindowimpl.h */
 typedef enum
 {
@@ -433,6 +435,7 @@ typedef enum
   GDK_TITLEBAR_GESTURE_RIGHT_CLICK    = 2,
   GDK_TITLEBAR_GESTURE_MIDDLE_CLICK   = 3
 } GdkTitlebarGesture;
+#endif
 
 typedef struct _GdkWindowClass GdkWindowClass;
 
@@ -443,6 +446,7 @@ typedef struct _GdkWindowClass GdkWindowClass;
 #define GDK_IS_WINDOW_IMPL_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), GDK_TYPE_WINDOW_IMPL))
 #define GDK_WINDOW_IMPL_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), GDK_TYPE_WINDOW_IMPL, GdkWindowImplClass))
 
+#if 0
 typedef struct _GdkWindowImpl       GdkWindowImpl;
 typedef struct _GdkWindowImplClass  GdkWindowImplClass;
 
@@ -726,7 +730,6 @@ struct _GdkWindowImplClass
                                  GdkTitlebarGesture  gesture);
 };
 
-
 struct GdkWindow2
 {
   GObject parent_instance;
@@ -852,6 +855,7 @@ struct GdkWindow2
 
   cairo_region_t *opaque_region;
 };
+#endif
 
 #define GDK_WINDOW_TYPE(d) ((((GdkWindow *)(d)))->window_type)
 #define GDK_WINDOW_DESTROYED(d) (((GdkWindow *)(d))->destroyed)

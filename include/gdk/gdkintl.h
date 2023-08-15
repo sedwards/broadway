@@ -22,9 +22,15 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include "config.h"
+#ifndef __GDKINTL_H__
+#define __GDKINTL_H__
 
-#include "gdkprivate-broadway.h"
+#include <glib/gi18n-lib.h>
 
-#include <stdio.h>
+#ifdef ENABLE_NLS
+#define P_(String) dgettext(GETTEXT_PACKAGE "-properties",String)
+#else
+#define P_(String) (String)
+#endif
 
+#endif

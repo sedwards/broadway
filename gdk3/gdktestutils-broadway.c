@@ -16,9 +16,13 @@
  * License along with this library. If not, see <http://www.gnu.org/licenses/>.
  */
 #include "config.h"
-#include <gdk/gdktestutils.h>
-#include <gdk/gdkkeysyms.h>
+
+#include <gdk/gdk.h>
+
+//#include <gdk/gdktestutils.h>
+//#include <gdk/gdkkeysyms.h>
 #include <gdk/gdkinternals.h>
+
 #include "gdkprivate-broadway.h"
 
 void

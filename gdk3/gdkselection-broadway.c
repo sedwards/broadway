@@ -24,9 +24,8 @@
 
 #include "config.h"
 
-#include "gdkselection.h"
+#include <gdk/gdk.h>
 
-#include "gdkproperty.h"
 #include "gdkprivate.h"
 #include "gdkprivate-broadway.h"
 #include "gdkdisplay-broadway.h"

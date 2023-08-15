@@ -7,8 +7,7 @@
 #include <fcntl.h>
 
 #include "gdkbroadway-server.h"
-
-#include "gdkprivate-broadway.h"
+//#include "gdkprivate-broadway.h"
 
 #include <glib.h>
 #include <glib/gprintf.h>

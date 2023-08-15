@@ -18,7 +18,10 @@
 #ifndef __GDK_DEVICE_BROADWAY_H__
 #define __GDK_DEVICE_BROADWAY_H__
 
-#include <gdk/gdkdeviceprivate.h>
+#include <gdk/gdk.h>
+#include "gdk_structs.h"
+
+//#include <gdk/gdkdeviceprivate.h>
 
 G_BEGIN_DECLS
 

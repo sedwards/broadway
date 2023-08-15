@@ -24,14 +24,15 @@
 
 #include "config.h"
 
-#include "gdkproperty.h"
+#include <gdk/gdk.h>
+//#include "gdkproperty.h"
 
 #include "gdkmain.h"
 #include "gdkprivate.h"
 #include "gdkinternals.h"
 #include "gdkdisplay-broadway.h"
 #include "gdkscreen-broadway.h"
-#include "gdkselection.h"
+//#include "gdkselection.h"
 
 #include <string.h>
 

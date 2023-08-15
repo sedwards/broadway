@@ -8,7 +8,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
@@ -22,9 +22,23 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-#include "config.h"
+#ifndef __GDK_PRIVATE_H__
+#define __GDK_PRIVATE_H__
 
-#include "gdkprivate-broadway.h"
+#include <gdk/gdk.h>
 
-#include <stdio.h>
+G_BEGIN_DECLS
 
+const char * _gdk_atom_name_const (GdkAtom atom);
+
+GDK_AVAILABLE_IN_ALL
+void gdk_window_destroy_notify	     (GdkWindow *window);
+
+GDK_AVAILABLE_IN_ALL
+void gdk_synthesize_window_state (GdkWindow     *window,
+                                  GdkWindowState unset_flags,
+                                  GdkWindowState set_flags);
+
+G_END_DECLS
+
+#endif /* __GDK_PRIVATE_H__ */

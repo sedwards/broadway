@@ -28,8 +28,10 @@
 #define GDK_PIXBUF_ENABLE_BACKEND
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
-#include "gdkcursor.h"
-#include "gdkcursorprivate.h"
+#include <gdk/gdk.h>
+
+//#include "gdkcursor.h"
+//#include "gdkcursorprivate.h"
 
 #include "gdkprivate-broadway.h"
 #include "gdkdisplay-broadway.h"

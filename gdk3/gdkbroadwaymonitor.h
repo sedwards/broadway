@@ -22,11 +22,8 @@
 #ifndef __GDK_BROADWAY_MONITOR_H__
 #define __GDK_BROADWAY_MONITOR_H__
 
-#if !defined (__GDKBROADWAY_H_INSIDE__) && !defined (GDK_COMPILATION)
-#error "Only <gdk/gdkbroadway.h> can be included directly."
-#endif
-
-#include <gdk/gdkmonitor.h>
+#include <gdk/gdk.h>
+#include "gdk_structs.h"
 
 G_BEGIN_DECLS
 

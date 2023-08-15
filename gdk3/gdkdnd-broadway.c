@@ -24,10 +24,12 @@
 
 #include "config.h"
 
+#include <gdk/gdk.h>
+
 #include "gdkdndprivate.h"
 
 #include "gdkinternals.h"
-#include "gdkproperty.h"
+//#include "gdkproperty.h"
 #include "gdkprivate-broadway.h"
 #include "gdkinternals.h"
 #include "gdkscreen-broadway.h"

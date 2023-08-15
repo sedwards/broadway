@@ -22,9 +22,10 @@
 #ifndef __GDK_BROADWAY_SCREEN_H__
 #define __GDK_BROADWAY_SCREEN_H__
 
-#include <gdk/gdkscreenprivate.h>
+#include <gdk/gdk.h>
 #include <gdk/gdkvisual.h>
 #include "gdkprivate-broadway.h"
+#include "gdkscreenprivate.h"
 
 G_BEGIN_DECLS
 

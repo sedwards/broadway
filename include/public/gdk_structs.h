@@ -1,3 +1,19 @@
+#ifndef _GDK_STRUCTS_H
+#define _GDK_STRUCTS_H
+
+/* Actually, start with some types first */
+
+/* Public
+typedef enum
+{
+  GDK_GRAB_SUCCESS         = 0,
+  GDK_GRAB_ALREADY_GRABBED = 1,
+  GDK_GRAB_INVALID_TIME    = 2,
+  GDK_GRAB_NOT_VIEWABLE    = 3,
+  GDK_GRAB_FROZEN          = 4,
+  GDK_GRAB_FAILED          = 5
+} GdkGrabStatus;
+
 typedef enum
 {
   GDK_SHIFT_MASK    = 1 << 0,
@@ -27,11 +43,11 @@ typedef enum
   GDK_MODIFIER_RESERVED_23_MASK  = 1 << 23,
   GDK_MODIFIER_RESERVED_24_MASK  = 1 << 24,
   GDK_MODIFIER_RESERVED_25_MASK  = 1 << 25,
-
+*/
   /* The next few modifiers are used by XKB, so we skip to the end.
    * Bits 15 - 25 are currently unused. Bit 29 is used internally.
    */
-
+/*
   GDK_SUPER_MASK    = 1 << 26,
   GDK_HYPER_MASK    = 1 << 27,
   GDK_META_MASK     = 1 << 28,
@@ -39,11 +55,14 @@ typedef enum
   GDK_MODIFIER_RESERVED_29_MASK  = 1 << 29,
 
   GDK_RELEASE_MASK  = 1 << 30,
-
+*/
   /* Combination of GDK_SHIFT_MASK..GDK_BUTTON5_MASK + GDK_SUPER_MASK
      + GDK_HYPER_MASK + GDK_META_MASK + GDK_RELEASE_MASK */
-  GDK_MODIFIER_MASK = 0x5c001fff
+/*  GDK_MODIFIER_MASK = 0x5c001fff
 } GdkModifierType;
+*/
+
+typedef struct _GdkDeviceKey GdkDeviceKey;
 
 struct _GdkDeviceKey
 {
@@ -51,6 +70,7 @@ struct _GdkDeviceKey
   GdkModifierType modifiers;
 };
 
+/* Public
 typedef enum {
   GDK_DEVICE_TOOL_TYPE_UNKNOWN,
   GDK_DEVICE_TOOL_TYPE_PEN,
@@ -74,6 +94,7 @@ typedef enum
   GDK_AXIS_FLAG_ROTATION = 1 << GDK_AXIS_ROTATION,
   GDK_AXIS_FLAG_SLIDER   = 1 << GDK_AXIS_SLIDER,
 } GdkAxisFlags;
+*/
 
 struct _GdkDeviceTool
 {
@@ -84,9 +105,66 @@ struct _GdkDeviceTool
   GdkAxisFlags tool_axes;
 };
 
+/* Public
 struct _GdkSeat
 {
   GObject parent_instance;
+};
+*/
+
+typedef enum {
+  GDK_RENDERING_MODE_SIMILAR = 0,
+  GDK_RENDERING_MODE_IMAGE,
+  GDK_RENDERING_MODE_RECORDING
+} GdkRenderingMode;
+
+struct _GdkDisplay
+{
+  GObject parent_instance;
+
+  GList *queued_events;
+  GList *queued_tail;
+
+  /* Information for determining if the latest button click
+   * is part of a double-click or triple-click
+   */
+  GHashTable *multiple_click_info;
+
+  guint event_pause_count;       /* How many times events are blocked */
+
+  guint closed             : 1;  /* Whether this display has been closed */
+
+  GArray *touch_implicit_grabs;
+  GHashTable *device_grabs;
+  GHashTable *motion_hint_info;
+  GdkDeviceManager *device_manager;
+  GList *input_devices; /* Deprecated, only used to keep gdk_display_list_devices working */
+
+  GHashTable *pointers_info;  /* GdkPointerWindowInfo for each device */
+  guint32 last_event_time;    /* Last reported event time from server */
+
+  guint double_click_time;  /* Maximum time between clicks in msecs */
+  guint double_click_distance;   /* Maximum distance between clicks in pixels */
+
+  guint has_gl_extension_texture_non_power_of_two : 1;
+  guint has_gl_extension_texture_rectangle : 1;
+
+  guint debug_updates     : 1;
+  guint debug_updates_set : 1;
+
+  GdkRenderingMode rendering_mode;
+
+  GList *seats;
+};
+
+typedef struct _GdkDisplayClass GdkDisplayClass;
+
+struct _GdkDisplayClass
+{
+  GObjectClass parent_class;
+
+  GType window_type;          /* type for native windows for this display, set in class_init */
+  /* Stub a lot missing */
 };
 
 struct _GdkDevice
@@ -118,13 +196,6 @@ struct _GdkDevice
   GdkDeviceTool *last_tool;
 };
 
-
-typedef enum {
-  GDK_RENDERING_MODE_SIMILAR = 0,
-  GDK_RENDERING_MODE_IMAGE,
-  GDK_RENDERING_MODE_RECORDING
-} GdkRenderingMode;
-
 struct _GdkDeviceManager
 {
   GObject parent_instance;
@@ -133,42 +204,7 @@ struct _GdkDeviceManager
   GdkDisplay *display;
 };
 
-struct _GdkDisplay
-{
-  GObject parent_instance;
-
-  GList *queued_events;
-  GList *queued_tail;
-
-  GHashTable *multiple_click_info;
-
-  guint event_pause_count;       /* How many times events are blocked */
-
-  guint closed             : 1;  /* Whether this display has been closed */
-
-  GArray *touch_implicit_grabs;
-  GHashTable *device_grabs;
-  GHashTable *motion_hint_info;
-  GdkDeviceManager *device_manager;
-  GList *input_devices; /* Deprecated, only used to keep gdk_display_list_devices working */
-
-  GHashTable *pointers_info;  /* GdkPointerWindowInfo for each device */
-  guint32 last_event_time;    /* Last reported event time from server */
-
-  guint double_click_time;  /* Maximum time between clicks in msecs */
-  guint double_click_distance;   /* Maximum distance between clicks in pixels */
-
-  guint has_gl_extension_texture_non_power_of_two : 1;
-  guint has_gl_extension_texture_rectangle : 1;
-
-  guint debug_updates     : 1;
-  guint debug_updates_set : 1;
-
-  GdkRenderingMode rendering_mode;
-
-  GList *seats;
-}
-
+/* Public
 typedef enum
 {
   GDK_X_CURSOR            = 0,
@@ -253,14 +289,296 @@ typedef enum
   GDK_BLANK_CURSOR        = -2,
   GDK_CURSOR_IS_PIXMAP    = -1
 } GdkCursorType;
+*/
 
-struct _GdkCursor
+typedef enum
 {
-  GObject parent_instance;
+  GDK_TITLEBAR_GESTURE_DOUBLE_CLICK   = 1,
+  GDK_TITLEBAR_GESTURE_RIGHT_CLICK    = 2,
+  GDK_TITLEBAR_GESTURE_MIDDLE_CLICK   = 3
+} GdkTitlebarGesture;
 
-  GdkDisplay *display;
-  GdkCursorType type;
+typedef struct _GdkWindowImpl       GdkWindowImpl;
+typedef struct _GdkWindowImplClass  GdkWindowImplClass;
+
+struct _GdkWindowImpl
+{
+  GObject parent;
 };
 
-typedef struct GdkCursor _GdkCursor;
+struct _GdkWindowImplClass
+{
+  GObjectClass parent_class;
 
+  cairo_surface_t *
+               (* ref_cairo_surface)    (GdkWindow       *window);
+  cairo_surface_t *
+               (* create_similar_image_surface) (GdkWindow *     window,
+                                                 cairo_format_t  format,
+                                                 int             width,
+                                                 int             height);
+
+  void         (* show)                 (GdkWindow       *window,
+                                         gboolean         already_mapped);
+  void         (* hide)                 (GdkWindow       *window);
+  void         (* withdraw)             (GdkWindow       *window);
+  void         (* raise)                (GdkWindow       *window);
+  void         (* lower)                (GdkWindow       *window);
+  void         (* restack_under)        (GdkWindow       *window,
+                                         GList           *native_siblings);
+  void         (* restack_toplevel)     (GdkWindow       *window,
+                                         GdkWindow       *sibling,
+                                         gboolean        above);
+
+  void         (* move_resize)          (GdkWindow       *window,
+                                         gboolean         with_move,
+                                         gint             x,
+                                         gint             y,
+                                         gint             width,
+                                         gint             height);
+
+  void         (* move_to_rect)         (GdkWindow       *window,
+                                         const GdkRectangle *rect,
+                                         GdkGravity       rect_anchor,
+                                         GdkGravity       window_anchor,
+                                         GdkAnchorHints   anchor_hints,
+                                         gint             rect_anchor_dx,
+                                         gint             rect_anchor_dy);
+  void         (* set_background)       (GdkWindow       *window,
+                                         cairo_pattern_t *pattern);
+
+  GdkEventMask (* get_events)           (GdkWindow       *window);
+  void         (* set_events)           (GdkWindow       *window,
+                                         GdkEventMask     event_mask);
+
+  gboolean     (* reparent)             (GdkWindow       *window,
+                                         GdkWindow       *new_parent,
+                                         gint             x,
+                                         gint             y);
+
+  void         (* set_device_cursor)    (GdkWindow       *window,
+                                         GdkDevice       *device,
+                                         GdkCursor       *cursor);
+
+  void         (* get_geometry)         (GdkWindow       *window,
+                                         gint            *x,
+                                         gint            *y,
+                                         gint            *width,
+                                         gint            *height);
+  void         (* get_root_coords)      (GdkWindow       *window,
+                                         gint             x,
+                                         gint             y,
+                                         gint            *root_x,
+                                         gint            *root_y);
+  gboolean     (* get_device_state)     (GdkWindow       *window,
+                                         GdkDevice       *device,
+                                         gdouble         *x,
+                                         gdouble         *y,
+                                         GdkModifierType *mask);
+  gboolean    (* begin_paint)           (GdkWindow       *window);
+  void        (* end_paint)             (GdkWindow       *window);
+
+  cairo_region_t * (* get_shape)        (GdkWindow       *window);
+  cairo_region_t * (* get_input_shape)  (GdkWindow       *window);
+  void         (* shape_combine_region) (GdkWindow       *window,
+                                         const cairo_region_t *shape_region,
+                                         gint             offset_x,
+                                         gint             offset_y);
+  void         (* input_shape_combine_region) (GdkWindow       *window,
+                                               const cairo_region_t *shape_region,
+                                               gint             offset_x,
+                                               gint             offset_y);
+  /* Called before processing updates for a window. This gives the windowing
+   * layer a chance to save the region for later use in avoiding duplicate
+   * exposes.
+   */
+  void     (* queue_antiexpose)     (GdkWindow       *window,
+                                     cairo_region_t  *update_area);
+
+/* Called to do the windowing system specific part of gdk_window_destroy(),
+ *
+ * window: The window being destroyed
+ * recursing: If TRUE, then this is being called because a parent
+ *     was destroyed. This generally means that the call to the windowing
+ *     system to destroy the window can be omitted, since it will be
+ *     destroyed as a result of the parent being destroyed.
+ *     Unless @foreign_destroy
+ * foreign_destroy: If TRUE, the window or a parent was destroyed by some
+ *     external agency. The window has already been destroyed and no
+ *     windowing system calls should be made. (This may never happen
+ *     for some windowing systems.)
+ */
+  void         (* destroy)              (GdkWindow       *window,
+                                         gboolean         recursing,
+                                         gboolean         foreign_destroy);
+
+
+ /* Called when gdk_window_destroy() is called on a foreign window
+  * or an ancestor of the foreign window. It should generally reparent
+  * the window out of it's current heirarchy, hide it, and then
+  * send a message to the owner requesting that the window be destroyed.
+  */
+  void         (*destroy_foreign)       (GdkWindow       *window);
+
+  /* optional */
+  gboolean     (* beep)                 (GdkWindow       *window);
+
+  void         (* focus)                (GdkWindow       *window,
+                                         guint32          timestamp);
+  void         (* set_type_hint)        (GdkWindow       *window,
+                                         GdkWindowTypeHint hint);
+  GdkWindowTypeHint (* get_type_hint)   (GdkWindow       *window);
+  void         (* set_modal_hint)       (GdkWindow *window,
+                                         gboolean   modal);
+  void         (* set_skip_taskbar_hint) (GdkWindow *window,
+                                          gboolean   skips_taskbar);
+  void         (* set_skip_pager_hint)  (GdkWindow *window,
+                                         gboolean   skips_pager);
+  void         (* set_urgency_hint)     (GdkWindow *window,
+                                         gboolean   urgent);
+  void         (* set_geometry_hints)   (GdkWindow         *window,
+                                         const GdkGeometry *geometry,
+                                         GdkWindowHints     geom_mask);
+  void         (* set_title)            (GdkWindow   *window,
+                                         const gchar *title);
+  void         (* set_role)             (GdkWindow   *window,
+                                         const gchar *role);
+  void         (* set_startup_id)       (GdkWindow   *window,
+                                         const gchar *startup_id);
+  void         (* set_transient_for)    (GdkWindow *window,
+                                         GdkWindow *parent);
+  void         (* get_frame_extents)    (GdkWindow    *window,
+                                         GdkRectangle *rect);
+  void         (* set_override_redirect) (GdkWindow *window,
+                                          gboolean override_redirect);
+  void         (* set_accept_focus)     (GdkWindow *window,
+                                         gboolean accept_focus);
+  void         (* set_focus_on_map)     (GdkWindow *window,
+                                         gboolean focus_on_map);
+  void         (* set_icon_list)        (GdkWindow *window,
+                                         GList     *pixbufs);
+  void         (* set_icon_name)        (GdkWindow   *window,
+                                         const gchar *name);
+  void         (* iconify)              (GdkWindow *window);
+  void         (* deiconify)            (GdkWindow *window);
+  void         (* stick)                (GdkWindow *window);
+  void         (* unstick)              (GdkWindow *window);
+  void         (* maximize)             (GdkWindow *window);
+  void         (* unmaximize)           (GdkWindow *window);
+  void         (* fullscreen)           (GdkWindow *window);
+  void         (* fullscreen_on_monitor) (GdkWindow *window, gint monitor);
+  void         (* apply_fullscreen_mode) (GdkWindow *window);
+  void         (* unfullscreen)         (GdkWindow *window);
+  void         (* set_keep_above)       (GdkWindow *window,
+                                         gboolean   setting);
+  void         (* set_keep_below)       (GdkWindow *window,
+                                         gboolean   setting);
+  GdkWindow *  (* get_group)            (GdkWindow *window);
+  void         (* set_group)            (GdkWindow *window,
+                                         GdkWindow *leader);
+  void         (* set_decorations)      (GdkWindow      *window,
+                                         GdkWMDecoration decorations);
+  gboolean     (* get_decorations)      (GdkWindow       *window,
+                                         GdkWMDecoration *decorations);
+  void         (* set_functions)        (GdkWindow    *window,
+                                         GdkWMFunction functions);
+  void         (* begin_resize_drag)    (GdkWindow     *window,
+                                         GdkWindowEdge  edge,
+                                         GdkDevice     *device,
+                                         gint           button,
+                                         gint           root_x,
+                                         gint           root_y,
+                                         guint32        timestamp);
+  void         (* begin_move_drag)      (GdkWindow *window,
+                                         GdkDevice     *device,
+                                         gint       button,
+                                         gint       root_x,
+                                         gint       root_y,
+                                         guint32    timestamp);
+  void         (* enable_synchronized_configure) (GdkWindow *window);
+  void         (* configure_finished)   (GdkWindow *window);
+  void         (* set_opacity)          (GdkWindow *window,
+                                         gdouble    opacity);
+  void         (* set_composited)       (GdkWindow *window,
+                                         gboolean   composited);
+  void         (* destroy_notify)       (GdkWindow *window);
+  GdkDragProtocol (* get_drag_protocol) (GdkWindow *window,
+                                         GdkWindow **target);
+  void         (* register_dnd)         (GdkWindow *window);
+  GdkDragContext * (*drag_begin)        (GdkWindow *window,
+                                         GdkDevice *device,
+                                         GList     *targets,
+                                         gint       x_root,
+                                         gint       y_root);
+  void         (*process_updates_recurse) (GdkWindow      *window,
+                                           cairo_region_t *region);
+
+  void         (*sync_rendering)          (GdkWindow      *window);
+  gboolean     (*simulate_key)            (GdkWindow      *window,
+                                           gint            x,
+                                           gint            y,
+                                           guint           keyval,
+                                           GdkModifierType modifiers,
+                                           GdkEventType    event_type);
+  gboolean     (*simulate_button)         (GdkWindow      *window,
+                                           gint            x,
+                                           gint            y,
+                                           guint           button,
+                                           GdkModifierType modifiers,
+                                           GdkEventType    event_type);
+
+  gboolean     (*get_property)            (GdkWindow      *window,
+                                           GdkAtom         property,
+                                           GdkAtom         type,
+                                           gulong          offset,
+                                           gulong          length,
+                                           gint            pdelete,
+                                           GdkAtom        *actual_type,
+                                           gint           *actual_format,
+                                           gint           *actual_length,
+                                           guchar        **data);
+  void         (*change_property)         (GdkWindow      *window,
+                                           GdkAtom         property,
+                                           GdkAtom         type,
+                                           gint            format,
+                                           GdkPropMode     mode,
+                                           const guchar   *data,
+                                           gint            n_elements);
+  void         (*delete_property)         (GdkWindow      *window,
+                                           GdkAtom         property);
+
+  gint         (* get_scale_factor)       (GdkWindow      *window);
+  void         (* get_unscaled_size)      (GdkWindow      *window,
+                                           int            *unscaled_width,
+                                           int            *unscaled_height);
+
+  void         (* set_opaque_region)      (GdkWindow      *window,
+                                           cairo_region_t *region);
+  void         (* set_shadow_width)       (GdkWindow      *window,
+                                           gint            left,
+                                           gint            right,
+                                           gint            top,
+                                           gint            bottom);
+  gboolean     (* show_window_menu)       (GdkWindow      *window,
+                                           GdkEvent       *event);
+  GdkGLContext *(*create_gl_context)      (GdkWindow      *window,
+                                           gboolean        attached,
+                                           GdkGLContext   *share,
+                                           GError        **error);
+  gboolean     (* realize_gl_context)     (GdkWindow      *window,
+                                           GdkGLContext   *context,
+                                           GError        **error);
+
+  void         (*invalidate_for_new_frame)(GdkWindow      *window,
+                                           cairo_region_t *update_area);
+
+  GdkDrawingContext *(* create_draw_context)  (GdkWindow            *window,
+                                               const cairo_region_t *region);
+  void               (* destroy_draw_context) (GdkWindow            *window,
+                                               GdkDrawingContext    *context);
+
+  gboolean (* titlebar_gesture) (GdkWindow          *window,
+                                 GdkTitlebarGesture  gesture);
+};
+
+#endif /* _GDK_STRUCTS_H */

@@ -1437,7 +1437,7 @@ void
 broadway_server_destroy_window (BroadwayServer *server,
 				gint id)
 {
-  //printf("server destro window called \n");
+  printf("server destro window called \n");
   BroadwayWindow *window;
 
   if (server->mouse_in_toplevel_id == id)
@@ -1473,7 +1473,7 @@ gboolean
 broadway_server_window_show (BroadwayServer *server,
 			     gint id)
 {
-  //printf("New window show called\n");
+  printf("New window show called\n");
   BroadwayWindow *window;
   gboolean sent = FALSE;
 
@@ -1843,7 +1843,7 @@ broadway_server_new_window (BroadwayServer *server,
 			    int height,
 			    gboolean is_temp)
 {
-  //printf("New window requested\n");
+  printf("New window requested\n");
   BroadwayWindow *window;
 
   window = g_new0 (BroadwayWindow, 1);

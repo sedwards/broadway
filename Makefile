@@ -118,7 +118,7 @@ testsocket :
 	gcc -o tests/gtk/$@ tests/gtk/testsocket.c tests/gtk/testsocket_common.c $(CFLAGS_GTK)
 
 connection-proto :
-	gcc -o tests/$@ tests/connection-proto.c /usr/local/lib/libbroadway.a $(CFLAGS)
+	gcc -o tests/$@ tests/connection-proto.c $(LIBBROADWAY-WINE) $(CFLAGS)
 
 ###
 ### Clean target, other useful targets

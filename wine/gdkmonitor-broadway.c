@@ -24,14 +24,14 @@
 #include "gdkscreen-broadway.h"
 
 
-G_DEFINE_TYPE (GdkBroadwayMonitor, gdk_broadway_monitor, GDK_TYPE_MONITOR)
+G_DEFINE_TYPE (GdkBroadwayMonitor, wine_broadway_monitor, GDK_TYPE_MONITOR)
 
 static void
-gdk_broadway_monitor_init (GdkBroadwayMonitor *monitor)
+wine_broadway_monitor_init (GdkBroadwayMonitor *monitor)
 {
 }
 
 static void
-gdk_broadway_monitor_class_init (GdkBroadwayMonitorClass *class)
+wine_broadway_monitor_class_init (GdkBroadwayMonitorClass *class)
 {
 }

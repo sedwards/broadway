@@ -4,6 +4,8 @@
 
 #include <cairo.h>
 
+#include <gdk/gdk.h>
+
 struct _BroadwayServer {
   GObject parent_instance;
 
@@ -18,6 +20,8 @@ struct _BroadwayServer {
 };
 
 typedef struct _BroadwayServer BroadwayServer;
+
+#define wine_broadway gdk_broadway
 
 BroadwayServer * wine_broadway_server_new (const char *display, GError **error);
 guint32 wine_broadway_server_get_last_seen_time (BroadwayServer *server);
@@ -46,6 +50,11 @@ wine_broadway_server_create_surface (int width, int height);
 void wine_broadway_server_window_update (BroadwayServer *server, gint id,
                                     cairo_surface_t *surface);
 
+void wine_broadway_display_get_type(void);
+
+GdkDisplay *
+wine_broadway_display_open (const gchar *display_name);
+
 
 int main(void)
 {
@@ -67,7 +76,12 @@ int main(void)
 	printf("Some error: %s", error-> message);
         g_clear_error (&error);
     }
-    
+
+    wine_broadway_display_get_type();
+
+    wine_broadway_display_open(":0");
+    printf("wine_broadway_display_open\n");
+
     //printf("wine_broadway_server_new function did something: %s", error-> message);
     printf("wine_broadway_server_new function did something\n");
 

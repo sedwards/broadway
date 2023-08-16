@@ -25,25 +25,25 @@
 #define HAS_FOCUS(toplevel)                           \
   ((toplevel)->has_focus || (toplevel)->has_pointer_focus)
 
-static void    gdk_broadway_device_manager_finalize    (GObject *object);
-static void    gdk_broadway_device_manager_constructed (GObject *object);
+static void    wine_broadway_device_manager_finalize    (GObject *object);
+static void    wine_broadway_device_manager_constructed (GObject *object);
 
-static GList * gdk_broadway_device_manager_list_devices (GdkDeviceManager *device_manager,
+static GList * wine_broadway_device_manager_list_devices (GdkDeviceManager *device_manager,
 							 GdkDeviceType     type);
-static GdkDevice * gdk_broadway_device_manager_get_client_pointer (GdkDeviceManager *device_manager);
+static GdkDevice * wine_broadway_device_manager_get_client_pointer (GdkDeviceManager *device_manager);
 
-G_DEFINE_TYPE (GdkBroadwayDeviceManager, gdk_broadway_device_manager, GDK_TYPE_DEVICE_MANAGER)
+G_DEFINE_TYPE (GdkBroadwayDeviceManager, wine_broadway_device_manager, GDK_TYPE_DEVICE_MANAGER)
 
 static void
-gdk_broadway_device_manager_class_init (GdkBroadwayDeviceManagerClass *klass)
+wine_broadway_device_manager_class_init (GdkBroadwayDeviceManagerClass *klass)
 {
   GdkDeviceManagerClass *device_manager_class = GDK_DEVICE_MANAGER_CLASS (klass);
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-  object_class->finalize = gdk_broadway_device_manager_finalize;
-  object_class->constructed = gdk_broadway_device_manager_constructed;
-  device_manager_class->list_devices = gdk_broadway_device_manager_list_devices;
-  device_manager_class->get_client_pointer = gdk_broadway_device_manager_get_client_pointer;
+  object_class->finalize = wine_broadway_device_manager_finalize;
+  object_class->constructed = wine_broadway_device_manager_constructed;
+  device_manager_class->list_devices = wine_broadway_device_manager_list_devices;
+  device_manager_class->get_client_pointer = wine_broadway_device_manager_get_client_pointer;
 }
 
 static GdkDevice *
@@ -92,12 +92,12 @@ create_touchscreen (GdkDeviceManager *device_manager,
 }
 
 static void
-gdk_broadway_device_manager_init (GdkBroadwayDeviceManager *device_manager)
+wine_broadway_device_manager_init (GdkBroadwayDeviceManager *device_manager)
 {
 }
 
 static void
-gdk_broadway_device_manager_finalize (GObject *object)
+wine_broadway_device_manager_finalize (GObject *object)
 {
   GdkBroadwayDeviceManager *device_manager;
 
@@ -107,11 +107,11 @@ gdk_broadway_device_manager_finalize (GObject *object)
   g_object_unref (device_manager->core_keyboard);
   g_object_unref (device_manager->touchscreen);
 
-  G_OBJECT_CLASS (gdk_broadway_device_manager_parent_class)->finalize (object);
+  G_OBJECT_CLASS (wine_broadway_device_manager_parent_class)->finalize (object);
 }
 
 static void
-gdk_broadway_device_manager_constructed (GObject *object)
+wine_broadway_device_manager_constructed (GObject *object)
 {
   GdkBroadwayDeviceManager *device_manager;
   GdkDisplay *display;
@@ -137,7 +137,7 @@ gdk_broadway_device_manager_constructed (GObject *object)
 
 
 static GList *
-gdk_broadway_device_manager_list_devices (GdkDeviceManager *device_manager,
+wine_broadway_device_manager_list_devices (GdkDeviceManager *device_manager,
 					  GdkDeviceType     type)
 {
   GdkBroadwayDeviceManager *broadway_device_manager = (GdkBroadwayDeviceManager *) device_manager;
@@ -158,7 +158,7 @@ gdk_broadway_device_manager_list_devices (GdkDeviceManager *device_manager,
 }
 
 static GdkDevice *
-gdk_broadway_device_manager_get_client_pointer (GdkDeviceManager *device_manager)
+wine_broadway_device_manager_get_client_pointer (GdkDeviceManager *device_manager)
 {
   GdkBroadwayDeviceManager *broadway_device_manager = (GdkBroadwayDeviceManager *) device_manager;
 

@@ -37,7 +37,7 @@
 
 #include <string.h>
 
-#define GDK_TYPE_BROADWAY_DRAG_CONTEXT              (gdk_broadway_drag_context_get_type ())
+#define GDK_TYPE_BROADWAY_DRAG_CONTEXT              (wine_broadway_drag_context_get_type ())
 #define GDK_BROADWAY_DRAG_CONTEXT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GDK_TYPE_BROADWAY_DRAG_CONTEXT, GdkBroadwayDragContext))
 #define GDK_BROADWAY_DRAG_CONTEXT_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), GDK_TYPE_BROADWAY_DRAG_CONTEXT, GdkBroadwayDragContextClass))
 #define GDK_IS_BROADWAY_DRAG_CONTEXT(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), GDK_TYPE_BROADWAY_DRAG_CONTEXT))
@@ -51,7 +51,7 @@ typedef GdkDragContext GdkBroadwayDragContext;
 #endif
 typedef struct _GdkBroadwayDragContextClass GdkBroadwayDragContextClass;
 
-GType     gdk_broadway_drag_context_get_type (void);
+GType     wine_broadway_drag_context_get_type (void);
 
 struct _GdkBroadwayDragContext {
   GdkDragContext context;
@@ -62,26 +62,26 @@ struct _GdkBroadwayDragContextClass
   GdkDragContextClass parent_class;
 };
 
-static void gdk_broadway_drag_context_finalize (GObject *object);
+static void wine_broadway_drag_context_finalize (GObject *object);
 
 static GList *contexts;
 
-G_DEFINE_TYPE (GdkBroadwayDragContext, gdk_broadway_drag_context, GDK_TYPE_DRAG_CONTEXT)
+G_DEFINE_TYPE (GdkBroadwayDragContext, wine_broadway_drag_context, GDK_TYPE_DRAG_CONTEXT)
 
 static void
-gdk_broadway_drag_context_init (GdkBroadwayDragContext *dragcontext)
+wine_broadway_drag_context_init (GdkBroadwayDragContext *dragcontext)
 {
   contexts = g_list_prepend (contexts, dragcontext);
 }
 
 static void
-gdk_broadway_drag_context_finalize (GObject *object)
+wine_broadway_drag_context_finalize (GObject *object)
 {
   GdkDragContext *context = GDK_DRAG_CONTEXT (object);
 
   contexts = g_list_remove (contexts, context);
 
-  G_OBJECT_CLASS (gdk_broadway_drag_context_parent_class)->finalize (object);
+  G_OBJECT_CLASS (wine_broadway_drag_context_parent_class)->finalize (object);
 }
 
 /* Drag Contexts */
@@ -113,7 +113,7 @@ wine_broadway_window_get_drag_protocol (GdkWindow *window,
 }
 
 static GdkWindow *
-gdk_broadway_drag_context_find_window (GdkDragContext  *context,
+wine_broadway_drag_context_find_window (GdkDragContext  *context,
 				       GdkWindow       *drag_window,
 				       GdkScreen       *screen,
 				       gint             x_root,
@@ -125,7 +125,7 @@ gdk_broadway_drag_context_find_window (GdkDragContext  *context,
 }
 
 static gboolean
-gdk_broadway_drag_context_drag_motion (GdkDragContext *context,
+wine_broadway_drag_context_drag_motion (GdkDragContext *context,
 				       GdkWindow      *dest_window,
 				       GdkDragProtocol protocol,
 				       gint            x_root,
@@ -141,14 +141,14 @@ gdk_broadway_drag_context_drag_motion (GdkDragContext *context,
 }
 
 static void
-gdk_broadway_drag_context_drag_drop (GdkDragContext *context,
+wine_broadway_drag_context_drag_drop (GdkDragContext *context,
 				     guint32         time)
 {
   g_return_if_fail (context != NULL);
 }
 
 static void
-gdk_broadway_drag_context_drag_abort (GdkDragContext *context,
+wine_broadway_drag_context_drag_abort (GdkDragContext *context,
 				      guint32         time)
 {
   g_return_if_fail (context != NULL);
@@ -157,7 +157,7 @@ gdk_broadway_drag_context_drag_abort (GdkDragContext *context,
 /* Destination side */
 
 static void
-gdk_broadway_drag_context_drag_status (GdkDragContext   *context,
+wine_broadway_drag_context_drag_status (GdkDragContext   *context,
 				       GdkDragAction     action,
 				       guint32           time)
 {
@@ -165,7 +165,7 @@ gdk_broadway_drag_context_drag_status (GdkDragContext   *context,
 }
 
 static void
-gdk_broadway_drag_context_drop_reply (GdkDragContext   *context,
+wine_broadway_drag_context_drop_reply (GdkDragContext   *context,
 				      gboolean          ok,
 				      guint32           time)
 {
@@ -173,7 +173,7 @@ gdk_broadway_drag_context_drop_reply (GdkDragContext   *context,
 }
 
 static void
-gdk_broadway_drag_context_drop_finish (GdkDragContext   *context,
+wine_broadway_drag_context_drop_finish (GdkDragContext   *context,
 				       gboolean          success,
 				       guint32           time)
 {
@@ -186,7 +186,7 @@ wine_broadway_window_register_dnd (GdkWindow      *window)
 }
 
 static GdkAtom
-gdk_broadway_drag_context_get_selection (GdkDragContext *context)
+wine_broadway_drag_context_get_selection (GdkDragContext *context)
 {
   g_return_val_if_fail (context != NULL, GDK_NONE);
 
@@ -194,7 +194,7 @@ gdk_broadway_drag_context_get_selection (GdkDragContext *context)
 }
 
 static gboolean
-gdk_broadway_drag_context_drop_status (GdkDragContext *context)
+wine_broadway_drag_context_drop_status (GdkDragContext *context)
 {
   g_return_val_if_fail (context != NULL, FALSE);
 
@@ -207,20 +207,20 @@ wine_broadway_display_init_dnd (GdkDisplay *display)
 }
 
 static void
-gdk_broadway_drag_context_class_init (GdkBroadwayDragContextClass *klass)
+wine_broadway_drag_context_class_init (GdkBroadwayDragContextClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
   GdkDragContextClass *context_class = GDK_DRAG_CONTEXT_CLASS (klass);
 
-  object_class->finalize = gdk_broadway_drag_context_finalize;
+  object_class->finalize = wine_broadway_drag_context_finalize;
 
-  context_class->find_window = gdk_broadway_drag_context_find_window;
-  context_class->drag_status = gdk_broadway_drag_context_drag_status;
-  context_class->drag_motion = gdk_broadway_drag_context_drag_motion;
-  context_class->drag_abort = gdk_broadway_drag_context_drag_abort;
-  context_class->drag_drop = gdk_broadway_drag_context_drag_drop;
-  context_class->drop_reply = gdk_broadway_drag_context_drop_reply;
-  context_class->drop_finish = gdk_broadway_drag_context_drop_finish;
-  context_class->drop_status = gdk_broadway_drag_context_drop_status;
-  context_class->get_selection = gdk_broadway_drag_context_get_selection;
+  context_class->find_window = wine_broadway_drag_context_find_window;
+  context_class->drag_status = wine_broadway_drag_context_drag_status;
+  context_class->drag_motion = wine_broadway_drag_context_drag_motion;
+  context_class->drag_abort = wine_broadway_drag_context_drag_abort;
+  context_class->drag_drop = wine_broadway_drag_context_drag_drop;
+  context_class->drop_reply = wine_broadway_drag_context_drop_reply;
+  context_class->drop_finish = wine_broadway_drag_context_drop_finish;
+  context_class->drop_status = wine_broadway_drag_context_drop_status;
+  context_class->get_selection = wine_broadway_drag_context_get_selection;
 }

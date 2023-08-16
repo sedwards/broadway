@@ -41,17 +41,17 @@
 #endif
 #include <sys/types.h>
 
-static void   gdk_broadway_display_dispose            (GObject            *object);
-static void   gdk_broadway_display_finalize           (GObject            *object);
+static void   wine_broadway_display_dispose            (GObject            *object);
+static void   wine_broadway_display_finalize           (GObject            *object);
 
 #if 0
 #define DEBUG_WEBSOCKETS 1
 #endif
 
-G_DEFINE_TYPE (GdkBroadwayDisplay, gdk_broadway_display, GDK_TYPE_DISPLAY)
+G_DEFINE_TYPE (GdkBroadwayDisplay, wine_broadway_display, GDK_TYPE_DISPLAY)
 
 static void
-gdk_broadway_display_init (GdkBroadwayDisplay *display)
+wine_broadway_display_init (GdkBroadwayDisplay *display)
 {
   display->id_ht = g_hash_table_new (NULL, NULL);
 
@@ -121,7 +121,7 @@ wine_broadway_display_open (const gchar *display_name)
 }
 
 static const gchar *
-gdk_broadway_display_get_name (GdkDisplay *display)
+wine_broadway_display_get_name (GdkDisplay *display)
 {
   g_return_val_if_fail (GDK_IS_DISPLAY (display), NULL);
 
@@ -129,7 +129,7 @@ gdk_broadway_display_get_name (GdkDisplay *display)
 }
 
 static GdkScreen *
-gdk_broadway_display_get_default_screen (GdkDisplay *display)
+wine_broadway_display_get_default_screen (GdkDisplay *display)
 {
   g_return_val_if_fail (GDK_IS_DISPLAY (display), NULL);
 
@@ -137,13 +137,13 @@ gdk_broadway_display_get_default_screen (GdkDisplay *display)
 }
 
 static void
-gdk_broadway_display_beep (GdkDisplay *display)
+wine_broadway_display_beep (GdkDisplay *display)
 {
   g_return_if_fail (GDK_IS_DISPLAY (display));
 }
 
 static void
-gdk_broadway_display_sync (GdkDisplay *display)
+wine_broadway_display_sync (GdkDisplay *display)
 {
   GdkBroadwayDisplay *broadway_display = GDK_BROADWAY_DISPLAY (display);
 
@@ -153,7 +153,7 @@ gdk_broadway_display_sync (GdkDisplay *display)
 }
 
 static void
-gdk_broadway_display_flush (GdkDisplay *display)
+wine_broadway_display_flush (GdkDisplay *display)
 {
   GdkBroadwayDisplay *broadway_display = GDK_BROADWAY_DISPLAY (display);
 
@@ -163,13 +163,13 @@ gdk_broadway_display_flush (GdkDisplay *display)
 }
 
 static gboolean
-gdk_broadway_display_has_pending (GdkDisplay *display)
+wine_broadway_display_has_pending (GdkDisplay *display)
 {
   return FALSE;
 }
 
 static GdkWindow *
-gdk_broadway_display_get_default_group (GdkDisplay *display)
+wine_broadway_display_get_default_group (GdkDisplay *display)
 {
   g_return_val_if_fail (GDK_IS_DISPLAY (display), NULL);
 
@@ -177,7 +177,7 @@ gdk_broadway_display_get_default_group (GdkDisplay *display)
 }
 
 static void
-gdk_broadway_display_dispose (GObject *object)
+wine_broadway_display_dispose (GObject *object)
 {
   GdkBroadwayDisplay *broadway_display = GDK_BROADWAY_DISPLAY (object);
 
@@ -190,11 +190,11 @@ gdk_broadway_display_dispose (GObject *object)
       broadway_display->event_source = NULL;
     }
 
-  G_OBJECT_CLASS (gdk_broadway_display_parent_class)->dispose (object);
+  G_OBJECT_CLASS (wine_broadway_display_parent_class)->dispose (object);
 }
 
 static void
-gdk_broadway_display_finalize (GObject *object)
+wine_broadway_display_finalize (GObject *object)
 {
   GdkBroadwayDisplay *broadway_display = GDK_BROADWAY_DISPLAY (object);
 
@@ -210,23 +210,23 @@ gdk_broadway_display_finalize (GObject *object)
 
   g_object_unref (broadway_display->monitor);
 
-  G_OBJECT_CLASS (gdk_broadway_display_parent_class)->finalize (object);
+  G_OBJECT_CLASS (wine_broadway_display_parent_class)->finalize (object);
 }
 
 static void
-gdk_broadway_display_notify_startup_complete (GdkDisplay  *display,
+wine_broadway_display_notify_startup_complete (GdkDisplay  *display,
 					      const gchar *startup_id)
 {
 }
 
 static gboolean
-gdk_broadway_display_supports_selection_notification (GdkDisplay *display)
+wine_broadway_display_supports_selection_notification (GdkDisplay *display)
 {
   return FALSE;
 }
 
 static gboolean
-gdk_broadway_display_request_selection_notification (GdkDisplay *display,
+wine_broadway_display_request_selection_notification (GdkDisplay *display,
 						     GdkAtom     selection)
 
 {
@@ -234,13 +234,13 @@ gdk_broadway_display_request_selection_notification (GdkDisplay *display,
 }
 
 static gboolean
-gdk_broadway_display_supports_clipboard_persistence (GdkDisplay *display)
+wine_broadway_display_supports_clipboard_persistence (GdkDisplay *display)
 {
   return FALSE;
 }
 
 static void
-gdk_broadway_display_store_clipboard (GdkDisplay    *display,
+wine_broadway_display_store_clipboard (GdkDisplay    *display,
 				      GdkWindow     *clipboard_window,
 				      guint32        time_,
 				      const GdkAtom *targets,
@@ -249,25 +249,25 @@ gdk_broadway_display_store_clipboard (GdkDisplay    *display,
 }
 
 static gboolean
-gdk_broadway_display_supports_shapes (GdkDisplay *display)
+wine_broadway_display_supports_shapes (GdkDisplay *display)
 {
   return FALSE;
 }
 
 static gboolean
-gdk_broadway_display_supports_input_shapes (GdkDisplay *display)
+wine_broadway_display_supports_input_shapes (GdkDisplay *display)
 {
   return FALSE;
 }
 
 static gboolean
-gdk_broadway_display_supports_composite (GdkDisplay *display)
+wine_broadway_display_supports_composite (GdkDisplay *display)
 {
   return FALSE;
 }
 
 static gulong
-gdk_broadway_display_get_next_serial (GdkDisplay *display)
+wine_broadway_display_get_next_serial (GdkDisplay *display)
 {
   GdkBroadwayDisplay *broadway_display;
   broadway_display = GDK_BROADWAY_DISPLAY (display);
@@ -276,7 +276,7 @@ gdk_broadway_display_get_next_serial (GdkDisplay *display)
 }
 
 void
-gdk_broadway_display_show_keyboard (GdkBroadwayDisplay *display)
+wine_broadway_display_show_keyboard (GdkBroadwayDisplay *display)
 {
   g_return_if_fail (GDK_IS_BROADWAY_DISPLAY (display));
 
@@ -284,7 +284,7 @@ gdk_broadway_display_show_keyboard (GdkBroadwayDisplay *display)
 }
 
 void
-gdk_broadway_display_hide_keyboard (GdkBroadwayDisplay *display)
+wine_broadway_display_hide_keyboard (GdkBroadwayDisplay *display)
 {
   g_return_if_fail (GDK_IS_BROADWAY_DISPLAY (display));
 
@@ -292,13 +292,13 @@ gdk_broadway_display_hide_keyboard (GdkBroadwayDisplay *display)
 }
 
 static int
-gdk_broadway_display_get_n_monitors (GdkDisplay *display)
+wine_broadway_display_get_n_monitors (GdkDisplay *display)
 {
   return 1;
 }
 
 static GdkMonitor *
-gdk_broadway_display_get_monitor (GdkDisplay *display,
+wine_broadway_display_get_monitor (GdkDisplay *display,
                                   int         monitor_num)
 {
   GdkBroadwayDisplay *broadway_display = GDK_BROADWAY_DISPLAY (display);
@@ -310,7 +310,7 @@ gdk_broadway_display_get_monitor (GdkDisplay *display,
 }
 
 static GdkMonitor *
-gdk_broadway_display_get_primary_monitor (GdkDisplay *display)
+wine_broadway_display_get_primary_monitor (GdkDisplay *display)
 {
   GdkBroadwayDisplay *broadway_display = GDK_BROADWAY_DISPLAY (display);
 
@@ -318,31 +318,31 @@ gdk_broadway_display_get_primary_monitor (GdkDisplay *display)
 }
 
 static void
-gdk_broadway_display_class_init (GdkBroadwayDisplayClass * class)
+wine_broadway_display_class_init (GdkBroadwayDisplayClass * class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
   GdkDisplayClass *display_class = GDK_DISPLAY_CLASS (class);
 
-  object_class->dispose = gdk_broadway_display_dispose;
-  object_class->finalize = gdk_broadway_display_finalize;
+  object_class->dispose = wine_broadway_display_dispose;
+  object_class->finalize = wine_broadway_display_finalize;
 
   display_class->window_type = GDK_TYPE_BROADWAY_WINDOW;
 
-  display_class->get_name = gdk_broadway_display_get_name;
-  display_class->get_default_screen = gdk_broadway_display_get_default_screen;
-  display_class->beep = gdk_broadway_display_beep;
-  display_class->sync = gdk_broadway_display_sync;
-  display_class->flush = gdk_broadway_display_flush;
-  display_class->has_pending = gdk_broadway_display_has_pending;
+  display_class->get_name = wine_broadway_display_get_name;
+  display_class->get_default_screen = wine_broadway_display_get_default_screen;
+  display_class->beep = wine_broadway_display_beep;
+  display_class->sync = wine_broadway_display_sync;
+  display_class->flush = wine_broadway_display_flush;
+  display_class->has_pending = wine_broadway_display_has_pending;
   display_class->queue_events = wine_broadway_display_queue_events;
-  display_class->get_default_group = gdk_broadway_display_get_default_group;
-  display_class->supports_selection_notification = gdk_broadway_display_supports_selection_notification;
-  display_class->request_selection_notification = gdk_broadway_display_request_selection_notification;
-  display_class->supports_clipboard_persistence = gdk_broadway_display_supports_clipboard_persistence;
-  display_class->store_clipboard = gdk_broadway_display_store_clipboard;
-  display_class->supports_shapes = gdk_broadway_display_supports_shapes;
-  display_class->supports_input_shapes = gdk_broadway_display_supports_input_shapes;
-  display_class->supports_composite = gdk_broadway_display_supports_composite;
+  display_class->get_default_group = wine_broadway_display_get_default_group;
+  display_class->supports_selection_notification = wine_broadway_display_supports_selection_notification;
+  display_class->request_selection_notification = wine_broadway_display_request_selection_notification;
+  display_class->supports_clipboard_persistence = wine_broadway_display_supports_clipboard_persistence;
+  display_class->store_clipboard = wine_broadway_display_store_clipboard;
+  display_class->supports_shapes = wine_broadway_display_supports_shapes;
+  display_class->supports_input_shapes = wine_broadway_display_supports_input_shapes;
+  display_class->supports_composite = wine_broadway_display_supports_composite;
   display_class->get_cursor_for_type = wine_broadway_display_get_cursor_for_type;
   display_class->get_cursor_for_name = wine_broadway_display_get_cursor_for_name;
   display_class->get_cursor_for_surface = wine_broadway_display_get_cursor_for_surface;
@@ -353,8 +353,8 @@ gdk_broadway_display_class_init (GdkBroadwayDisplayClass * class)
 
   display_class->before_process_all_updates = wine_broadway_display_before_process_all_updates;
   display_class->after_process_all_updates = wine_broadway_display_after_process_all_updates;
-  display_class->get_next_serial = gdk_broadway_display_get_next_serial;
-  display_class->notify_startup_complete = gdk_broadway_display_notify_startup_complete;
+  display_class->get_next_serial = wine_broadway_display_get_next_serial;
+  display_class->notify_startup_complete = wine_broadway_display_notify_startup_complete;
   display_class->create_window_impl = wine_broadway_display_create_window_impl;
   display_class->get_keymap = wine_broadway_display_get_keymap;
   display_class->get_selection_owner = wine_broadway_display_get_selection_owner;
@@ -365,8 +365,8 @@ gdk_broadway_display_class_init (GdkBroadwayDisplayClass * class)
   display_class->text_property_to_utf8_list = wine_broadway_display_text_property_to_utf8_list;
   display_class->utf8_to_string_target = wine_broadway_display_utf8_to_string_target;
 
-  display_class->get_n_monitors = gdk_broadway_display_get_n_monitors;
-  display_class->get_monitor = gdk_broadway_display_get_monitor;
-  display_class->get_primary_monitor = gdk_broadway_display_get_primary_monitor;
+  display_class->get_n_monitors = wine_broadway_display_get_n_monitors;
+  display_class->get_monitor = wine_broadway_display_get_monitor;
+  display_class->get_primary_monitor = wine_broadway_display_get_primary_monitor;
 }
 

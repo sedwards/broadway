@@ -33,7 +33,7 @@ typedef struct _GdkBroadwayDisplay GdkBroadwayDisplay;
 //#endif
 typedef struct _GdkBroadwayDisplayClass GdkBroadwayDisplayClass;
 
-#define GDK_TYPE_BROADWAY_DISPLAY              (gdk_broadway_display_get_type())
+#define GDK_TYPE_BROADWAY_DISPLAY              (wine_broadway_display_get_type())
 #define GDK_BROADWAY_DISPLAY(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GDK_TYPE_BROADWAY_DISPLAY, GdkBroadwayDisplay))
 #define GDK_BROADWAY_DISPLAY_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), GDK_TYPE_BROADWAY_DISPLAY, GdkBroadwayDisplayClass))
 #define GDK_IS_BROADWAY_DISPLAY(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), GDK_TYPE_BROADWAY_DISPLAY))
@@ -41,12 +41,12 @@ typedef struct _GdkBroadwayDisplayClass GdkBroadwayDisplayClass;
 #define GDK_BROADWAY_DISPLAY_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), GDK_TYPE_BROADWAY_DISPLAY, GdkBroadwayDisplayClass))
 
 GDK_AVAILABLE_IN_ALL
-GType                   gdk_broadway_display_get_type            (void);
+GType                   wine_broadway_display_get_type            (void);
 
 GDK_AVAILABLE_IN_3_12
-void                    gdk_broadway_display_show_keyboard       (GdkBroadwayDisplay *display);
+void                    wine_broadway_display_show_keyboard       (GdkBroadwayDisplay *display);
 GDK_AVAILABLE_IN_3_12
-void                    gdk_broadway_display_hide_keyboard       (GdkBroadwayDisplay *display);
+void                    wine_broadway_display_hide_keyboard       (GdkBroadwayDisplay *display);
 
 G_END_DECLS
 

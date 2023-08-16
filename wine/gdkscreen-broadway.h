@@ -32,7 +32,7 @@ G_BEGIN_DECLS
 typedef struct _GdkBroadwayScreen GdkBroadwayScreen;
 typedef struct _GdkBroadwayScreenClass GdkBroadwayScreenClass;
 
-#define GDK_TYPE_BROADWAY_SCREEN              (gdk_broadway_screen_get_type ())
+#define GDK_TYPE_BROADWAY_SCREEN              (wine_broadway_screen_get_type ())
 #define GDK_BROADWAY_SCREEN(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GDK_TYPE_BROADWAY_SCREEN, GdkBroadwayScreen))
 #define GDK_BROADWAY_SCREEN_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), GDK_TYPE_BROADWAY_SCREEN, GdkBroadwayScreenClass))
 #define GDK_IS_BROADWAY_SCREEN(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), GDK_TYPE_BROADWAY_SCREEN))
@@ -69,7 +69,7 @@ struct _GdkBroadwayScreenClass
   void (* window_manager_changed) (GdkBroadwayScreen *screen);
 };
 
-GType       gdk_broadway_screen_get_type (void);
+GType       wine_broadway_screen_get_type (void);
 GdkScreen * wine_broadway_screen_new      (GdkDisplay *display,
 					   gint	  screen_number);
 void wine_broadway_screen_setup           (GdkScreen *screen);

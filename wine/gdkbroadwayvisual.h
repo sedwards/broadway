@@ -23,7 +23,7 @@
 
 G_BEGIN_DECLS
 
-#define GDK_TYPE_BROADWAY_VISUAL              (gdk_broadway_visual_get_type ())
+#define GDK_TYPE_BROADWAY_VISUAL              (wine_broadway_visual_get_type ())
 #define GDK_BROADWAY_VISUAL(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GDK_TYPE_BROADWAY_VISUAL, GdkBroadwayVisual))
 #define GDK_BROADWAY_VISUAL_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), GDK_TYPE_BROADWAY_VISUAL, GdkBroadwayVisualClass))
 #define GDK_IS_BROADWAY_VISUAL(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), GDK_TYPE_BROADWAY_VISUAL))
@@ -39,7 +39,7 @@ typedef struct _GdkBroadwayVisualClass GdkBroadwayVisualClass;
 
 
 GDK_AVAILABLE_IN_ALL
-GType gdk_broadway_visual_get_type (void);
+GType wine_broadway_visual_get_type (void);
 
 G_END_DECLS
 

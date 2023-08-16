@@ -27,24 +27,24 @@
 #include "gdkwindow.h"
 #include "gdkprivate-broadway.h"
 
-static gboolean gdk_broadway_device_get_history (GdkDevice      *device,
+static gboolean wine_broadway_device_get_history (GdkDevice      *device,
 						 GdkWindow      *window,
 						 guint32         start,
 						 guint32         stop,
 						 GdkTimeCoord ***events,
 						 gint           *n_events);
-static void gdk_broadway_device_get_state (GdkDevice       *device,
+static void wine_broadway_device_get_state (GdkDevice       *device,
 					   GdkWindow       *window,
 					   gdouble         *axes,
 					   GdkModifierType *mask);
-static void gdk_broadway_device_set_window_cursor (GdkDevice *device,
+static void wine_broadway_device_set_window_cursor (GdkDevice *device,
 						   GdkWindow *window,
 						   GdkCursor *cursor);
-static void gdk_broadway_device_warp (GdkDevice *device,
+static void wine_broadway_device_warp (GdkDevice *device,
 				      GdkScreen *screen,
 				      gdouble    x,
 				      gdouble    y);
-static void gdk_broadway_device_query_state (GdkDevice        *device,
+static void wine_broadway_device_query_state (GdkDevice        *device,
                                              GdkWindow        *window,
                                              GdkWindow       **root_window,
                                              GdkWindow       **child_window,
@@ -53,45 +53,45 @@ static void gdk_broadway_device_query_state (GdkDevice        *device,
                                              gdouble          *win_x,
                                              gdouble          *win_y,
                                              GdkModifierType  *mask);
-static GdkGrabStatus gdk_broadway_device_grab   (GdkDevice     *device,
+static GdkGrabStatus wine_broadway_device_grab   (GdkDevice     *device,
 						 GdkWindow     *window,
 						 gboolean       owner_events,
 						 GdkEventMask   event_mask,
 						 GdkWindow     *confine_to,
 						 GdkCursor     *cursor,
 						 guint32        time_);
-static void          gdk_broadway_device_ungrab (GdkDevice     *device,
+static void          wine_broadway_device_ungrab (GdkDevice     *device,
 						 guint32        time_);
-static GdkWindow * gdk_broadway_device_window_at_position (GdkDevice       *device,
+static GdkWindow * wine_broadway_device_window_at_position (GdkDevice       *device,
 							   gdouble         *win_x,
 							   gdouble         *win_y,
 							   GdkModifierType *mask,
 							   gboolean         get_toplevel);
-static void      gdk_broadway_device_select_window_events (GdkDevice       *device,
+static void      wine_broadway_device_select_window_events (GdkDevice       *device,
 							   GdkWindow       *window,
 							   GdkEventMask     event_mask);
 
 
-G_DEFINE_TYPE (GdkBroadwayDevice, gdk_broadway_device, GDK_TYPE_DEVICE)
+G_DEFINE_TYPE (GdkBroadwayDevice, wine_broadway_device, GDK_TYPE_DEVICE)
 
 static void
-gdk_broadway_device_class_init (GdkBroadwayDeviceClass *klass)
+wine_broadway_device_class_init (GdkBroadwayDeviceClass *klass)
 {
   GdkDeviceClass *device_class = GDK_DEVICE_CLASS (klass);
 
-  device_class->get_history = gdk_broadway_device_get_history;
-  device_class->get_state = gdk_broadway_device_get_state;
-  device_class->set_window_cursor = gdk_broadway_device_set_window_cursor;
-  device_class->warp = gdk_broadway_device_warp;
-  device_class->query_state = gdk_broadway_device_query_state;
-  device_class->grab = gdk_broadway_device_grab;
-  device_class->ungrab = gdk_broadway_device_ungrab;
-  device_class->window_at_position = gdk_broadway_device_window_at_position;
-  device_class->select_window_events = gdk_broadway_device_select_window_events;
+  device_class->get_history = wine_broadway_device_get_history;
+  device_class->get_state = wine_broadway_device_get_state;
+  device_class->set_window_cursor = wine_broadway_device_set_window_cursor;
+  device_class->warp = wine_broadway_device_warp;
+  device_class->query_state = wine_broadway_device_query_state;
+  device_class->grab = wine_broadway_device_grab;
+  device_class->ungrab = wine_broadway_device_ungrab;
+  device_class->window_at_position = wine_broadway_device_window_at_position;
+  device_class->select_window_events = wine_broadway_device_select_window_events;
 }
 
 static void
-gdk_broadway_device_init (GdkBroadwayDevice *device_core)
+wine_broadway_device_init (GdkBroadwayDevice *device_core)
 {
   GdkDevice *device;
 
@@ -102,7 +102,7 @@ gdk_broadway_device_init (GdkBroadwayDevice *device_core)
 }
 
 static gboolean
-gdk_broadway_device_get_history (GdkDevice      *device,
+wine_broadway_device_get_history (GdkDevice      *device,
 				 GdkWindow      *window,
 				 guint32         start,
 				 guint32         stop,
@@ -113,7 +113,7 @@ gdk_broadway_device_get_history (GdkDevice      *device,
 }
 
 static void
-gdk_broadway_device_get_state (GdkDevice       *device,
+wine_broadway_device_get_state (GdkDevice       *device,
 			       GdkWindow       *window,
 			       gdouble         *axes,
 			       GdkModifierType *mask)
@@ -130,14 +130,14 @@ gdk_broadway_device_get_state (GdkDevice       *device,
 }
 
 static void
-gdk_broadway_device_set_window_cursor (GdkDevice *device,
+wine_broadway_device_set_window_cursor (GdkDevice *device,
 				       GdkWindow *window,
 				       GdkCursor *cursor)
 {
 }
 
 static void
-gdk_broadway_device_warp (GdkDevice *device,
+wine_broadway_device_warp (GdkDevice *device,
 			  GdkScreen *screen,
 			  gdouble    x,
 			  gdouble    y)
@@ -145,7 +145,7 @@ gdk_broadway_device_warp (GdkDevice *device,
 }
 
 static void
-gdk_broadway_device_query_state (GdkDevice        *device,
+wine_broadway_device_query_state (GdkDevice        *device,
 				 GdkWindow        *window,
 				 GdkWindow       **root_window,
 				 GdkWindow       **child_window,
@@ -273,7 +273,7 @@ wine_broadway_window_grab_check_destroy (GdkWindow *window)
 
 
 static GdkGrabStatus
-gdk_broadway_device_grab (GdkDevice    *device,
+wine_broadway_device_grab (GdkDevice    *device,
 			  GdkWindow    *window,
 			  gboolean      owner_events,
 			  GdkEventMask  event_mask,
@@ -309,7 +309,7 @@ gdk_broadway_device_grab (GdkDevice    *device,
   )
 
 static void
-gdk_broadway_device_ungrab (GdkDevice *device,
+wine_broadway_device_ungrab (GdkDevice *device,
 			    guint32    time_)
 {
   GdkDisplay *display;
@@ -342,7 +342,7 @@ gdk_broadway_device_ungrab (GdkDevice *device,
 }
 
 static GdkWindow *
-gdk_broadway_device_window_at_position (GdkDevice       *device,
+wine_broadway_device_window_at_position (GdkDevice       *device,
 					gdouble         *win_x,
 					gdouble         *win_y,
 					GdkModifierType *mask,
@@ -355,13 +355,13 @@ gdk_broadway_device_window_at_position (GdkDevice       *device,
   screen = gdk_display_get_default_screen (gdk_device_get_display (device));
   root_window = gdk_screen_get_root_window (screen);
 
-  gdk_broadway_device_query_state (device, root_window, NULL, &window, NULL, NULL, win_x, win_y, mask);
+  wine_broadway_device_query_state (device, root_window, NULL, &window, NULL, NULL, win_x, win_y, mask);
 
   return window;
 }
 
 static void
-gdk_broadway_device_select_window_events (GdkDevice    *device,
+wine_broadway_device_select_window_events (GdkDevice    *device,
 					  GdkWindow    *window,
 					  GdkEventMask  event_mask)
 {

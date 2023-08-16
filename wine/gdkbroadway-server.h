@@ -8,7 +8,7 @@
 typedef struct _GdkBroadwayServer GdkBroadwayServer;
 typedef struct _GdkBroadwayServerClass GdkBroadwayServerClass;
 
-#define GDK_TYPE_BROADWAY_SERVER              (gdk_broadway_server_get_type())
+#define GDK_TYPE_BROADWAY_SERVER              (wine_broadway_server_get_type())
 #define GDK_BROADWAY_SERVER(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GDK_TYPE_BROADWAY_SERVER, GdkBroadwayServer))
 #define GDK_BROADWAY_SERVER_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), GDK_TYPE_BROADWAY_SERVER, GdkBroadwayServerClass))
 #define GDK_IS_BROADWAY_SERVER(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), GDK_TYPE_BROADWAY_SERVER))

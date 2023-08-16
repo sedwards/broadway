@@ -51,31 +51,31 @@ struct _GdkBroadwayCursorClass
 
 /*** GdkBroadwayCursor ***/
 
-G_DEFINE_TYPE (GdkBroadwayCursor, gdk_broadway_cursor, GDK_TYPE_CURSOR)
+G_DEFINE_TYPE (GdkBroadwayCursor, wine_broadway_cursor, GDK_TYPE_CURSOR)
 
-static cairo_surface_t * gdk_broadway_cursor_get_surface (GdkCursor *cursor,
+static cairo_surface_t * wine_broadway_cursor_get_surface (GdkCursor *cursor,
 							  gdouble   *x_hot,
 							  gdouble   *y_hot);
 
 static void
-gdk_broadway_cursor_finalize (GObject *object)
+wine_broadway_cursor_finalize (GObject *object)
 {
-  G_OBJECT_CLASS (gdk_broadway_cursor_parent_class)->finalize (object);
+  G_OBJECT_CLASS (wine_broadway_cursor_parent_class)->finalize (object);
 }
 
 static void
-gdk_broadway_cursor_class_init (GdkBroadwayCursorClass *xcursor_class)
+wine_broadway_cursor_class_init (GdkBroadwayCursorClass *xcursor_class)
 {
   GdkCursorClass *cursor_class = GDK_CURSOR_CLASS (xcursor_class);
   GObjectClass *object_class = G_OBJECT_CLASS (xcursor_class);
 
-  object_class->finalize = gdk_broadway_cursor_finalize;
+  object_class->finalize = wine_broadway_cursor_finalize;
 
-  cursor_class->get_surface = gdk_broadway_cursor_get_surface;
+  cursor_class->get_surface = wine_broadway_cursor_get_surface;
 }
 
 static void
-gdk_broadway_cursor_init (GdkBroadwayCursor *cursor)
+wine_broadway_cursor_init (GdkBroadwayCursor *cursor)
 {
 }
 
@@ -104,7 +104,7 @@ wine_broadway_display_get_cursor_for_type (GdkDisplay    *display,
 }
 
 static cairo_surface_t *
-gdk_broadway_cursor_get_surface (GdkCursor *cursor,
+wine_broadway_cursor_get_surface (GdkCursor *cursor,
 				 gdouble *x_hot,
 				 gdouble *y_hot)
 {

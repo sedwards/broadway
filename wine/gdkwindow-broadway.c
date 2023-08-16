@@ -43,12 +43,12 @@
 #include <string.h>
 
 /* Forward declarations */
-static void     gdk_window_broadway_set_background     (GdkWindow      *window,
+static void     wine_window_broadway_set_background     (GdkWindow      *window,
                                                    cairo_pattern_t *pattern);
 
 static void        gdk_window_impl_broadway_finalize   (GObject            *object);
 
-static const cairo_user_data_key_t gdk_broadway_cairo_key;
+static const cairo_user_data_key_t wine_broadway_cairo_key;
 
 #define WINDOW_IS_TOPLEVEL_OR_FOREIGN(window) \
   (GDK_WINDOW_TYPE (window) != GDK_WINDOW_CHILD &&   \
@@ -67,15 +67,15 @@ struct _GdkBroadwayWindowClass {
   GdkWindowClass parent_class;
 };
 
-G_DEFINE_TYPE (GdkBroadwayWindow, gdk_broadway_window, GDK_TYPE_WINDOW)
+G_DEFINE_TYPE (GdkBroadwayWindow, wine_broadway_window, GDK_TYPE_WINDOW)
 
 static void
-gdk_broadway_window_class_init (GdkBroadwayWindowClass *broadway_window_class)
+wine_broadway_window_class_init (GdkBroadwayWindowClass *broadway_window_class)
 {
 }
 
 static void
-gdk_broadway_window_init (GdkBroadwayWindow *broadway_window)
+wine_broadway_window_init (GdkBroadwayWindow *broadway_window)
 {
 }
 
@@ -308,7 +308,7 @@ wine_broadway_window_resize_surface (GdkWindow *window)
 
   if (impl->ref_surface)
     {
-      cairo_surface_set_user_data (impl->ref_surface, &gdk_broadway_cairo_key,
+      cairo_surface_set_user_data (impl->ref_surface, &wine_broadway_cairo_key,
 				   NULL, NULL);
       impl->ref_surface = NULL;
     }
@@ -325,7 +325,7 @@ ref_surface_destroyed (void *data)
 }
 
 static cairo_surface_t *
-gdk_window_broadway_ref_cairo_surface (GdkWindow *window)
+wine_window_broadway_ref_cairo_surface (GdkWindow *window)
 {
   GdkWindowImplBroadway *impl = GDK_WINDOW_IMPL_BROADWAY (window->impl);
   int w, h;
@@ -349,7 +349,7 @@ gdk_window_broadway_ref_cairo_surface (GdkWindow *window)
 					    0, 0,
 					    w, h);
       if (impl->ref_surface)
-	cairo_surface_set_user_data (impl->ref_surface, &gdk_broadway_cairo_key,
+	cairo_surface_set_user_data (impl->ref_surface, &wine_broadway_cairo_key,
 				     impl, ref_surface_destroyed);
     }
   else
@@ -376,7 +376,7 @@ wine_broadway_window_destroy (GdkWindow *window,
   if (impl->ref_surface)
     {
       cairo_surface_finish (impl->ref_surface);
-      cairo_surface_set_user_data (impl->ref_surface, &gdk_broadway_cairo_key,
+      cairo_surface_set_user_data (impl->ref_surface, &wine_broadway_cairo_key,
 				   NULL, NULL);
     }
 
@@ -394,14 +394,14 @@ wine_broadway_window_destroy (GdkWindow *window,
 }
 
 static void
-gdk_broadway_window_destroy_foreign (GdkWindow *window)
+wine_broadway_window_destroy_foreign (GdkWindow *window)
 {
 }
 
 /* This function is called when the XWindow is really gone.
  */
 static void
-gdk_broadway_window_destroy_notify (GdkWindow *window)
+wine_broadway_window_destroy_notify (GdkWindow *window)
 {
   if (!GDK_WINDOW_DESTROYED (window))
     {
@@ -415,7 +415,7 @@ gdk_broadway_window_destroy_notify (GdkWindow *window)
 }
 
 static void
-gdk_window_broadway_show (GdkWindow *window, gboolean already_mapped)
+wine_window_broadway_show (GdkWindow *window, gboolean already_mapped)
 {
   GdkWindowImplBroadway *impl;
   GdkBroadwayDisplay *broadway_display;
@@ -438,7 +438,7 @@ gdk_window_broadway_show (GdkWindow *window, gboolean already_mapped)
 }
 
 static void
-gdk_window_broadway_hide (GdkWindow *window)
+wine_window_broadway_hide (GdkWindow *window)
 {
   GdkWindowImplBroadway *impl;
   GdkBroadwayDisplay *broadway_display;
@@ -466,13 +466,13 @@ gdk_window_broadway_hide (GdkWindow *window)
 }
 
 static void
-gdk_window_broadway_withdraw (GdkWindow *window)
+wine_window_broadway_withdraw (GdkWindow *window)
 {
-  gdk_window_broadway_hide (window);
+  wine_window_broadway_hide (window);
 }
 
 static void
-gdk_window_broadway_move_resize (GdkWindow *window,
+wine_window_broadway_move_resize (GdkWindow *window,
 				 gboolean   with_move,
 				 gint       x,
 				 gint       y,
@@ -521,7 +521,7 @@ gdk_window_broadway_move_resize (GdkWindow *window,
 }
 
 static gboolean
-gdk_window_broadway_reparent (GdkWindow *window,
+wine_window_broadway_reparent (GdkWindow *window,
 			      GdkWindow *new_parent,
 			      gint       x,
 			      gint       y)
@@ -530,31 +530,31 @@ gdk_window_broadway_reparent (GdkWindow *window,
 }
 
 static void
-gdk_window_broadway_raise (GdkWindow *window)
+wine_window_broadway_raise (GdkWindow *window)
 {
 }
 
 static void
-gdk_window_broadway_restack_under (GdkWindow *window,
+wine_window_broadway_restack_under (GdkWindow *window,
 				   GList *native_siblings /* in requested order, first is bottom-most */)
 {
 }
 
 static void
-gdk_window_broadway_restack_toplevel (GdkWindow *window,
+wine_window_broadway_restack_toplevel (GdkWindow *window,
 				      GdkWindow *sibling,
 				      gboolean   above)
 {
 }
 
 static void
-gdk_window_broadway_lower (GdkWindow *window)
+wine_window_broadway_lower (GdkWindow *window)
 {
 }
 
 
 static void
-gdk_broadway_window_focus (GdkWindow *window,
+wine_broadway_window_focus (GdkWindow *window,
 			   guint32    timestamp)
 {
   GdkWindowImplBroadway *impl;
@@ -573,43 +573,43 @@ gdk_broadway_window_focus (GdkWindow *window,
 }
 
 static void
-gdk_broadway_window_set_type_hint (GdkWindow        *window,
+wine_broadway_window_set_type_hint (GdkWindow        *window,
 				   GdkWindowTypeHint hint)
 {
 }
 
 static GdkWindowTypeHint
-gdk_broadway_window_get_type_hint (GdkWindow *window)
+wine_broadway_window_get_type_hint (GdkWindow *window)
 {
   return GDK_WINDOW_TYPE_HINT_NORMAL;
 }
 
 static void
-gdk_broadway_window_set_modal_hint (GdkWindow *window,
+wine_broadway_window_set_modal_hint (GdkWindow *window,
 				    gboolean   modal)
 {
 }
 
 static void
-gdk_broadway_window_set_skip_taskbar_hint (GdkWindow *window,
+wine_broadway_window_set_skip_taskbar_hint (GdkWindow *window,
 					   gboolean   skips_taskbar)
 {
 }
 
 static void
-gdk_broadway_window_set_skip_pager_hint (GdkWindow *window,
+wine_broadway_window_set_skip_pager_hint (GdkWindow *window,
 					 gboolean   skips_pager)
 {
 }
 
 static void
-gdk_broadway_window_set_urgency_hint (GdkWindow *window,
+wine_broadway_window_set_urgency_hint (GdkWindow *window,
 				      gboolean   urgent)
 {
 }
 
 static void
-gdk_broadway_window_set_geometry_hints (GdkWindow         *window,
+wine_broadway_window_set_geometry_hints (GdkWindow         *window,
 					const GdkGeometry *geometry,
 					GdkWindowHints     geom_mask)
 {
@@ -622,25 +622,25 @@ gdk_broadway_window_set_geometry_hints (GdkWindow         *window,
 }
 
 static void
-gdk_broadway_window_set_title (GdkWindow   *window,
+wine_broadway_window_set_title (GdkWindow   *window,
 			       const gchar *title)
 {
 }
 
 static void
-gdk_broadway_window_set_role (GdkWindow   *window,
+wine_broadway_window_set_role (GdkWindow   *window,
 			      const gchar *role)
 {
 }
 
 static void
-gdk_broadway_window_set_startup_id (GdkWindow   *window,
+wine_broadway_window_set_startup_id (GdkWindow   *window,
 				    const gchar *startup_id)
 {
 }
 
 static void
-gdk_broadway_window_set_transient_for (GdkWindow *window,
+wine_broadway_window_set_transient_for (GdkWindow *window,
 				       GdkWindow *parent)
 {
   GdkBroadwayDisplay *display;
@@ -660,14 +660,14 @@ gdk_broadway_window_set_transient_for (GdkWindow *window,
 }
 
 static void
-gdk_window_broadway_set_background (GdkWindow      *window,
+wine_window_broadway_set_background (GdkWindow      *window,
 				    cairo_pattern_t *pattern)
 {
   return;
 }
 
 static void
-gdk_window_broadway_set_device_cursor (GdkWindow *window,
+wine_window_broadway_set_device_cursor (GdkWindow *window,
 				       GdkDevice *device,
 				       GdkCursor *cursor)
 {
@@ -692,7 +692,7 @@ gdk_window_broadway_set_device_cursor (GdkWindow *window,
 }
 
 static void
-gdk_window_broadway_get_geometry (GdkWindow *window,
+wine_window_broadway_get_geometry (GdkWindow *window,
 				  gint      *x,
 				  gint      *y,
 				  gint      *width,
@@ -718,7 +718,7 @@ gdk_window_broadway_get_geometry (GdkWindow *window,
 }
 
 static void
-gdk_window_broadway_get_root_coords (GdkWindow *window,
+wine_window_broadway_get_root_coords (GdkWindow *window,
 				     gint       x,
 				     gint       y,
 				     gint      *root_x,
@@ -735,7 +735,7 @@ gdk_window_broadway_get_root_coords (GdkWindow *window,
 }
 
 static void
-gdk_broadway_window_get_frame_extents (GdkWindow    *window,
+wine_broadway_window_get_frame_extents (GdkWindow    *window,
 				       GdkRectangle *rect)
 {
   g_return_if_fail (rect != NULL);
@@ -749,7 +749,7 @@ gdk_broadway_window_get_frame_extents (GdkWindow    *window,
 }
 
 static gboolean
-gdk_window_broadway_get_device_state (GdkWindow       *window,
+wine_window_broadway_get_device_state (GdkWindow       *window,
 				      GdkDevice       *device,
 				      gdouble         *x,
 				      gdouble         *y,
@@ -770,7 +770,7 @@ gdk_window_broadway_get_device_state (GdkWindow       *window,
 }
 
 static GdkEventMask
-gdk_window_broadway_get_events (GdkWindow *window)
+wine_window_broadway_get_events (GdkWindow *window)
 {
   if (GDK_WINDOW_DESTROYED (window))
     return 0;
@@ -779,7 +779,7 @@ gdk_window_broadway_get_events (GdkWindow *window)
 }
 
 static void
-gdk_window_broadway_set_events (GdkWindow    *window,
+wine_window_broadway_set_events (GdkWindow    *window,
 				GdkEventMask  event_mask)
 {
   if (!GDK_WINDOW_DESTROYED (window))
@@ -788,7 +788,7 @@ gdk_window_broadway_set_events (GdkWindow    *window,
 }
 
 static void
-gdk_window_broadway_shape_combine_region (GdkWindow       *window,
+wine_window_broadway_shape_combine_region (GdkWindow       *window,
 					  const cairo_region_t *shape_region,
 					  gint             offset_x,
 					  gint             offset_y)
@@ -796,7 +796,7 @@ gdk_window_broadway_shape_combine_region (GdkWindow       *window,
 }
 
 static void
-gdk_window_broadway_input_shape_combine_region (GdkWindow       *window,
+wine_window_broadway_input_shape_combine_region (GdkWindow       *window,
 						const cairo_region_t *shape_region,
 						gint             offset_x,
 						gint             offset_y)
@@ -805,13 +805,13 @@ gdk_window_broadway_input_shape_combine_region (GdkWindow       *window,
 
 
 static void
-gdk_broadway_window_set_override_redirect (GdkWindow *window,
+wine_broadway_window_set_override_redirect (GdkWindow *window,
 					   gboolean override_redirect)
 {
 }
 
 static void
-gdk_broadway_window_set_accept_focus (GdkWindow *window,
+wine_broadway_window_set_accept_focus (GdkWindow *window,
 				      gboolean accept_focus)
 {
   accept_focus = accept_focus != FALSE;
@@ -823,7 +823,7 @@ gdk_broadway_window_set_accept_focus (GdkWindow *window,
 }
 
 static void
-gdk_broadway_window_set_focus_on_map (GdkWindow *window,
+wine_broadway_window_set_focus_on_map (GdkWindow *window,
 				      gboolean focus_on_map)
 {
   focus_on_map = focus_on_map != FALSE;
@@ -836,13 +836,13 @@ gdk_broadway_window_set_focus_on_map (GdkWindow *window,
 
 
 static void
-gdk_broadway_window_set_icon_list (GdkWindow *window,
+wine_broadway_window_set_icon_list (GdkWindow *window,
 				   GList     *pixbufs)
 {
 }
 
 static void
-gdk_broadway_window_set_icon_name (GdkWindow   *window,
+wine_broadway_window_set_icon_name (GdkWindow   *window,
 				   const gchar *name)
 {
   if (GDK_WINDOW_DESTROYED (window) ||
@@ -854,7 +854,7 @@ gdk_broadway_window_set_icon_name (GdkWindow   *window,
 }
 
 static void
-gdk_broadway_window_iconify (GdkWindow *window)
+wine_broadway_window_iconify (GdkWindow *window)
 {
   if (GDK_WINDOW_DESTROYED (window) ||
       !WINDOW_IS_TOPLEVEL_OR_FOREIGN (window))
@@ -862,7 +862,7 @@ gdk_broadway_window_iconify (GdkWindow *window)
 }
 
 static void
-gdk_broadway_window_deiconify (GdkWindow *window)
+wine_broadway_window_deiconify (GdkWindow *window)
 {
   if (GDK_WINDOW_DESTROYED (window) ||
       !WINDOW_IS_TOPLEVEL_OR_FOREIGN (window))
@@ -870,16 +870,7 @@ gdk_broadway_window_deiconify (GdkWindow *window)
 }
 
 static void
-gdk_broadway_window_stick (GdkWindow *window)
-{
-  if (GDK_WINDOW_DESTROYED (window) ||
-      !WINDOW_IS_TOPLEVEL_OR_FOREIGN (window))
-    return;
-
-}
-
-static void
-gdk_broadway_window_unstick (GdkWindow *window)
+wine_broadway_window_stick (GdkWindow *window)
 {
   if (GDK_WINDOW_DESTROYED (window) ||
       !WINDOW_IS_TOPLEVEL_OR_FOREIGN (window))
@@ -888,7 +879,16 @@ gdk_broadway_window_unstick (GdkWindow *window)
 }
 
 static void
-gdk_broadway_window_maximize (GdkWindow *window)
+wine_broadway_window_unstick (GdkWindow *window)
+{
+  if (GDK_WINDOW_DESTROYED (window) ||
+      !WINDOW_IS_TOPLEVEL_OR_FOREIGN (window))
+    return;
+
+}
+
+static void
+wine_broadway_window_maximize (GdkWindow *window)
 {
   GdkWindowImplBroadway *impl;
   GdkScreen *screen;
@@ -919,7 +919,7 @@ gdk_broadway_window_maximize (GdkWindow *window)
 }
 
 static void
-gdk_broadway_window_unmaximize (GdkWindow *window)
+wine_broadway_window_unmaximize (GdkWindow *window)
 {
   GdkWindowImplBroadway *impl;
 
@@ -944,7 +944,7 @@ gdk_broadway_window_unmaximize (GdkWindow *window)
 }
 
 static void
-gdk_broadway_window_fullscreen (GdkWindow *window)
+wine_broadway_window_fullscreen (GdkWindow *window)
 {
   if (GDK_WINDOW_DESTROYED (window) ||
       !WINDOW_IS_TOPLEVEL_OR_FOREIGN (window))
@@ -953,7 +953,7 @@ gdk_broadway_window_fullscreen (GdkWindow *window)
 }
 
 static void
-gdk_broadway_window_unfullscreen (GdkWindow *window)
+wine_broadway_window_unfullscreen (GdkWindow *window)
 {
   if (GDK_WINDOW_DESTROYED (window) ||
       !WINDOW_IS_TOPLEVEL_OR_FOREIGN (window))
@@ -962,7 +962,7 @@ gdk_broadway_window_unfullscreen (GdkWindow *window)
 }
 
 static void
-gdk_broadway_window_set_keep_above (GdkWindow *window,
+wine_broadway_window_set_keep_above (GdkWindow *window,
 				    gboolean   setting)
 {
   g_return_if_fail (GDK_IS_WINDOW (window));
@@ -974,7 +974,7 @@ gdk_broadway_window_set_keep_above (GdkWindow *window,
 }
 
 static void
-gdk_broadway_window_set_keep_below (GdkWindow *window, gboolean setting)
+wine_broadway_window_set_keep_below (GdkWindow *window, gboolean setting)
 {
   g_return_if_fail (GDK_IS_WINDOW (window));
 
@@ -985,7 +985,7 @@ gdk_broadway_window_set_keep_below (GdkWindow *window, gboolean setting)
 }
 
 static GdkWindow *
-gdk_broadway_window_get_group (GdkWindow *window)
+wine_broadway_window_get_group (GdkWindow *window)
 {
   if (GDK_WINDOW_DESTROYED (window) ||
       !WINDOW_IS_TOPLEVEL (window))
@@ -995,13 +995,13 @@ gdk_broadway_window_get_group (GdkWindow *window)
 }
 
 static void
-gdk_broadway_window_set_group (GdkWindow *window,
+wine_broadway_window_set_group (GdkWindow *window,
 			       GdkWindow *leader)
 {
 }
 
 static void
-gdk_broadway_window_set_decorations (GdkWindow      *window,
+wine_broadway_window_set_decorations (GdkWindow      *window,
 				     GdkWMDecoration decorations)
 {
   if (GDK_WINDOW_DESTROYED (window) ||
@@ -1011,7 +1011,7 @@ gdk_broadway_window_set_decorations (GdkWindow      *window,
 }
 
 static gboolean
-gdk_broadway_window_get_decorations (GdkWindow       *window,
+wine_broadway_window_get_decorations (GdkWindow       *window,
 				     GdkWMDecoration *decorations)
 {
   gboolean result = FALSE;
@@ -1024,7 +1024,7 @@ gdk_broadway_window_get_decorations (GdkWindow       *window,
 }
 
 static void
-gdk_broadway_window_set_functions (GdkWindow    *window,
+wine_broadway_window_set_functions (GdkWindow    *window,
 				   GdkWMFunction functions)
 {
   g_return_if_fail (GDK_IS_WINDOW (window));
@@ -1035,19 +1035,19 @@ gdk_broadway_window_set_functions (GdkWindow    *window,
 }
 
 static cairo_region_t *
-gdk_broadway_window_get_shape (GdkWindow *window)
+wine_broadway_window_get_shape (GdkWindow *window)
 {
   return NULL;
 }
 
 static cairo_region_t *
-gdk_broadway_window_get_input_shape (GdkWindow *window)
+wine_broadway_window_get_input_shape (GdkWindow *window)
 {
   return NULL;
 }
 
 static void
-gdk_broadway_window_end_paint (GdkWindow *window)
+wine_broadway_window_end_paint (GdkWindow *window)
 {
   GdkWindowImplBroadway *impl;
   impl = GDK_WINDOW_IMPL_BROADWAY (window->impl);
@@ -1422,7 +1422,7 @@ calculate_unmoving_origin (MoveResizeData *mv_resize)
 }
 
 static void
-gdk_broadway_window_begin_resize_drag (GdkWindow     *window,
+wine_broadway_window_begin_resize_drag (GdkWindow     *window,
 				       GdkWindowEdge  edge,
                                        GdkDevice     *device,
 				       gint           button,
@@ -1463,7 +1463,7 @@ gdk_broadway_window_begin_resize_drag (GdkWindow     *window,
 }
 
 static void
-gdk_broadway_window_begin_move_drag (GdkWindow *window,
+wine_broadway_window_begin_move_drag (GdkWindow *window,
                                      GdkDevice *device,
 				     gint       button,
 				     gint       root_x,
@@ -1502,13 +1502,13 @@ gdk_broadway_window_begin_move_drag (GdkWindow *window,
 }
 
 static gboolean
-gdk_broadway_window_beep (GdkWindow *window)
+wine_broadway_window_beep (GdkWindow *window)
 {
   return FALSE;
 }
 
 static void
-gdk_broadway_window_set_opacity (GdkWindow *window,
+wine_broadway_window_set_opacity (GdkWindow *window,
 				 gdouble    opacity)
 {
   g_return_if_fail (GDK_IS_WINDOW (window));
@@ -1524,7 +1524,7 @@ gdk_broadway_window_set_opacity (GdkWindow *window,
 }
 
 static void
-gdk_broadway_window_set_composited (GdkWindow *window,
+wine_broadway_window_set_composited (GdkWindow *window,
 				    gboolean   composited)
 {
 }
@@ -1540,7 +1540,7 @@ wine_broadway_display_after_process_all_updates (GdkDisplay *display)
 }
 
 guint32
-gdk_broadway_get_last_seen_time (GdkWindow  *window)
+wine_broadway_get_last_seen_time (GdkWindow  *window)
 {
   GdkDisplay *display;
 
@@ -1556,70 +1556,70 @@ gdk_window_impl_broadway_class_init (GdkWindowImplBroadwayClass *klass)
 
   object_class->finalize = gdk_window_impl_broadway_finalize;
 
-  impl_class->ref_cairo_surface = gdk_window_broadway_ref_cairo_surface;
-  impl_class->show = gdk_window_broadway_show;
-  impl_class->hide = gdk_window_broadway_hide;
-  impl_class->withdraw = gdk_window_broadway_withdraw;
-  impl_class->set_events = gdk_window_broadway_set_events;
-  impl_class->get_events = gdk_window_broadway_get_events;
-  impl_class->raise = gdk_window_broadway_raise;
-  impl_class->lower = gdk_window_broadway_lower;
-  impl_class->restack_under = gdk_window_broadway_restack_under;
-  impl_class->restack_toplevel = gdk_window_broadway_restack_toplevel;
-  impl_class->move_resize = gdk_window_broadway_move_resize;
-  impl_class->set_background = gdk_window_broadway_set_background;
-  impl_class->reparent = gdk_window_broadway_reparent;
-  impl_class->set_device_cursor = gdk_window_broadway_set_device_cursor;
-  impl_class->get_geometry = gdk_window_broadway_get_geometry;
-  impl_class->get_root_coords = gdk_window_broadway_get_root_coords;
-  impl_class->get_device_state = gdk_window_broadway_get_device_state;
-  impl_class->shape_combine_region = gdk_window_broadway_shape_combine_region;
-  impl_class->input_shape_combine_region = gdk_window_broadway_input_shape_combine_region;
+  impl_class->ref_cairo_surface = wine_window_broadway_ref_cairo_surface;
+  impl_class->show = wine_window_broadway_show;
+  impl_class->hide = wine_window_broadway_hide;
+  impl_class->withdraw = wine_window_broadway_withdraw;
+  impl_class->set_events = wine_window_broadway_set_events;
+  impl_class->get_events = wine_window_broadway_get_events;
+  impl_class->raise = wine_window_broadway_raise;
+  impl_class->lower = wine_window_broadway_lower;
+  impl_class->restack_under = wine_window_broadway_restack_under;
+  impl_class->restack_toplevel = wine_window_broadway_restack_toplevel;
+  impl_class->move_resize = wine_window_broadway_move_resize;
+  impl_class->set_background = wine_window_broadway_set_background;
+  impl_class->reparent = wine_window_broadway_reparent;
+  impl_class->set_device_cursor = wine_window_broadway_set_device_cursor;
+  impl_class->get_geometry = wine_window_broadway_get_geometry;
+  impl_class->get_root_coords = wine_window_broadway_get_root_coords;
+  impl_class->get_device_state = wine_window_broadway_get_device_state;
+  impl_class->shape_combine_region = wine_window_broadway_shape_combine_region;
+  impl_class->input_shape_combine_region = wine_window_broadway_input_shape_combine_region;
   impl_class->destroy = wine_broadway_window_destroy;
-  impl_class->destroy_foreign = gdk_broadway_window_destroy_foreign;
-  impl_class->get_shape = gdk_broadway_window_get_shape;
-  impl_class->get_input_shape = gdk_broadway_window_get_input_shape;
-  impl_class->end_paint = gdk_broadway_window_end_paint;
-  impl_class->beep = gdk_broadway_window_beep;
+  impl_class->destroy_foreign = wine_broadway_window_destroy_foreign;
+  impl_class->get_shape = wine_broadway_window_get_shape;
+  impl_class->get_input_shape = wine_broadway_window_get_input_shape;
+  impl_class->end_paint = wine_broadway_window_end_paint;
+  impl_class->beep = wine_broadway_window_beep;
 
-  impl_class->focus = gdk_broadway_window_focus;
-  impl_class->set_type_hint = gdk_broadway_window_set_type_hint;
-  impl_class->get_type_hint = gdk_broadway_window_get_type_hint;
-  impl_class->set_modal_hint = gdk_broadway_window_set_modal_hint;
-  impl_class->set_skip_taskbar_hint = gdk_broadway_window_set_skip_taskbar_hint;
-  impl_class->set_skip_pager_hint = gdk_broadway_window_set_skip_pager_hint;
-  impl_class->set_urgency_hint = gdk_broadway_window_set_urgency_hint;
-  impl_class->set_geometry_hints = gdk_broadway_window_set_geometry_hints;
-  impl_class->set_title = gdk_broadway_window_set_title;
-  impl_class->set_role = gdk_broadway_window_set_role;
-  impl_class->set_startup_id = gdk_broadway_window_set_startup_id;
-  impl_class->set_transient_for = gdk_broadway_window_set_transient_for;
-  impl_class->get_frame_extents = gdk_broadway_window_get_frame_extents;
-  impl_class->set_override_redirect = gdk_broadway_window_set_override_redirect;
-  impl_class->set_accept_focus = gdk_broadway_window_set_accept_focus;
-  impl_class->set_focus_on_map = gdk_broadway_window_set_focus_on_map;
-  impl_class->set_icon_list = gdk_broadway_window_set_icon_list;
-  impl_class->set_icon_name = gdk_broadway_window_set_icon_name;
-  impl_class->iconify = gdk_broadway_window_iconify;
-  impl_class->deiconify = gdk_broadway_window_deiconify;
-  impl_class->stick = gdk_broadway_window_stick;
-  impl_class->unstick = gdk_broadway_window_unstick;
-  impl_class->maximize = gdk_broadway_window_maximize;
-  impl_class->unmaximize = gdk_broadway_window_unmaximize;
-  impl_class->fullscreen = gdk_broadway_window_fullscreen;
-  impl_class->unfullscreen = gdk_broadway_window_unfullscreen;
-  impl_class->set_keep_above = gdk_broadway_window_set_keep_above;
-  impl_class->set_keep_below = gdk_broadway_window_set_keep_below;
-  impl_class->get_group = gdk_broadway_window_get_group;
-  impl_class->set_group = gdk_broadway_window_set_group;
-  impl_class->set_decorations = gdk_broadway_window_set_decorations;
-  impl_class->get_decorations = gdk_broadway_window_get_decorations;
-  impl_class->set_functions = gdk_broadway_window_set_functions;
-  impl_class->begin_resize_drag = gdk_broadway_window_begin_resize_drag;
-  impl_class->begin_move_drag = gdk_broadway_window_begin_move_drag;
-  impl_class->set_opacity = gdk_broadway_window_set_opacity;
-  impl_class->set_composited = gdk_broadway_window_set_composited;
-  impl_class->destroy_notify = gdk_broadway_window_destroy_notify;
+  impl_class->focus = wine_broadway_window_focus;
+  impl_class->set_type_hint = wine_broadway_window_set_type_hint;
+  impl_class->get_type_hint = wine_broadway_window_get_type_hint;
+  impl_class->set_modal_hint = wine_broadway_window_set_modal_hint;
+  impl_class->set_skip_taskbar_hint = wine_broadway_window_set_skip_taskbar_hint;
+  impl_class->set_skip_pager_hint = wine_broadway_window_set_skip_pager_hint;
+  impl_class->set_urgency_hint = wine_broadway_window_set_urgency_hint;
+  impl_class->set_geometry_hints = wine_broadway_window_set_geometry_hints;
+  impl_class->set_title = wine_broadway_window_set_title;
+  impl_class->set_role = wine_broadway_window_set_role;
+  impl_class->set_startup_id = wine_broadway_window_set_startup_id;
+  impl_class->set_transient_for = wine_broadway_window_set_transient_for;
+  impl_class->get_frame_extents = wine_broadway_window_get_frame_extents;
+  impl_class->set_override_redirect = wine_broadway_window_set_override_redirect;
+  impl_class->set_accept_focus = wine_broadway_window_set_accept_focus;
+  impl_class->set_focus_on_map = wine_broadway_window_set_focus_on_map;
+  impl_class->set_icon_list = wine_broadway_window_set_icon_list;
+  impl_class->set_icon_name = wine_broadway_window_set_icon_name;
+  impl_class->iconify = wine_broadway_window_iconify;
+  impl_class->deiconify = wine_broadway_window_deiconify;
+  impl_class->stick = wine_broadway_window_stick;
+  impl_class->unstick = wine_broadway_window_unstick;
+  impl_class->maximize = wine_broadway_window_maximize;
+  impl_class->unmaximize = wine_broadway_window_unmaximize;
+  impl_class->fullscreen = wine_broadway_window_fullscreen;
+  impl_class->unfullscreen = wine_broadway_window_unfullscreen;
+  impl_class->set_keep_above = wine_broadway_window_set_keep_above;
+  impl_class->set_keep_below = wine_broadway_window_set_keep_below;
+  impl_class->get_group = wine_broadway_window_get_group;
+  impl_class->set_group = wine_broadway_window_set_group;
+  impl_class->set_decorations = wine_broadway_window_set_decorations;
+  impl_class->get_decorations = wine_broadway_window_get_decorations;
+  impl_class->set_functions = wine_broadway_window_set_functions;
+  impl_class->begin_resize_drag = wine_broadway_window_begin_resize_drag;
+  impl_class->begin_move_drag = wine_broadway_window_begin_move_drag;
+  impl_class->set_opacity = wine_broadway_window_set_opacity;
+  impl_class->set_composited = wine_broadway_window_set_composited;
+  impl_class->destroy_notify = wine_broadway_window_destroy_notify;
   impl_class->register_dnd = wine_broadway_window_register_dnd;
   impl_class->drag_begin = wine_broadway_window_drag_begin;
   impl_class->sync_rendering = wine_broadway_window_sync_rendering;

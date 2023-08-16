@@ -40,24 +40,24 @@ struct _GdkBroadwayVisualClass
   GObjectClass parent_class;
 };
 
-G_DEFINE_TYPE (GdkBroadwayVisual, gdk_broadway_visual, GDK_TYPE_VISUAL)
+G_DEFINE_TYPE (GdkBroadwayVisual, wine_broadway_visual, GDK_TYPE_VISUAL)
 
 static void
-gdk_broadway_visual_finalize (GObject *object)
+wine_broadway_visual_finalize (GObject *object)
 {
-  G_OBJECT_CLASS (gdk_broadway_visual_parent_class)->finalize (object);
+  G_OBJECT_CLASS (wine_broadway_visual_parent_class)->finalize (object);
 }
 
 static void
-gdk_broadway_visual_class_init (GdkBroadwayVisualClass *visual_class)
+wine_broadway_visual_class_init (GdkBroadwayVisualClass *visual_class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (visual_class);
 
-  object_class->finalize = gdk_broadway_visual_finalize;
+  object_class->finalize = wine_broadway_visual_finalize;
 }
 
 static void
-gdk_broadway_visual_init (GdkBroadwayVisual *visual)
+wine_broadway_visual_init (GdkBroadwayVisual *visual)
 {
 }
 

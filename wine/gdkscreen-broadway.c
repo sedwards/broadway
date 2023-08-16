@@ -32,56 +32,56 @@
 #include <stdlib.h>
 #include <string.h>
 
-static void   gdk_broadway_screen_dispose     (GObject *object);
-static void   gdk_broadway_screen_finalize    (GObject *object);
+static void   wine_broadway_screen_dispose     (GObject *object);
+static void   wine_broadway_screen_finalize    (GObject *object);
 
-G_DEFINE_TYPE (GdkBroadwayScreen, gdk_broadway_screen, GDK_TYPE_SCREEN)
+G_DEFINE_TYPE (GdkBroadwayScreen, wine_broadway_screen, GDK_TYPE_SCREEN)
 
 static void
-gdk_broadway_screen_init (GdkBroadwayScreen *screen)
+wine_broadway_screen_init (GdkBroadwayScreen *screen)
 {
   screen->width = 1024;
   screen->height = 768;
 }
 
 static GdkDisplay *
-gdk_broadway_screen_get_display (GdkScreen *screen)
+wine_broadway_screen_get_display (GdkScreen *screen)
 {
   return GDK_BROADWAY_SCREEN (screen)->display;
 }
 
 static gint
-gdk_broadway_screen_get_width (GdkScreen *screen)
+wine_broadway_screen_get_width (GdkScreen *screen)
 {
   return GDK_BROADWAY_SCREEN (screen)->width;
 }
 
 static gint
-gdk_broadway_screen_get_height (GdkScreen *screen)
+wine_broadway_screen_get_height (GdkScreen *screen)
 {
   return GDK_BROADWAY_SCREEN (screen)->height;
 }
 
 static gint
-gdk_broadway_screen_get_width_mm (GdkScreen *screen)
+wine_broadway_screen_get_width_mm (GdkScreen *screen)
 {
   return gdk_screen_get_width (screen) * 25.4 / 96;
 }
 
 static gint
-gdk_broadway_screen_get_height_mm (GdkScreen *screen)
+wine_broadway_screen_get_height_mm (GdkScreen *screen)
 {
   return gdk_screen_get_height (screen) * 25.4 / 96;
 }
 
 static gint
-gdk_broadway_screen_get_number (GdkScreen *screen)
+wine_broadway_screen_get_number (GdkScreen *screen)
 {
   return 0;
 }
 
 static GdkWindow *
-gdk_broadway_screen_get_root_window (GdkScreen *screen)
+wine_broadway_screen_get_root_window (GdkScreen *screen)
 {
   return GDK_BROADWAY_SCREEN (screen)->root_window;
 }
@@ -125,7 +125,7 @@ wine_broadway_screen_size_changed (GdkScreen                       *screen,
 }
 
 static void
-gdk_broadway_screen_dispose (GObject *object)
+wine_broadway_screen_dispose (GObject *object)
 {
   GdkBroadwayScreen *broadway_screen = GDK_BROADWAY_SCREEN (object);
 
@@ -133,11 +133,11 @@ gdk_broadway_screen_dispose (GObject *object)
     //gdk_window_destroy (broadway_screen->root_window, TRUE);
     gdk_window_destroy (broadway_screen->root_window);
 
-  G_OBJECT_CLASS (gdk_broadway_screen_parent_class)->dispose (object);
+  G_OBJECT_CLASS (wine_broadway_screen_parent_class)->dispose (object);
 }
 
 static void
-gdk_broadway_screen_finalize (GObject *object)
+wine_broadway_screen_finalize (GObject *object)
 {
   GdkBroadwayScreen *broadway_screen = GDK_BROADWAY_SCREEN (object);
   gint          i;
@@ -150,11 +150,11 @@ gdk_broadway_screen_finalize (GObject *object)
     g_object_unref (broadway_screen->visuals[i]);
   g_free (broadway_screen->visuals);
 
-  G_OBJECT_CLASS (gdk_broadway_screen_parent_class)->finalize (object);
+  G_OBJECT_CLASS (wine_broadway_screen_parent_class)->finalize (object);
 }
 
 static GdkVisual *
-gdk_broadway_screen_get_rgba_visual (GdkScreen *screen)
+wine_broadway_screen_get_rgba_visual (GdkScreen *screen)
 {
   GdkBroadwayScreen *broadway_screen = GDK_BROADWAY_SCREEN (screen);
 
@@ -189,38 +189,38 @@ wine_broadway_screen_setup (GdkScreen *screen)
 }
 
 static gboolean
-gdk_broadway_screen_is_composited (GdkScreen *screen)
+wine_broadway_screen_is_composited (GdkScreen *screen)
 {
   return TRUE;
 }
 
 
 static gchar *
-gdk_broadway_screen_make_display_name (GdkScreen *screen)
+wine_broadway_screen_make_display_name (GdkScreen *screen)
 {
   return g_strdup ("browser");
 }
 
 static GdkWindow *
-gdk_broadway_screen_get_active_window (GdkScreen *screen)
+wine_broadway_screen_get_active_window (GdkScreen *screen)
 {
   return NULL;
 }
 
 static GList *
-gdk_broadway_screen_get_window_stack (GdkScreen *screen)
+wine_broadway_screen_get_window_stack (GdkScreen *screen)
 {
   return NULL;
 }
 
 static void
-gdk_broadway_screen_broadcast_client_message (GdkScreen *screen,
+wine_broadway_screen_broadcast_client_message (GdkScreen *screen,
 					      GdkEvent  *event)
 {
 }
 
 static gboolean
-gdk_broadway_screen_get_setting (GdkScreen   *screen,
+wine_broadway_screen_get_setting (GdkScreen   *screen,
 				 const gchar *name,
 				 GValue      *value)
 {
@@ -233,28 +233,28 @@ wine_broadway_screen_events_init (GdkScreen *screen)
 }
 
 static void
-gdk_broadway_screen_class_init (GdkBroadwayScreenClass *klass)
+wine_broadway_screen_class_init (GdkBroadwayScreenClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
   GdkScreenClass *screen_class = GDK_SCREEN_CLASS (klass);
 
-  object_class->dispose = gdk_broadway_screen_dispose;
-  object_class->finalize = gdk_broadway_screen_finalize;
+  object_class->dispose = wine_broadway_screen_dispose;
+  object_class->finalize = wine_broadway_screen_finalize;
 
-  screen_class->get_display = gdk_broadway_screen_get_display;
-  screen_class->get_width = gdk_broadway_screen_get_width;
-  screen_class->get_height = gdk_broadway_screen_get_height;
-  screen_class->get_width_mm = gdk_broadway_screen_get_width_mm;
-  screen_class->get_height_mm = gdk_broadway_screen_get_height_mm;
-  screen_class->get_number = gdk_broadway_screen_get_number;
-  screen_class->get_root_window = gdk_broadway_screen_get_root_window;
-  screen_class->is_composited = gdk_broadway_screen_is_composited;
-  screen_class->make_display_name = gdk_broadway_screen_make_display_name;
-  screen_class->get_active_window = gdk_broadway_screen_get_active_window;
-  screen_class->get_window_stack = gdk_broadway_screen_get_window_stack;
-  screen_class->broadcast_client_message = gdk_broadway_screen_broadcast_client_message;
-  screen_class->get_setting = gdk_broadway_screen_get_setting;
-  screen_class->get_rgba_visual = gdk_broadway_screen_get_rgba_visual;
+  screen_class->get_display = wine_broadway_screen_get_display;
+  screen_class->get_width = wine_broadway_screen_get_width;
+  screen_class->get_height = wine_broadway_screen_get_height;
+  screen_class->get_width_mm = wine_broadway_screen_get_width_mm;
+  screen_class->get_height_mm = wine_broadway_screen_get_height_mm;
+  screen_class->get_number = wine_broadway_screen_get_number;
+  screen_class->get_root_window = wine_broadway_screen_get_root_window;
+  screen_class->is_composited = wine_broadway_screen_is_composited;
+  screen_class->make_display_name = wine_broadway_screen_make_display_name;
+  screen_class->get_active_window = wine_broadway_screen_get_active_window;
+  screen_class->get_window_stack = wine_broadway_screen_get_window_stack;
+  screen_class->broadcast_client_message = wine_broadway_screen_broadcast_client_message;
+  screen_class->get_setting = wine_broadway_screen_get_setting;
+  screen_class->get_rgba_visual = wine_broadway_screen_get_rgba_visual;
   screen_class->get_system_visual = wine_broadway_screen_get_system_visual;
   screen_class->visual_get_best_depth = wine_broadway_screen_visual_get_best_depth;
   screen_class->visual_get_best_type = wine_broadway_screen_visual_get_best_type;

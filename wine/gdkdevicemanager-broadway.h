@@ -24,7 +24,7 @@
 
 G_BEGIN_DECLS
 
-#define GDK_TYPE_BROADWAY_DEVICE_MANAGER         (gdk_broadway_device_manager_get_type ())
+#define GDK_TYPE_BROADWAY_DEVICE_MANAGER         (wine_broadway_device_manager_get_type ())
 #define GDK_BROADWAY_DEVICE_MANAGER(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), GDK_TYPE_BROADWAY_DEVICE_MANAGER, GdkBroadwayDeviceManager))
 #define GDK_BROADWAY_DEVICE_MANAGER_CLASS(c)     (G_TYPE_CHECK_CLASS_CAST ((c), GDK_TYPE_BROADWAY_DEVICE_MANAGER, GdkBroadwayDeviceManagerClass))
 #define GDK_IS_BROADWAY_DEVICE_MANAGER(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), GDK_TYPE_BROADWAY_DEVICE_MANAGER))
@@ -47,7 +47,7 @@ struct _GdkBroadwayDeviceManagerClass
   GdkDeviceManagerClass parent_class;
 };
 
-GType gdk_broadway_device_manager_get_type (void) G_GNUC_CONST;
+GType wine_broadway_device_manager_get_type (void) G_GNUC_CONST;
 GdkDeviceManager *wine_broadway_device_manager_new (GdkDisplay *display);
 
 G_END_DECLS

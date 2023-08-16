@@ -33,7 +33,7 @@
 
 G_BEGIN_DECLS
 
-#define GDK_TYPE_BROADWAY_CURSOR              (gdk_broadway_cursor_get_type ())
+#define GDK_TYPE_BROADWAY_CURSOR              (wine_broadway_cursor_get_type ())
 #define GDK_BROADWAY_CURSOR(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GDK_TYPE_BROADWAY_CURSOR, GdkBroadwayCursor))
 #define GDK_BROADWAY_CURSOR_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), GDK_TYPE_BROADWAY_CURSOR, GdkBroadwayCursorClass))
 #define GDK_IS_BROADWAY_CURSOR(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), GDK_TYPE_BROADWAY_CURSOR))
@@ -48,7 +48,7 @@ typedef GdkCursor GdkBroadwayCursor;
 typedef struct _GdkBroadwayCursorClass GdkBroadwayCursorClass;
 
 GDK_AVAILABLE_IN_ALL
-GType    gdk_broadway_cursor_get_type          (void);
+GType    wine_broadway_cursor_get_type          (void);
 
 G_END_DECLS
 

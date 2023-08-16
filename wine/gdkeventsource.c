@@ -482,11 +482,6 @@ GList* _gdk_event_queue_append       (GdkDisplay *display,
   printf("stub - _gdk_event_queue_append\n");
 }
 
-GType gdk_window_impl_get_type (void)
-{
-  printf("stub - gdk_window_impl_get_type\n");
-}
-
 GList* _gdk_event_queue_find_first   (GdkDisplay *display)
 {
   printf("stub - _gdk_event_queue_find_first\n");

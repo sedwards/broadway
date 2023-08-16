@@ -18,6 +18,10 @@
 #include "config.h"
 #include <stdlib.h>
 
+#include <gdk/gdk.h>
+#include "gdk_structs.h"
+#include "gdkdeviceprivate.h"
+
 #include "gdkdevice-broadway.h"
 
 #include "gdkwindow.h"

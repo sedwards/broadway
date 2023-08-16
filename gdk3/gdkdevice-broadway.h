@@ -21,7 +21,7 @@
 #include <gdk/gdk.h>
 #include "gdk_structs.h"
 
-//#include <gdk/gdkdeviceprivate.h>
+#include "gdkdeviceprivate.h"
 
 G_BEGIN_DECLS
 

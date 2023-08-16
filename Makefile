@@ -4,9 +4,10 @@ CFLAGS_GTK=`pkg-config --libs --cflags gio-2.0 gobject-2.0 cairo glib-2.0 gtk+-3
 
 LIBBROADWAY=libbroadway.a
 LIBBROADWAY-GDK3=libbroadway-gdk3.a
-LIBBROADWAY-WIN=libbroadway-win.a
+LIBBROADWAY-WINE=libbroadway-wine.a
+#LIBBROADWAY-WIN=libbroadway-win.a
 
-all: broadwayd-gtk3 broadwayd-gtk4 libbroadway-win.a libbroadway-gdk3.a testsocket connection-proto
+all: broadwayd-gtk3 broadwayd-gtk4 libbroadway-gdk3.a libbroadway-wine.a testsocket connection-proto
 
 SERVER_SRC = \
        broadway-server.c \
@@ -29,26 +30,44 @@ broadwayd-gtk4 :
 ###ls -l win/*.c | awk '{print "\t" $9 " \/"}' | awk '{sub(/.$/,"")}1'
 
 GDK3_BROADWAY_SRC = \
-	gdk3/gdkbroadway-server.c \
-	gdk3/gdkcursor-broadway.c \
-	gdk3/gdkdevice-broadway.c \
-	gdk3/gdkdevicemanager-broadway.c \
-	gdk3/gdkdisplay-broadway.c \
-	gdk3/gdkdnd-broadway.c \
-	gdk3/gdkeventsource.c \
-	gdk3/gdkglobals-broadway.c \
-	gdk3/gdkkeys-broadway.c \
-	gdk3/gdkmonitor-broadway.c \
-	gdk3/gdkproperty-broadway.c \
-	gdk3/gdkscreen-broadway.c \
-	gdk3/gdkselection-broadway.c \
-	gdk3/gdktestutils-broadway.c \
-	gdk3/gdkvisual-broadway.c \
-	gdk3/gdkwindow-broadway.c
+	wine/gdkbroadway-server.c \
+	wine/gdkcursor-broadway.c \
+	wine/gdkdevice-broadway.c \
+	wine/gdkdevicemanager-broadway.c \
+	wine/gdkdisplay-broadway.c \
+	wine/gdkdnd-broadway.c \
+	wine/gdkeventsource.c \
+	wine/gdkglobals-broadway.c \
+	wine/gdkkeys-broadway.c \
+	wine/gdkmonitor-broadway.c \
+	wine/gdkproperty-broadway.c \
+	wine/gdkscreen-broadway.c \
+	wine/gdkselection-broadway.c \
+	wine/gdktestutils-broadway.c \
+	wine/gdkvisual-broadway.c \
+	wine/gdkwindow-broadway.c
 
 WIN_BROADWAY_SRC = \
 	win/eventsource.c \
 	win/winbroadway-server.c
+
+WINE_BROADWAY_SRC = \
+        wine/gdkbroadway-server.c \
+        wine/gdkcursor-broadway.c \
+        wine/gdkdevice-broadway.c \
+        wine/gdkdevicemanager-broadway.c \
+        wine/gdkdisplay-broadway.c \
+        wine/gdkdnd-broadway.c \
+        wine/gdkeventsource.c \
+        wine/gdkglobals-broadway.c \
+        wine/gdkkeys-broadway.c \
+        wine/gdkmonitor-broadway.c \
+        wine/gdkproperty-broadway.c \
+        wine/gdkscreen-broadway.c \
+        wine/gdkselection-broadway.c \
+        wine/gdktestutils-broadway.c \
+        wine/gdkvisual-broadway.c \
+        wine/gdkwindow-broadway.c
 
 #win/cairocontext-broadway.c \
 	win/cursor-broadway.c \
@@ -72,6 +91,7 @@ WIN_BROADWAY_SRC = \
 
 GDK3_BROADWAY_OBJS = $(patsubst %.c, %.o, $(GDK3_BROADWAY_SRC))
 WIN_BROADWAY_OBJS = $(patsubst %.c, %.o, $(WIN_BROADWAY_SRC))
+WINE_BROADWAY_OBJS = $(patsubst %.c, %.o, $(WINE_BROADWAY_SRC))
 BROADWAYD_OBJS = $(patsubst %.c, %.o, $(BROADWAYD_SRC))
 SERVER_OBJS = $(patsubst %.c, %.o, $(SERVER_SRC))
 
@@ -79,7 +99,10 @@ SERVER_OBJS = $(patsubst %.c, %.o, $(SERVER_SRC))
 $(LIBBROADWAY) : $(SERVER_OBJS)
 	ar rcs $@ $^
 
-$(LIBBROADWAY-WIN) : $(SERVER_OBJS) $(WIN_BROADWAY_OBJS)
+#$(LIBBROADWAY-WIN) : $(SERVER_OBJS) $(WIN_BROADWAY_OBJS)
+#	ar rcs $@ $^
+
+$(LIBBROADWAY-WINE) : $(SERVER_OBJS) $(WINE_BROADWAY_OBJS)
 	ar rcs $@ $^
 
 $(LIBBROADWAY-GDK3) : $(SERVER_OBJS) $(GDK3_BROADWAY_OBJS)
@@ -94,7 +117,7 @@ testsocket :
 	gcc -o tests/gtk/$@ tests/gtk/testsocket.c tests/gtk/testsocket_common.c $(CFLAGS_GTK)
 
 connection-proto :
-	gcc -o tests/$@ tests/connection-proto.c libbroadway-win.a $(CFLAGS)
+	gcc -o tests/$@ tests/connection-proto.c libbroadway-wine.a $(CFLAGS)
 
 ###
 ### Clean target, other useful targets
@@ -102,6 +125,6 @@ connection-proto :
 
 clean:
 	rm -f broadwayd-gtk3 broadwayd-gtk4 
-	rm -f win/*.o gdk3/*.o *.a 
+	rm -f gdk3/*.o win/*.o wine/*.o *.a 
 	rm -f tests/gtk/testsocket tests/connection-proto
 

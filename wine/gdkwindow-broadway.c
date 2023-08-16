@@ -235,7 +235,7 @@ wine_broadway_screen_init_root_window (GdkScreen * screen)
   window->height = gdk_screen_get_height (screen);
   window->viewable = TRUE;
 
-  _gdk_window_update_size (broadway_screen->root_window);
+  //_gdk_window_update_size (broadway_screen->root_window);
 }
 
 static void
@@ -451,18 +451,18 @@ gdk_window_broadway_hide (GdkWindow *window)
   //  _gdk_make_event (GDK_WINDOW (window), GDK_UNMAP, NULL, FALSE);
 
   if (window->parent && window->parent->event_mask & GDK_SUBSTRUCTURE_MASK)
-     gdk_window_set_events (GDK_WINDOW (window), UNGDK_MAP);
+     gdk_window_set_events (GDK_WINDOW (window), GDK_UNMAP);
    // _gdk_make_event (GDK_WINDOW (window), GDK_UNMAP, NULL, FALSE);
 
   broadway_display = GDK_BROADWAY_DISPLAY (gdk_window_get_display (window));
 
-  wine_broadway_window_grab_check_unmap (window,
-					 wine_broadway_server_get_next_serial (broadway_display->server));
+  //wine_broadway_window_grab_check_unmap (window,
+//					 wine_broadway_server_get_next_serial (broadway_display->server));
 
   if (wine_broadway_server_window_hide (broadway_display->server, impl->id))
     queue_flush (window);
 
-  _gdk_window_clear_update_area (window);
+  //_gdk_window_clear_update_area (window);
 }
 
 static void

@@ -107,7 +107,7 @@ wine_broadway_screen_size_changed (GdkScreen                       *screen,
 
   monitor = GDK_BROADWAY_DISPLAY (broadway_screen->display)->monitor;
 
-  gdk_monitor_set_size (monitor, msg->width, msg->height);
+  //gdk_monitor_set_size (monitor, msg->width, msg->height);
   gdk_monitor_set_physical_size (monitor, msg->width * 25.4 / 96, msg->height * 25.4 / 96);
 
   g_signal_emit_by_name (screen, "size-changed");

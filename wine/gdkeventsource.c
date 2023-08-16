@@ -32,6 +32,9 @@ static gboolean gdk_event_source_dispatch (GSource     *source,
                                            gpointer     user_data);
 static void     gdk_event_source_finalize (GSource     *source);
 
+void     gdk_event_set_seat2              (GdkEvent *event,
+                                          GdkSeat  *seat);
+
 #define HAS_FOCUS(toplevel)                           \
   ((toplevel)->has_focus || (toplevel)->has_pointer_focus)
 
@@ -137,7 +140,7 @@ wine_broadway_events_got_input (BroadwayInputMsg *message)
 	event->crossing.mode = message->crossing.mode;
 	event->crossing.detail = GDK_NOTIFY_ANCESTOR;
 	gdk_event_set_device (event, device_manager->core_pointer);
-	gdk_event_set_seat (event, gdk_device_get_seat (device_manager->core_pointer));
+	gdk_event_set_seat2 (event, gdk_device_get_seat (device_manager->core_pointer));
 
 	node = _gdk_event_queue_append (display, event);
 	_gdk_windowing_got_event (display, node, event, message->base.serial);
@@ -158,7 +161,7 @@ wine_broadway_events_got_input (BroadwayInputMsg *message)
 	event->crossing.mode = message->crossing.mode;
 	event->crossing.detail = GDK_NOTIFY_ANCESTOR;
 	gdk_event_set_device (event, device_manager->core_pointer);
-	gdk_event_set_seat (event, gdk_device_get_seat (device_manager->core_pointer));
+	gdk_event_set_seat2 (event, gdk_device_get_seat (device_manager->core_pointer));
 
 	node = _gdk_event_queue_append (display, event);
 	_gdk_windowing_got_event (display, node, event, message->base.serial);
@@ -180,7 +183,7 @@ wine_broadway_events_got_input (BroadwayInputMsg *message)
 	event->motion.y_root = message->pointer.root_y;
 	event->motion.state = message->pointer.state;
 	gdk_event_set_device (event, device_manager->core_pointer);
-	gdk_event_set_seat (event, gdk_device_get_seat (device_manager->core_pointer));
+	gdk_event_set_seat2 (event, gdk_device_get_seat (device_manager->core_pointer));
 
 	node = _gdk_event_queue_append (display, event);
 	_gdk_windowing_got_event (display, node, event, message->base.serial);
@@ -206,7 +209,7 @@ wine_broadway_events_got_input (BroadwayInputMsg *message)
 	event->button.button = message->button.button;
 	event->button.state = message->pointer.state;
 	gdk_event_set_device (event, device_manager->core_pointer);
-	gdk_event_set_seat (event, gdk_device_get_seat (device_manager->core_pointer));
+	gdk_event_set_seat2 (event, gdk_device_get_seat (device_manager->core_pointer));
 
 	node = _gdk_event_queue_append (display, event);
 	_gdk_windowing_got_event (display, node, event, message->base.serial);
@@ -227,7 +230,7 @@ wine_broadway_events_got_input (BroadwayInputMsg *message)
         event->scroll.state = message->pointer.state;
 	event->scroll.direction = message->scroll.dir == 0 ? GDK_SCROLL_UP : GDK_SCROLL_DOWN;
 	gdk_event_set_device (event, device_manager->core_pointer);
-	gdk_event_set_seat (event, gdk_device_get_seat (device_manager->core_pointer));
+	gdk_event_set_seat2 (event, gdk_device_get_seat (device_manager->core_pointer));
 
 	node = _gdk_event_queue_append (display, event);
 	_gdk_windowing_got_event (display, node, event, message->base.serial);
@@ -271,10 +274,10 @@ wine_broadway_events_got_input (BroadwayInputMsg *message)
 
 	gdk_event_set_device (event, device_manager->core_pointer);
 	gdk_event_set_source_device (event, device_manager->touchscreen);
-	gdk_event_set_seat (event, gdk_device_get_seat (device_manager->core_pointer));
+	gdk_event_set_seat2 (event, gdk_device_get_seat (device_manager->core_pointer));
 
-        if (message->touch.is_emulated)
-          gdk_event_set_pointer_emulated (event, TRUE);
+        //if (message->touch.is_emulated)
+          //gdk_event_set_pointer_emulated (event, TRUE);
 
         if (event_type == GDK_TOUCH_BEGIN || event_type == GDK_TOUCH_UPDATE)
           event->touch.state |= GDK_BUTTON1_MASK;
@@ -299,7 +302,7 @@ wine_broadway_events_got_input (BroadwayInputMsg *message)
         gdk_event_set_scancode (event, message->key.key);
 	event->key.length = 0;
 	gdk_event_set_device (event, device_manager->core_keyboard);
-	gdk_event_set_seat (event, gdk_device_get_seat (device_manager->core_keyboard));
+	gdk_event_set_seat2 (event, gdk_device_get_seat (device_manager->core_keyboard));
 
 	node = _gdk_event_queue_append (display, event);
 	_gdk_windowing_got_event (display, node, event, message->base.serial);
@@ -351,13 +354,13 @@ wine_broadway_events_got_input (BroadwayInputMsg *message)
     break;
 
   case BROADWAY_EVENT_SCREEN_SIZE_CHANGED:
-    screen = gdk_display_get_default_screen (display);
-    window = gdk_screen_get_root_window (screen);
-    window->width = message->screen_resize_notify.width;
-    window->height = message->screen_resize_notify.height;
+    //screen = gdk_display_get_default_screen (display);
+    //window = gdk_screen_get_root_window (screen);
+    //window->width = message->screen_resize_notify.width;
+    //window->height = message->screen_resize_notify.height;
 
-    _gdk_window_update_size (window);
-    wine_broadway_screen_size_changed (screen, &message->screen_resize_notify);
+    //_gdk_window_update_size (window);
+    //wine_broadway_screen_size_changed (screen, &message->screen_resize_notify);
     break;
 
   case BROADWAY_EVENT_FOCUS:
@@ -368,7 +371,7 @@ wine_broadway_events_got_input (BroadwayInputMsg *message)
 	event->focus_change.window = g_object_ref (window);
 	event->focus_change.in = FALSE;
 	gdk_event_set_device (event, device_manager->core_pointer);
-	gdk_event_set_seat (event, gdk_device_get_seat (device_manager->core_pointer));
+	gdk_event_set_seat2 (event, gdk_device_get_seat (device_manager->core_pointer));
 	node = _gdk_event_queue_append (display, event);
 	_gdk_windowing_got_event (display, node, event, message->base.serial);
       }
@@ -379,7 +382,7 @@ wine_broadway_events_got_input (BroadwayInputMsg *message)
 	event->focus_change.window = g_object_ref (window);
 	event->focus_change.in = TRUE;
 	gdk_event_set_device (event, device_manager->core_pointer);
-	gdk_event_set_seat (event, gdk_device_get_seat (device_manager->core_pointer));
+	gdk_event_set_seat2 (event, gdk_device_get_seat (device_manager->core_pointer));
 	node = _gdk_event_queue_append (display, event);
 	_gdk_windowing_got_event (display, node, event, message->base.serial);
       }
@@ -410,7 +413,7 @@ gdk_event_source_dispatch (GSource     *source,
 
   if (event)
     {
-      _gdk_event_emit (event);
+      //_gdk_event_emit (event);
 
       gdk_event_free (event);
     }
@@ -451,3 +454,56 @@ wine_broadway_event_source_new (GdkDisplay *display)
 
   return source;
 }
+
+
+void     gdk_event_set_seat2              (GdkEvent *event,
+                                          GdkSeat  *seat)
+{
+  printf("stub - gdk_event_set_seat\n");
+}
+
+GList* _gdk_event_queue_append2      (GdkDisplay *display,
+                                      GdkEvent   *event)
+{
+  printf("stub - _gdk_event_queue_append\n");
+}
+
+void _gdk_windowing_got_event                (GdkDisplay       *display,
+                                              GList            *event_link,
+                                              GdkEvent         *event,
+                                              gulong            serial)
+{
+  printf("stub - _gdk_windowing_got_event\n");
+}
+
+GList* _gdk_event_queue_append       (GdkDisplay *display,
+                                      GdkEvent   *event)
+{
+  printf("stub - _gdk_event_queue_append\n");
+}
+
+GType gdk_window_impl_get_type (void)
+{
+  printf("stub - gdk_window_impl_get_type\n");
+}
+
+GList* _gdk_event_queue_find_first   (GdkDisplay *display)
+{
+  printf("stub - _gdk_event_queue_find_first\n");
+}
+
+void     gdk_event_set_scancode        (GdkEvent *event,
+                                        guint16 scancode)
+{
+  printf("stub - gdk_event_set_scancode\n");
+}
+
+
+void                _gdk_display_device_grab_update   (GdkDisplay *display,
+                                                       GdkDevice  *device,
+                                                       GdkDevice  *source_device,
+                                                       gulong      current_serial)
+{
+  printf("stub - _gdk_display_device_grab_update\n");
+}
+

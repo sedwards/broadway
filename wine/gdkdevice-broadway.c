@@ -233,8 +233,8 @@ wine_broadway_window_grab_check_unmap (GdkWindow *window,
   G_GNUC_END_IGNORE_DEPRECATIONS;
 
   /* End all grabs on the newly hidden window */
-  for (d = devices; d; d = d->next)
-    _gdk_display_end_device_grab (display, d->data, serial, window, TRUE);
+  //for (d = devices; d; d = d->next)
+    //_gdk_display_end_device_grab (display, d->data, serial, window, TRUE);
 
   g_list_free (devices);
 }
@@ -258,7 +258,7 @@ wine_broadway_window_grab_check_destroy (GdkWindow *window)
   for (d = devices; d; d = d->next)
     {
       /* Make sure there is no lasting grab in this native window */
-      grab = _gdk_display_get_last_device_grab (display, d->data);
+      //grab = _gdk_display_get_last_device_grab (display, d->data);
 
       if (grab && grab->native_window == window)
 	{
@@ -331,7 +331,7 @@ gdk_broadway_device_ungrab (GdkDevice *device,
 
       if (serial != 0)
 	{
-	  grab = _gdk_display_get_last_device_grab (display, device);
+	  //grab = _gdk_display_get_last_device_grab (display, device);
 	  if (grab &&
 	      (time_ == GDK_CURRENT_TIME ||
 	       grab->time == GDK_CURRENT_TIME ||
@@ -366,3 +366,15 @@ gdk_broadway_device_select_window_events (GdkDevice    *device,
 					  GdkEventMask  event_mask)
 {
 }
+
+guint _gdk_device_add_axis   (GdkDevice   *device,
+                              GdkAtom      label_atom,
+                              GdkAxisUse   use,
+                              gdouble      min_value,
+                              gdouble      max_value,
+                              gdouble      resolution)
+{
+  printf("stub - _gdk_device_add_axis\n");
+}
+
+

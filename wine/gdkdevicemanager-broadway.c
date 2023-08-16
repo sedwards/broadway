@@ -128,10 +128,10 @@ gdk_broadway_device_manager_constructed (GObject *object)
   _gdk_device_set_associated_device (device_manager->touchscreen, device_manager->core_pointer);
   _gdk_device_add_slave (device_manager->core_pointer, device_manager->touchscreen);
 
-  seat = gdk_seat_default_new_for_master_pair (device_manager->core_pointer,
-                                               device_manager->core_keyboard);
-  gdk_display_add_seat (display, seat);
-  gdk_seat_default_add_slave (GDK_SEAT_DEFAULT (seat), device_manager->touchscreen);
+//  seat = gdk_seat_default_new_for_master_pair (device_manager->core_pointer,
+//                                               device_manager->core_keyboard);
+//  gdk_display_add_seat (display, seat);
+//  gdk_seat_default_add_slave (GDK_SEAT_DEFAULT (seat), device_manager->touchscreen);
   g_object_unref (seat);
 }
 
@@ -172,3 +172,28 @@ wine_broadway_device_manager_new (GdkDisplay *display)
 		       "display", display,
 		       NULL);
 }
+
+void  _gdk_device_set_associated_device (GdkDevice *device,
+                                         GdkDevice *relative)
+{
+  printf("stub - _gdk_device_set_associated_device\n");
+}
+
+void _gdk_device_add_slave (GdkDevice *device,
+                            GdkDevice *slave)
+{
+  printf("stub - _gdk_device_add_slave\n");
+}
+
+gulong              _gdk_display_get_next_serial      (GdkDisplay       *display)
+{
+  printf("stub - _gdk_display_get_next_serial\n");
+}
+
+void            gdk_monitor_set_physical_size   (GdkMonitor *monitor,
+                                                 int         width_mm,
+                                                 int         height_mm)
+{
+  printf("stub - gdk_monitor_set_physical_size\n");
+}
+

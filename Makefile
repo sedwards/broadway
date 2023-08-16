@@ -45,7 +45,8 @@ GDK3_BROADWAY_SRC = \
 	wine/gdkselection-broadway.c \
 	wine/gdktestutils-broadway.c \
 	wine/gdkvisual-broadway.c \
-	wine/gdkwindow-broadway.c
+	wine/gdkwindow-broadway.c \
+	wine/port.c
 
 WIN_BROADWAY_SRC = \
 	win/eventsource.c \
@@ -117,7 +118,7 @@ testsocket :
 	gcc -o tests/gtk/$@ tests/gtk/testsocket.c tests/gtk/testsocket_common.c $(CFLAGS_GTK)
 
 connection-proto :
-	gcc -o tests/$@ tests/connection-proto.c libbroadway-wine.a $(CFLAGS)
+	gcc -o tests/$@ tests/connection-proto.c /usr/local/lib/libbroadway.a $(CFLAGS)
 
 ###
 ### Clean target, other useful targets

@@ -56,6 +56,17 @@ GdkDisplay *
 wine_broadway_display_open (const gchar *display_name);
 
 
+ GdkDisplayManager *
+gdk_display_manager_get (void);
+
+ GdkDisplay *
+gdk_display_manager_get_default_display
+                               (GdkDisplayManager *manager);
+
+ GdkDisplay *
+gdk_display_manager_open_display (GdkDisplayManager *manager,
+                                  const gchar *name);
+
 int main(void)
 {
     GError *error;
@@ -78,24 +89,28 @@ int main(void)
     }
 
     wine_broadway_display_get_type();
+    printf("wine_broadway_display_get_type\n");
 
-    wine_broadway_display_open(":0");
+    wine_broadway_display_open(client_port);
     printf("wine_broadway_display_open\n");
 
     //printf("wine_broadway_server_new function did something: %s", error-> message);
-    printf("wine_broadway_server_new function did something\n");
+    //printf("wine_broadway_server_new function did something\n");
 
     id = wine_broadway_server_new_window(broadway_server,100,100,100,100,0);
-    
     printf("wine_broadway_server_new_window function did something\n");
 
     wine_broadway_server_window_show (broadway_server, id);
+    printf("wine_broadway_server_window_show function did something\n");
 
     surface = wine_broadway_server_create_surface(100,100);
+    printf("wine_broadway_server_create_surface did something\n");
 
     wine_broadway_server_window_update (broadway_server, id, surface);
+    printf("wine_broadway_server_window_update\n");
 
     wine_broadway_server_window_show (broadway_server, id);
+    printf("wine_broadway_server_window_show again\n");
     
     //return id;
 }

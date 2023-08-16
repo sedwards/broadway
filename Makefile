@@ -1,6 +1,6 @@
 CC=gcc
 CFLAGS=`pkg-config --libs --cflags gio-2.0 gobject-2.0 cairo glib-2.0 gtk+-3.0` -fPIC -Wall -Wno-deprecated-declarations -g -I. -I./include -I./include/gdk -I./include/public
-CFLAGS_GTK=`pkg-config --libs --cflags gio-2.0 gobject-2.0 cairo glib-2.0 gtk+-3.0` -fPIC -Wall -g -I. -I./include
+CFLAGS_SANS_GTK=`pkg-config --libs --cflags gio-2.0 gobject-2.0 cairo glib-2.0` -fPIC -Wall -g -I. -I./include
 
 LIBBROADWAY=libbroadway.a
 LIBBROADWAY-GDK3=libbroadway-gdk3.a
@@ -115,7 +115,7 @@ $(LIBBROADWAY-GDK3) : $(SERVER_OBJS) $(GDK3_BROADWAY_OBJS)
 ###
 
 testsocket : 
-	gcc -o tests/gtk/$@ tests/gtk/testsocket.c tests/gtk/testsocket_common.c $(CFLAGS_GTK)
+	gcc -o tests/gtk/$@ tests/gtk/testsocket.c tests/gtk/testsocket_common.c $(CFLAGS)
 
 connection-proto :
 	gcc -o tests/$@ tests/connection-proto.c $(LIBBROADWAY-WINE) $(CFLAGS)

@@ -62,7 +62,7 @@ wine_broadway_display_init (GdkBroadwayDisplay *display)
   //gdk_monitor_set_manufacturer (display->monitor, "browser");
   //display->manufacturer = g_strdup ("browser");
   //gdk_monitor_set_model (display->monitor, "0");
-  display->monitor = g_strdup ("0");
+  //display->monitor = g_strdup ("0");
 }
 
 static void
@@ -77,32 +77,44 @@ gdk_event_init (GdkDisplay *display)
 GdkDisplay *
 wine_broadway_display_open (const gchar *display_name)
 {
+  printf("\n inside wine_broadway_display_open");
   GdkDisplay *display;
   GdkBroadwayDisplay *broadway_display;
   GError *error = NULL;
 
   display = g_object_new (GDK_TYPE_BROADWAY_DISPLAY, NULL);
+  printf("\n New object GDK_TYPE_BROADWAY_DISPLAY,");
+  
   broadway_display = GDK_BROADWAY_DISPLAY (display);
+
+  printf("\n open object");
 
   /* initialize the display's screens */
   broadway_display->screens = g_new (GdkScreen *, 1);
   broadway_display->screens[0] = wine_broadway_screen_new (display, 0);
 
+  printf("\n open screens");
   /* We need to initialize events after we have the screen
    * structures in places
    */
   wine_broadway_screen_events_init (broadway_display->screens[0]);
+  printf("\n screen events init");
 
   /*set the default screen */
   broadway_display->default_screen = broadway_display->screens[0];
+  printf("\n set default display");
 
   display->device_manager = wine_broadway_device_manager_new (display);
+  printf("\n New device manager");
 
   gdk_event_init (display);
+  printf("\n Process gdk events");
 
   wine_broadway_display_init_dnd (display);
+  printf("\n display init dnd");
 
   wine_broadway_screen_setup (broadway_display->screens[0]);
+  printf("\n screen setup");
 
   if (display_name == NULL)
     display_name = g_getenv ("BROADWAY_DISPLAY");
@@ -111,6 +123,7 @@ wine_broadway_display_open (const gchar *display_name)
   if (broadway_display->server == NULL)
     {
       GDK_NOTE (MISC, g_message ("Unable to init Broadway server: %s\n", error->message));
+      printf ("Unable to init Broadway server: %s\n", error->message);
       g_error_free (error);
       return NULL;
     }

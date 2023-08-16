@@ -68,6 +68,7 @@ struct _GdkBroadwayWindowClass {
 };
 
 G_DEFINE_TYPE (GdkBroadwayWindow, wine_broadway_window, GDK_TYPE_WINDOW)
+//G_DEFINE_TYPE (GdkBroadwayWindow, wine_broadway_window, G_TYPE_OBJECT)
 
 static void
 wine_broadway_window_class_init (GdkBroadwayWindowClass *broadway_window_class)
@@ -81,7 +82,8 @@ wine_broadway_window_init (GdkBroadwayWindow *broadway_window)
 
 G_DEFINE_TYPE (GdkWindowImplBroadway,
 	       gdk_window_impl_broadway,
-	       GDK_TYPE_WINDOW_IMPL)
+	       G_TYPE_OBJECT)
+//	       GDK_TYPE_WINDOW_IMPL)
 
 static GdkDisplay *
 find_broadway_display (void)
@@ -1552,7 +1554,12 @@ static void
 gdk_window_impl_broadway_class_init (GdkWindowImplBroadwayClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
-  GdkWindowImplClass *impl_class = GDK_WINDOW_IMPL_CLASS (klass);
+  //GdkWindowImplClass *impl_class = GDK_WINDOW_IMPL_CLASS (klass);
+  //GdkWindowImplClass *impl_class = G_OBJECT_CLASS (klass);
+  
+  GdkWindowImplClass *impl_class;
+
+  impl_class = GDK_WINDOW_IMPL_GET_CLASS (object_class);
 
   object_class->finalize = gdk_window_impl_broadway_finalize;
 
@@ -1630,3 +1637,10 @@ gdk_window_impl_broadway_class_init (GdkWindowImplBroadwayClass *klass)
   impl_class->delete_property = wine_broadway_window_delete_property;
   impl_class->get_drag_protocol = wine_broadway_window_get_drag_protocol;
 }
+
+#if 0
+GdkWindowImplClass * gdk_window_impl_broadway_class_init (GdkWindowImplBroadwayClass *klass)
+{
+}
+#endif
+

@@ -21,64 +21,45 @@ struct _BroadwayServer {
 
 typedef struct _BroadwayServer BroadwayServer;
 
-#define wine_broadway gdk_broadway
+#include <gtk/gtk.h>
 
-BroadwayServer * wine_broadway_server_new (const char *display, GError **error);
-guint32 wine_broadway_server_get_last_seen_time (BroadwayServer *server);
-void wine_broadway_server_flush (BroadwayServer *server);
-void wine_broadway_server_sync (BroadwayServer *server);
-void wine_broadway_server_query_mouse (BroadwayServer *server,
-                                  guint32            *toplevel,
-                                  gint32             *root_x,
-                                  gint32             *root_y,
-                                  guint32            *mask);
-
-guint32
-wine_broadway_server_new_window (BroadwayServer *server,
-                                 int x,
-                                 int y,
-                                 int width,
-                                 int height,
-                                 gboolean is_temp);
-
-
-gboolean wine_broadway_server_window_show (BroadwayServer *server, gint id);
-
-cairo_surface_t *
-wine_broadway_server_create_surface (int width, int height);
-
-void wine_broadway_server_window_update (BroadwayServer *server, gint id,
-                                    cairo_surface_t *surface);
-
-void wine_broadway_display_get_type(void);
-
-GdkDisplay *
-wine_broadway_display_open (const gchar *display_name);
-
-
- GdkDisplayManager *
-gdk_display_manager_get (void);
-
- GdkDisplay *
-gdk_display_manager_get_default_display
-                               (GdkDisplayManager *manager);
-
- GdkDisplay *
-gdk_display_manager_open_display (GdkDisplayManager *manager,
-                                  const gchar *name);
-
-int main(void)
+int main (int argc, char *argv[])
 {
     GError *error;
     error = NULL;
     guint32 id;
 
-    BroadwayServer *broadway_server;
-    cairo_surface_t *surface;
+    GdkDisplay *display;
+    GdkDeviceManager *dm;
+    GdkScreen *screen; 
+    GdkWindow *root_window;
+    GdkWindow *gdk_window;
+    GtkWindow *gtk_window;
+    struct _GdkWindowAttr window_attributes;
 
+
+
+    window_attributes.title="Broadway";
+    window_attributes.event_mask=0;
+    window_attributes.x=1000;
+    window_attributes.y=1000;
+    window_attributes.width=1000;
+    window_attributes.height=1000;
+  //GdkWindowWindowClass wclass;
+ //GdkVisual *visual;
+    window_attributes.window_type=GDK_WINDOW_TOPLEVEL;
+  //GdkCursor *cursor;
+    //window_attributes.wmclass_name;
+    //window_attributes.wmclass_class="wm_class_type_fixme"
+    window_attributes.override_redirect=0;
+  //GdkWindowTypeHint type_hint;
+
+
+     BroadwayServer *broadway_server;
+    cairo_surface_t *surface;
+    //GdkDisplay *display;
     char *client_port;
     client_port = ":0";
-
     //dir = g_dir_open(target.c_str(), 0, &error);
     broadway_server = wine_broadway_server_new(client_port, &error);
     if( error != NULL )
@@ -87,11 +68,37 @@ int main(void)
 	printf("Some error: %s", error-> message);
         g_clear_error (&error);
     }
+    printf("New broadway server\n");
 
-    wine_broadway_display_get_type();
-    printf("wine_broadway_display_get_type\n");
+    //gtk_init (&argc, &argv);
+    gdk_init (&argc, &argv);
 
-    wine_broadway_display_open(client_port);
+    printf("gtk init\n\n\n\n");
+   // screen = gdk_screen_get_default ();
+   
+    //dm = wine_broadway_device_manager_new (display);
+
+//    display = gdk_display_get_default ();
+printf("display_get_default\n\n\n\n\n");
+// gchar *
+//gdk_get_display_arg_name (void)
+
+//GdkDisplay *
+//gdk_display_open_default (void)
+
+
+//    if(wine_broadway_display_supports_cursor_alpha (display))
+//	    printf("Broadway says it supports alpha channel cursor\n");
+
+//    if(wine_broadway_display_supports_cursor_color(display))
+//	    printf("Display supports cursor color\n");
+
+//    wine_broadway_display_get_type();
+//    printf("wine_broadway_display_get_type\n");
+
+#if 0
+    printf("calling wine_broadway_display_open\n");
+    display = wine_broadway_display_open(client_port);
     printf("wine_broadway_display_open\n");
 
     //printf("wine_broadway_server_new function did something: %s", error-> message);
@@ -111,8 +118,11 @@ int main(void)
 
     wine_broadway_server_window_show (broadway_server, id);
     printf("wine_broadway_server_window_show again\n");
-    
     //return id;
-}
+#endif
+//    gtk_main();
+    gtk_main();
 
+    return 0;
+}
 

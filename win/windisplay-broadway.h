@@ -22,20 +22,17 @@
 #ifndef __GDK_BROADWAY_DISPLAY__
 #define __GDK_BROADWAY_DISPLAY__
 
-#include <gdk/gdk.h>
-#include "gdk_structs.h"
-
 #include "gdkbroadwaydisplay.h"
+
+#include "gdkdisplayprivate.h"
+#include "gdkkeys.h"
+#include "gdkwindow.h"
+#include "gdkinternals.h"
+#include "gdkmain.h"
 #include "gdkbroadway-server.h"
+#include "gdkmonitorprivate.h"
 
 G_BEGIN_DECLS
-
-typedef struct _GdkDisplay GdkDisplay;
-
-struct _GdkDisplay
-{
-  GObject parent_class;
-};
 
 struct _GdkBroadwayDisplay
 {
@@ -66,8 +63,7 @@ struct _GdkBroadwayDisplay
 
 struct _GdkBroadwayDisplayClass
 {
-  GObject parent_class;
-  //GdkDisplayClass parent_class;
+  GdkDisplayClass parent_class;
 };
 
 G_END_DECLS

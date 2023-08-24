@@ -10,21 +10,21 @@ LIBBROADWAY-WINE=libbroadway-wine.a
 all: broadwayd-gtk3 broadwayd-gtk4 libbroadway-gdk3.a libbroadway-wine.a testsocket connection-proto
 
 SERVER_SRC = \
-       broadway-server.c \
-       broadway-buffer.c \
-       broadway-output.c
+       broadwayd3/broadway-server.c \
+       broadwayd3/broadway-buffer.c \
+       broadwayd3/broadway-output.c
 
-BROADWAYD_SRC = \
+BROADWAYD3_SRC = \
 	$(SERVER_SRC) \
-	broadwayd.c
+	broadwayd3/broadwayd.c
 
 #### Broadway Standalone Daemon
 
 broadwayd-gtk3 :
-	gcc -o $@ $(BROADWAYD_SRC) `pkg-config --libs --cflags gio-2.0 gobject-2.0 cairo glib-2.0` -fPIC -Wall -g
+	gcc -o bin/$@ $(BROADWAYD3_SRC) $(CFLAGS) 
 
 broadwayd-gtk4 :
-	gcc -o $@ $(BROADWAYD_SRC) `pkg-config --libs --cflags gtk4` -fPIC -DGTK_MAJOR_VERSION=4 -Wall
+	gcc -o bin/$@ $(BROADWAYD4_SRC) `pkg-config --libs --cflags gtk4` -fPIC -DGTK_MAJOR_VERSION=4 -Wall
 
 ##############################################################################################################
 ###ls -l win/*.c | awk '{print "\t" $9 " \/"}' | awk '{sub(/.$/,"")}1'
@@ -93,7 +93,8 @@ WINE_BROADWAY_SRC = \
 GDK3_BROADWAY_OBJS = $(patsubst %.c, %.o, $(GDK3_BROADWAY_SRC))
 WIN_BROADWAY_OBJS = $(patsubst %.c, %.o, $(WIN_BROADWAY_SRC))
 WINE_BROADWAY_OBJS = $(patsubst %.c, %.o, $(WINE_BROADWAY_SRC))
-BROADWAYD_OBJS = $(patsubst %.c, %.o, $(BROADWAYD_SRC))
+BROADWAYD3_OBJS = $(patsubst %.c, %.o, $(BROADWAYD3_SRC))
+BROADWAYD4_OBJS = $(patsubst %.c, %.o, $(BROADWAYD4_SRC))
 SERVER_OBJS = $(patsubst %.c, %.o, $(SERVER_SRC))
 
 
@@ -120,12 +121,14 @@ testsocket :
 connection-proto :
 	gcc -o tests/$@ tests/connection-proto.c $(LIBBROADWAY-WINE) $(CFLAGS)
 
+full-sim :
+	gcc -o tests/$@ tests/full-sim.c $(LIBBROADWAY-WINE) $(CFLAGS)
 ###
 ### Clean target, other useful targets
 ###
 
 clean:
-	rm -f broadwayd-gtk3 broadwayd-gtk4 
+	rm -f bin/broadwayd-gtk3 bin/broadwayd-gtk4 
 	rm -f gdk3/*.o win/*.o wine/*.o *.a 
 	rm -f tests/gtk/testsocket tests/connection-proto
 

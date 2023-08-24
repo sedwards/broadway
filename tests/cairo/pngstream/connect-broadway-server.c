@@ -6,8 +6,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-#include "gdkbroadway-server.h"
-//#include "gdkprivate-broadway.h"
+#include "connect-broadway-server.h"
+void wine_broadway_events_got_input      (BroadwayInputMsg *message);
 
 #include <glib.h>
 #include <glib/gprintf.h>
@@ -24,10 +24,9 @@
 #define ftruncate _chsize_s
 #endif
 #include <sys/types.h>
-//#ifdef G_OS_WIN32
-//#include <windows.h>
-//#endif
-#include "gdkintl.h"
+#ifdef G_OS_WIN32
+#include <windows.h>
+#endif
 
 typedef struct BroadwayInput BroadwayInput;
 
@@ -52,32 +51,32 @@ struct _GdkBroadwayServerClass
 
 static gboolean input_available_cb (gpointer stream, gpointer user_data);
 
-static GType gdk_broadway_server_get_type (void);
+static GType wine_broadway_server_get_type (void);
 
-G_DEFINE_TYPE (GdkBroadwayServer, gdk_broadway_server, G_TYPE_OBJECT)
+G_DEFINE_TYPE (GdkBroadwayServer, wine_broadway_server, G_TYPE_OBJECT)
 
 static void
-gdk_broadway_server_init (GdkBroadwayServer *server)
+wine_broadway_server_init (GdkBroadwayServer *server)
 {
   server->next_serial = 1;
 }
 
 static void
-gdk_broadway_server_finalize (GObject *object)
+wine_broadway_server_finalize (GObject *object)
 {
-  G_OBJECT_CLASS (gdk_broadway_server_parent_class)->finalize (object);
+  G_OBJECT_CLASS (wine_broadway_server_parent_class)->finalize (object);
 }
 
 static void
-gdk_broadway_server_class_init (GdkBroadwayServerClass * class)
+wine_broadway_server_class_init (GdkBroadwayServerClass * class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
 
-  object_class->finalize = gdk_broadway_server_finalize;
+  object_class->finalize = wine_broadway_server_finalize;
 }
 
 gboolean
-_gdk_broadway_server_lookahead_event (GdkBroadwayServer  *server,
+wine_broadway_server_lookahead_event (GdkBroadwayServer  *server,
 				      const char         *types)
 {
 
@@ -85,13 +84,13 @@ _gdk_broadway_server_lookahead_event (GdkBroadwayServer  *server,
 }
 
 gulong
-_gdk_broadway_server_get_next_serial (GdkBroadwayServer *server)
+wine_broadway_server_get_next_serial (GdkBroadwayServer *server)
 {
   return (gulong)server->next_serial;
 }
 
 GdkBroadwayServer *
-_gdk_broadway_server_new (const char *display, GError **error)
+wine_broadway_server_new (const char *display, GError **error)
 {
   GdkBroadwayServer *server;
   GSocketClient *client;
@@ -140,7 +139,7 @@ _gdk_broadway_server_new (const char *display, GError **error)
   else
     {
       g_set_error (error, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
-		   _("Broadway display type not supported: %s"), display);
+		   "Broadway display type not supported: %s", display);
       return NULL;
     }
 
@@ -170,13 +169,13 @@ _gdk_broadway_server_new (const char *display, GError **error)
 }
 
 guint32
-_gdk_broadway_server_get_last_seen_time (GdkBroadwayServer *server)
+wine_broadway_server_get_last_seen_time (GdkBroadwayServer *server)
 {
   return 0;
 }
 
 static guint32
-gdk_broadway_server_send_message_with_size (GdkBroadwayServer *server, BroadwayRequestBase *base,
+wine_broadway_server_send_message_with_size (GdkBroadwayServer *server, BroadwayRequestBase *base,
 					    gsize size, guint32 type)
 {
   GOutputStream *out;
@@ -199,8 +198,8 @@ gdk_broadway_server_send_message_with_size (GdkBroadwayServer *server, BroadwayR
   return base->serial;
 }
 
-#define gdk_broadway_server_send_message(_server, _msg, _type) \
-  gdk_broadway_server_send_message_with_size(_server, (BroadwayRequestBase *)&_msg, sizeof (_msg), _type)
+#define wine_broadway_server_send_message(_server, _msg, _type) \
+  wine_broadway_server_send_message_with_size(_server, (BroadwayRequestBase *)&_msg, sizeof (_msg), _type)
 
 static void
 parse_all_input (GdkBroadwayServer *server)
@@ -317,7 +316,7 @@ process_input_messages (GdkBroadwayServer *server)
 			    server->incomming);
 
       if (reply->base.type == BROADWAY_REPLY_EVENT)
-	_gdk_broadway_events_got_input (&reply->event.msg);
+	wine_broadway_events_got_input (&reply->event.msg);
       else
 	g_warning ("Unhandled reply type %d", reply->base.type);
       g_free (reply);
@@ -354,7 +353,7 @@ input_available_cb (gpointer stream, gpointer user_data)
 }
 
 static BroadwayReply *
-gdk_broadway_server_wait_for_reply (GdkBroadwayServer *server,
+wine_broadway_server_wait_for_reply (GdkBroadwayServer *server,
 				    guint32 serial)
 {
   BroadwayReply *reply;
@@ -377,23 +376,23 @@ gdk_broadway_server_wait_for_reply (GdkBroadwayServer *server,
 }
 
 void
-_gdk_broadway_server_flush (GdkBroadwayServer *server)
+wine_broadway_server_flush (GdkBroadwayServer *server)
 {
   BroadwayRequestFlush msg;
 
-  gdk_broadway_server_send_message(server, msg, BROADWAY_REQUEST_FLUSH);
+  wine_broadway_server_send_message(server, msg, BROADWAY_REQUEST_FLUSH);
 }
 
 void
-_gdk_broadway_server_sync (GdkBroadwayServer *server)
+wine_broadway_server_sync (GdkBroadwayServer *server)
 {
   BroadwayRequestSync msg;
   guint32 serial;
   BroadwayReply *reply;
 
-  serial = gdk_broadway_server_send_message (server, msg,
+  serial = wine_broadway_server_send_message (server, msg,
 					     BROADWAY_REQUEST_SYNC);
-  reply = gdk_broadway_server_wait_for_reply (server, serial);
+  reply = wine_broadway_server_wait_for_reply (server, serial);
 
   g_assert (reply->base.type == BROADWAY_REPLY_SYNC);
 
@@ -403,7 +402,7 @@ _gdk_broadway_server_sync (GdkBroadwayServer *server)
 }
 
 void
-_gdk_broadway_server_query_mouse (GdkBroadwayServer *server,
+wine_broadway_server_query_mouse (GdkBroadwayServer *server,
 				  guint32            *toplevel,
 				  gint32             *root_x,
 				  gint32             *root_y,
@@ -413,9 +412,9 @@ _gdk_broadway_server_query_mouse (GdkBroadwayServer *server,
   guint32 serial;
   BroadwayReply *reply;
 
-  serial = gdk_broadway_server_send_message (server, msg,
+  serial = wine_broadway_server_send_message (server, msg,
 					     BROADWAY_REQUEST_QUERY_MOUSE);
-  reply = gdk_broadway_server_wait_for_reply (server, serial);
+  reply = wine_broadway_server_wait_for_reply (server, serial);
 
   g_assert (reply->base.type == BROADWAY_REPLY_QUERY_MOUSE);
 
@@ -432,7 +431,7 @@ _gdk_broadway_server_query_mouse (GdkBroadwayServer *server,
 }
 
 guint32
-_gdk_broadway_server_new_window (GdkBroadwayServer *server,
+wine_broadway_server_new_window (GdkBroadwayServer *server,
 				 int x,
 				 int y,
 				 int width,
@@ -449,9 +448,9 @@ _gdk_broadway_server_new_window (GdkBroadwayServer *server,
   msg.height = height;
   msg.is_temp = is_temp;
 
-  serial = gdk_broadway_server_send_message (server, msg,
+  serial = wine_broadway_server_send_message (server, msg,
 					     BROADWAY_REQUEST_NEW_WINDOW);
-  reply = gdk_broadway_server_wait_for_reply (server, serial);
+  reply = wine_broadway_server_wait_for_reply (server, serial);
 
   g_assert (reply->base.type == BROADWAY_REPLY_NEW_WINDOW);
 
@@ -463,62 +462,62 @@ _gdk_broadway_server_new_window (GdkBroadwayServer *server,
 }
 
 void
-_gdk_broadway_server_destroy_window (GdkBroadwayServer *server,
+wine_broadway_server_destroy_window (GdkBroadwayServer *server,
 				     gint id)
 {
   BroadwayRequestDestroyWindow msg;
 
   msg.id = id;
-  gdk_broadway_server_send_message (server, msg,
+  wine_broadway_server_send_message (server, msg,
 				    BROADWAY_REQUEST_DESTROY_WINDOW);
 }
 
 gboolean
-_gdk_broadway_server_window_show (GdkBroadwayServer *server,
+wine_broadway_server_window_show (GdkBroadwayServer *server,
 				  gint id)
 {
   BroadwayRequestShowWindow msg;
 
   msg.id = id;
-  gdk_broadway_server_send_message (server, msg,
+  wine_broadway_server_send_message (server, msg,
 				    BROADWAY_REQUEST_SHOW_WINDOW);
   
   return TRUE;
 }
 
 gboolean
-_gdk_broadway_server_window_hide (GdkBroadwayServer *server,
+wine_broadway_server_window_hide (GdkBroadwayServer *server,
 				  gint id)
 {
   BroadwayRequestHideWindow msg;
 
   msg.id = id;
-  gdk_broadway_server_send_message (server, msg,
+  wine_broadway_server_send_message (server, msg,
 				    BROADWAY_REQUEST_HIDE_WINDOW);
   
   return TRUE;
 }
 
 void
-_gdk_broadway_server_window_focus (GdkBroadwayServer *server,
+wine_broadway_server_window_focus (GdkBroadwayServer *server,
 				   gint id)
 {
   BroadwayRequestFocusWindow msg;
 
   msg.id = id;
-  gdk_broadway_server_send_message (server, msg,
+  wine_broadway_server_send_message (server, msg,
 				    BROADWAY_REQUEST_FOCUS_WINDOW);
 }
 
 void
-_gdk_broadway_server_window_set_transient_for (GdkBroadwayServer *server,
+wine_broadway_server_window_set_transient_for (GdkBroadwayServer *server,
 					       gint id, gint parent)
 {
   BroadwayRequestSetTransientFor msg;
 
   msg.id = id;
   msg.parent = parent;
-  gdk_broadway_server_send_message (server, msg,
+  wine_broadway_server_send_message (server, msg,
 				    BROADWAY_REQUEST_SET_TRANSIENT_FOR);
 }
 
@@ -662,7 +661,7 @@ create_random_shm (char *name, gsize size, gboolean *is_shm)
     }
 }
 
-static const cairo_user_data_key_t gdk_broadway_shm_cairo_key;
+static const cairo_user_data_key_t wine_broadway_shm_cairo_key;
 
 typedef struct {
   char name[36];
@@ -707,7 +706,7 @@ shm_data_destroy (void *_data)
 }
 
 cairo_surface_t *
-_gdk_broadway_server_create_surface (int                 width,
+wine_broadway_server_create_surface (int                 width,
 				     int                 height)
 {
   BroadwayShmSurfaceData *data;
@@ -721,14 +720,15 @@ _gdk_broadway_server_create_surface (int                 width,
 						 CAIRO_FORMAT_ARGB32, width, height, width * sizeof (guint32));
   g_assert (surface != NULL);
   
-  cairo_surface_set_user_data (surface, &gdk_broadway_shm_cairo_key,
+  cairo_surface_set_user_data (surface, &wine_broadway_shm_cairo_key,
 			       data, shm_data_destroy);
 
+  printf("wine_broadway_server_create_surface %s\n", data->name);
   return surface;
 }
 
 void
-_gdk_broadway_server_window_update (GdkBroadwayServer *server,
+wine_broadway_server_window_update (GdkBroadwayServer *server,
 				    gint id,
 				    cairo_surface_t *surface)
 {
@@ -738,20 +738,28 @@ _gdk_broadway_server_window_update (GdkBroadwayServer *server,
   if (surface == NULL)
     return;
 
-  data = cairo_surface_get_user_data (surface, &gdk_broadway_shm_cairo_key);
+  data = cairo_surface_get_user_data (surface, &wine_broadway_shm_cairo_key);
   g_assert (data != NULL);
 
   msg.id = id;
   memcpy (msg.name, data->name, 36);
+
+  printf("%s\n",msg.name);
+  printf("%s\n",data->name);
+
   msg.width = cairo_image_surface_get_width (surface);
   msg.height = cairo_image_surface_get_height (surface);
 
-  gdk_broadway_server_send_message (server, msg,
+  printf("%d msg.width\n\n",msg.width);
+  printf("%d msg.height\n\n", msg.height);
+
+  printf("Sending broadway window update to server\n");
+  wine_broadway_server_send_message (server, msg,
 				    BROADWAY_REQUEST_UPDATE);
 }
 
 gboolean
-_gdk_broadway_server_window_move_resize (GdkBroadwayServer *server,
+wine_broadway_server_window_move_resize (GdkBroadwayServer *server,
 					 gint id,
 					 gboolean with_move,
 					 int x,
@@ -768,14 +776,14 @@ _gdk_broadway_server_window_move_resize (GdkBroadwayServer *server,
   msg.width = width;
   msg.height = height;
 
-  gdk_broadway_server_send_message (server, msg,
+  wine_broadway_server_send_message (server, msg,
 				    BROADWAY_REQUEST_MOVE_RESIZE);
 
   return TRUE;
 }
 
 GdkGrabStatus
-_gdk_broadway_server_grab_pointer (GdkBroadwayServer *server,
+wine_broadway_server_grab_pointer (GdkBroadwayServer *server,
 				   gint id,
 				   gboolean owner_events,
 				   guint32 event_mask,
@@ -790,9 +798,9 @@ _gdk_broadway_server_grab_pointer (GdkBroadwayServer *server,
   msg.event_mask = event_mask;
   msg.time_ = time_;
 
-  serial = gdk_broadway_server_send_message (server, msg,
+  serial = wine_broadway_server_send_message (server, msg,
 					     BROADWAY_REQUEST_GRAB_POINTER);
-  reply = gdk_broadway_server_wait_for_reply (server, serial);
+  reply = wine_broadway_server_wait_for_reply (server, serial);
 
   g_assert (reply->base.type == BROADWAY_REPLY_GRAB_POINTER);
 
@@ -804,7 +812,7 @@ _gdk_broadway_server_grab_pointer (GdkBroadwayServer *server,
 }
 
 guint32
-_gdk_broadway_server_ungrab_pointer (GdkBroadwayServer *server,
+wine_broadway_server_ungrab_pointer (GdkBroadwayServer *server,
 				     guint32    time_)
 {
   BroadwayRequestUngrabPointer msg;
@@ -813,9 +821,9 @@ _gdk_broadway_server_ungrab_pointer (GdkBroadwayServer *server,
 
   msg.time_ = time_;
 
-  serial = gdk_broadway_server_send_message (server, msg,
+  serial = wine_broadway_server_send_message (server, msg,
 					     BROADWAY_REQUEST_UNGRAB_POINTER);
-  reply = gdk_broadway_server_wait_for_reply (server, serial);
+  reply = wine_broadway_server_wait_for_reply (server, serial);
 
   g_assert (reply->base.type == BROADWAY_REPLY_UNGRAB_POINTER);
 
@@ -827,12 +835,12 @@ _gdk_broadway_server_ungrab_pointer (GdkBroadwayServer *server,
 }
 
 void
-_gdk_broadway_server_set_show_keyboard (GdkBroadwayServer *server,
+wine_broadway_server_set_show_keyboard (GdkBroadwayServer *server,
                                         gboolean show)
 {
   BroadwayRequestSetShowKeyboard msg;
 
   msg.show_keyboard = show;
-  gdk_broadway_server_send_message (server, msg,
+  wine_broadway_server_send_message (server, msg,
 				    BROADWAY_REQUEST_SET_SHOW_KEYBOARD);
 }

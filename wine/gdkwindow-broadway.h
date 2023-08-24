@@ -25,7 +25,10 @@
 #ifndef __GDK_WINDOW_BROADWAY_H__
 #define __GDK_WINDOW_BROADWAY_H__
 
-#include <gdk/gdkwindowimpl.h>
+#include <gdk/gdk.h>
+#include "gdk_structs.h"
+
+//#include <gdk/gdkwindowimpl.h>
 
 G_BEGIN_DECLS
 
@@ -41,6 +44,20 @@ typedef struct _GdkWindowImplBroadwayClass GdkWindowImplBroadwayClass;
 #define GDK_IS_WINDOW_IMPL_BROADWAY(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), GDK_TYPE_WINDOW_IMPL_BROADWAY))
 #define GDK_IS_WINDOW_IMPL_BROADWAY_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), GDK_TYPE_WINDOW_IMPL_BROADWAY))
 #define GDK_WINDOW_IMPL_BROADWAY_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), GDK_TYPE_WINDOW_IMPL_BROADWAY, GdkWindowImplBroadwayClass))
+
+typedef struct _GdkWindowImpl       GdkWindowImpl;
+typedef struct _GdkWindowImplClass  GdkWindowImplClass;
+typedef struct _GdkWindowImplBroadway GdkWindowImplBroadway;
+
+typedef struct _GdkWindowImplClass
+{
+  GObject parent;
+};
+
+struct _GdkWindowImpl
+{
+  GObject parent;
+};
 
 struct _GdkWindowImplBroadway
 {

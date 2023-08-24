@@ -32,14 +32,16 @@
 #include <gdk/gdk.h>
 
 #include <gdk/gdkcursor.h>
-//#include "gdkprivate.h"
 //#include <gdk/gdkinternals.h>
+
+#if 0
 #include "gdkwindow-broadway.h"
 #include "gdkdisplay-broadway.h"
 
 #include "gdkbroadwaycursor.h"
 #include "gdkbroadwayvisual.h"
 #include "gdkbroadwaywindow.h"
+#endif
 
 void wine_broadway_resync_windows (void);
 

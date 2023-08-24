@@ -208,6 +208,7 @@ client_handle_request (BroadwayClient *client,
   switch (request->base.type)
     {
     case BROADWAY_REQUEST_NEW_WINDOW:
+      printf("BROADWAY_REQUEST_NEW_WINDOW\n");
       g_print("New window requested in Daemon\n");
       reply_new_window.id =
 	broadway_server_new_window (server,
@@ -222,16 +223,21 @@ client_handle_request (BroadwayClient *client,
 
       send_reply (client, request, (BroadwayReply *)&reply_new_window, sizeof (reply_new_window),
 		  BROADWAY_REPLY_NEW_WINDOW);
+      printf("BROADWAY_REPLY_NEW_WINDOW\n");
       break;
     case BROADWAY_REQUEST_FLUSH:
+      printf("BROADWAY_REQUEST_FLUSH\n");
       broadway_server_flush (server);
       break;
     case BROADWAY_REQUEST_SYNC:
+      printf("BROADWAY_REQUEST_SYNC\n");
       broadway_server_flush (server);
       send_reply (client, request, (BroadwayReply *)&reply_sync, sizeof (reply_sync),
 		  BROADWAY_REPLY_SYNC);
+      printf("BROADWAY_REPLY_SYNC\n");
       break;
     case BROADWAY_REQUEST_QUERY_MOUSE:
+      printf("BROADWAY_REQUEST_QUERY_MOUSE\n");
       broadway_server_query_mouse (server,
 				   &reply_query_mouse.toplevel,
 				   &reply_query_mouse.root_x,
@@ -239,25 +245,31 @@ client_handle_request (BroadwayClient *client,
 				   &reply_query_mouse.mask);
       send_reply (client, request, (BroadwayReply *)&reply_query_mouse, sizeof (reply_query_mouse),
 		  BROADWAY_REPLY_QUERY_MOUSE);
+      printf("BROADWAY_REPLY_QUERY_MOUSE\n");
       break;
     case BROADWAY_REQUEST_DESTROY_WINDOW:
+      printf("BROADWAY_REQUEST_DESTROY_WINDOW\n");
       client->windows =
 	g_list_remove (client->windows,
 		       GUINT_TO_POINTER (request->destroy_window.id));
       broadway_server_destroy_window (server, request->destroy_window.id);
       break;
     case BROADWAY_REQUEST_SHOW_WINDOW:
+      printf("BROADWAY_REQUEST_SHOW_WINDOW\n");
       broadway_server_window_show (server, request->show_window.id);
       break;
     case BROADWAY_REQUEST_HIDE_WINDOW:
+      printf("BROADWAY_REQUEST_HIDE_WINDOW\n");
       broadway_server_window_hide (server, request->hide_window.id);
       break;
     case BROADWAY_REQUEST_SET_TRANSIENT_FOR:
+      printf("BROADWAY_REQUEST_SET_TRAINSIENT_FOR\n");
       broadway_server_window_set_transient_for (server,
 						request->set_transient_for.id,
 						request->set_transient_for.parent);
       break;
     case BROADWAY_REQUEST_UPDATE:
+      printf("BROADWAY_REQUEST_UPDATE\n");
       surface = broadway_server_open_surface (server,
 					      request->update.id,
 					      request->update.name,
@@ -272,6 +284,7 @@ client_handle_request (BroadwayClient *client,
 	}
       break;
     case BROADWAY_REQUEST_MOVE_RESIZE:
+      printf("BROADWAY_REQUEST_MOVE_RESIZE\n");
       broadway_server_window_move_resize (server,
 					  request->move_resize.id,
 					  request->move_resize.with_move,
@@ -281,6 +294,7 @@ client_handle_request (BroadwayClient *client,
 					  request->move_resize.height);
       break;
     case BROADWAY_REQUEST_GRAB_POINTER:
+      printf("BROADWAY_REQUEST_GRAB_POINTER\n");
       reply_grab_pointer.status =
 	broadway_server_grab_pointer (server,
 				      client->id,
@@ -290,22 +304,28 @@ client_handle_request (BroadwayClient *client,
 				      request->grab_pointer.time_);
       send_reply (client, request, (BroadwayReply *)&reply_grab_pointer, sizeof (reply_grab_pointer),
 		  BROADWAY_REPLY_GRAB_POINTER);
+      printf("BROADWAY_REQUEST_GRAB_POINTER\n");
       break;
     case BROADWAY_REQUEST_UNGRAB_POINTER:
+      printf("BROADWAY_REQUEST_UNGRAB_POINTER\n");
       reply_ungrab_pointer.status =
 	broadway_server_ungrab_pointer (server,
 					request->ungrab_pointer.time_);
       send_reply (client, request, (BroadwayReply *)&reply_ungrab_pointer, sizeof (reply_ungrab_pointer),
 		  BROADWAY_REPLY_UNGRAB_POINTER);
+      printf("BROADWAY_REPLY_UNGRAB_POINTER\n");
       break;
     case BROADWAY_REQUEST_FOCUS_WINDOW:
+      printf("BROADWAY_REQUEST_FOCUS_WINDOW\n");
       broadway_server_focus_window (server, request->focus_window.id);
       break;
     case BROADWAY_REQUEST_SET_SHOW_KEYBOARD:
+      printf("BROADWAY_REQUEST_SET_SHOW_KEYBOARD\n");
       g_print("Server receved REQ set_show_keyboard\n");
       broadway_server_set_show_keyboard (server, request->set_show_keyboard.show_keyboard);
       break;
     default:
+      printf("Unknown BROADWAY_REQUEST_%d", request->base.type);  
       g_warning ("Unknown request of type %d", request->base.type);
     }
 
@@ -548,32 +568,48 @@ get_event_size (int type)
   switch (type)
     {
     case BROADWAY_EVENT_ENTER:
+      printf("BROADWAY_EVENT_ENTER\n");
     case BROADWAY_EVENT_LEAVE:
-      return sizeof (BroadwayInputCrossingMsg);
+      printf("BROADWAY_EVENT_LEVEL\n");
+    return sizeof (BroadwayInputCrossingMsg);
     case BROADWAY_EVENT_POINTER_MOVE:
+      printf("BROADWAY_EVENT_POINTER_MOVE\n");
       return sizeof (BroadwayInputPointerMsg);
     case BROADWAY_EVENT_BUTTON_PRESS:
+      printf("BROADWAY_EVENT_BUTTON_PRESS\n");
     case BROADWAY_EVENT_BUTTON_RELEASE:
+      printf("BROADWAY_EVENT_BUTTON_RELEASE\n");
       return sizeof (BroadwayInputButtonMsg);
     case BROADWAY_EVENT_SCROLL:
+      printf("BROADWAY_EVENT_SCROLL\n");
       return sizeof (BroadwayInputScrollMsg);
     case BROADWAY_EVENT_TOUCH:
+      printf("BROADWAY_EVENT_TOUCH\n");
       return sizeof (BroadwayInputTouchMsg);
     case BROADWAY_EVENT_KEY_PRESS:
+      printf("BROADWAY_EVENT_KEY_PRESS\n");
     case BROADWAY_EVENT_KEY_RELEASE:
+      printf("BROADWAY_EVENT_KEY_RELEASE\n");
       return  sizeof (BroadwayInputKeyMsg);
     case BROADWAY_EVENT_GRAB_NOTIFY:
+      printf("BROADWAY_EVENT_GRAB_NOTIFY\n");
     case BROADWAY_EVENT_UNGRAB_NOTIFY:
+      printf("BROADWAY_EVENT_UNGRAB_NOTIFY\n");
       return sizeof (BroadwayInputGrabReply);
     case BROADWAY_EVENT_CONFIGURE_NOTIFY:
+      printf("BROADWAY_EVENT_CONFIGURE_NOTIFY\n");
       return  sizeof (BroadwayInputConfigureNotify);
     case BROADWAY_EVENT_DELETE_NOTIFY:
+      printf("BROADWAY_EVENT_DELETE_NOTIFY\n");
       return sizeof (BroadwayInputDeleteNotify);
     case BROADWAY_EVENT_SCREEN_SIZE_CHANGED:
+      printf("BROADWAY_EVENT_SCREEN_SIZE_CHANGED\n");
       return sizeof (BroadwayInputScreenResizeNotify);
     case BROADWAY_EVENT_FOCUS:
+      printf("BROADWAY_EVENT_FOCUS\n");
       return sizeof (BroadwayInputFocusMsg);
     default:
+      printf("No BROADWAY_EVENT_* matched\n");
       g_assert_not_reached ();
     }
   return 0;

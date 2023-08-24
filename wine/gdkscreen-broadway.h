@@ -23,9 +23,12 @@
 #define __GDK_BROADWAY_SCREEN_H__
 
 #include <gdk/gdk.h>
+
+#include "gdk_structs.h"
+
 #include <gdk/gdkvisual.h>
 #include "gdkprivate-broadway.h"
-#include "gdkscreenprivate.h"
+//#include "gdkscreenprivate.h"
 
 G_BEGIN_DECLS
 
@@ -39,7 +42,22 @@ typedef struct _GdkBroadwayScreenClass GdkBroadwayScreenClass;
 #define GDK_IS_BROADWAY_SCREEN_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), GDK_TYPE_BROADWAY_SCREEN))
 #define GDK_BROADWAY_SCREEN_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), GDK_TYPE_BROADWAY_SCREEN, GdkBroadwayScreenClass))
 
+typedef struct _GdkScreenClass GdkScreenClass;
+typedef struct _GdkScreen GdkScreen;
+
+typedef struct _GdkScreenClass
+{
+  GObject parent;
+};
+
+struct _GdkScreen
+{
+  GObject parent;
+};
+
+
 typedef struct _GdkBroadwayMonitor GdkBroadwayMonitor;
+typedef struct _GdkBroadwayScreen GdkBroadwayScreen;
 
 struct _GdkBroadwayScreen
 {
@@ -62,10 +80,11 @@ struct _GdkBroadwayScreen
   gint navailable_types;
 };
 
+typedef struct _GdkBroadwayScreenClass GdkBroadwayScreenClass;
+
 struct _GdkBroadwayScreenClass
 {
   GdkScreenClass parent_class;
-
   void (* window_manager_changed) (GdkBroadwayScreen *screen);
 };
 

@@ -1,9 +1,10 @@
 *.a
 *.o
+broadwayd3/*.o
 gdk3/*.o
 gdk4/*.o
 wine/*.o
-broadwayd-gtk3
-broadwayd-gtk4
+bin/broadwayd-gtk3
+bin/broadwayd-gtk4
 tests/connection-proto
 tests/gtk/testsocket

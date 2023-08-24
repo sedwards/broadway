@@ -123,7 +123,6 @@ typedef enum {
 } GdkRenderingMode;
 */
 
-#if 0
 /* Tracks information about the device grab on this display */
 typedef struct
 {
@@ -140,7 +139,7 @@ typedef struct
   guint owner_events : 1;
   guint implicit : 1;
 } GdkDeviceGrabInfo;
-
+#if 0
 typedef struct _GdkDisplay GdkDisplay;
 //typedef struct _GdkDisplay2 _GdkDisplay;
 struct _GdkDisplay
@@ -427,7 +426,6 @@ struct _GdkCursorClass
                                      gdouble   *y_hot);
 };
 
-#if 0
 /* dkwindowimpl.h */
 typedef enum
 {
@@ -435,9 +433,8 @@ typedef enum
   GDK_TITLEBAR_GESTURE_RIGHT_CLICK    = 2,
   GDK_TITLEBAR_GESTURE_MIDDLE_CLICK   = 3
 } GdkTitlebarGesture;
-#endif
 
-typedef struct _GdkWindowClass GdkWindowClass;
+//typedef struct _GdkWindowClass GdkWindowClass;
 
 #define GDK_TYPE_WINDOW_IMPL           (gdk_window_impl_get_type ())
 #define GDK_WINDOW_IMPL(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GDK_TYPE_WINDOW_IMPL, GdkWindowImpl))
@@ -446,16 +443,15 @@ typedef struct _GdkWindowClass GdkWindowClass;
 #define GDK_IS_WINDOW_IMPL_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), GDK_TYPE_WINDOW_IMPL))
 #define GDK_WINDOW_IMPL_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), GDK_TYPE_WINDOW_IMPL, GdkWindowImplClass))
 
-#if 0
-typedef struct _GdkWindowImpl       GdkWindowImpl;
-typedef struct _GdkWindowImplClass  GdkWindowImplClass;
+typedef struct _GdkWindowImpl2       GdkWindowImpl2;
+typedef struct _GdkWindowImplClass2  GdkWindowImplClass2;
 
-struct _GdkWindowImpl
+struct _GdkWindowImpl2
 {
   GObject parent;
 };
 
-struct _GdkWindowImplClass
+struct _GdkWindowImplClass2
 {
   GObjectClass parent_class;
 
@@ -730,6 +726,7 @@ struct _GdkWindowImplClass
                                  GdkTitlebarGesture  gesture);
 };
 
+#if 0
 struct GdkWindow2
 {
   GObject parent_instance;

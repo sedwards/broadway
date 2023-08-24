@@ -10,13 +10,13 @@ LIBBROADWAY-WINE=libbroadway-wine.a
 all: broadwayd-gtk3 broadwayd-gtk4 libbroadway-gdk3.a libbroadway-wine.a testsocket connection-proto
 
 SERVER_SRC = \
-       broadwayd3/broadway-server.c \
-       broadwayd3/broadway-buffer.c \
-       broadwayd3/broadway-output.c
+       broadway-server.c \
+       broadway-buffer.c \
+       broadway-output.c
 
 BROADWAYD3_SRC = \
 	$(SERVER_SRC) \
-	broadwayd3/broadwayd.c
+	broadwayd.c
 
 #### Broadway Standalone Daemon
 
@@ -122,7 +122,7 @@ connection-proto :
 	gcc -o tests/$@ tests/connection-proto.c $(LIBBROADWAY-WINE) $(CFLAGS)
 
 full-sim :
-	gcc -o tests/$@ tests/full-sim.c $(LIBBROADWAY-WINE) $(CFLAGS)
+	gcc -o tests/$@ tests/full-sim.c $(CFLAGS) /usr/local/lib/libbroadway-wine.a
 ###
 ### Clean target, other useful targets
 ###

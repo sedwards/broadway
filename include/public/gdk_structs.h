@@ -443,15 +443,15 @@ typedef enum
 #define GDK_IS_WINDOW_IMPL_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), GDK_TYPE_WINDOW_IMPL))
 #define GDK_WINDOW_IMPL_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), GDK_TYPE_WINDOW_IMPL, GdkWindowImplClass))
 
-typedef struct _GdkWindowImpl2       GdkWindowImpl2;
-typedef struct _GdkWindowImplClass2  GdkWindowImplClass2;
+typedef struct _GdkWindowImpl       GdkWindowImpl;
+typedef struct _GdkWindowImplClass  GdkWindowImplClass;
 
-struct _GdkWindowImpl2
+struct _GdkWindowImpl
 {
   GObject parent;
 };
 
-struct _GdkWindowImplClass2
+struct _GdkWindowImplClass
 {
   GObjectClass parent_class;
 
@@ -726,8 +726,8 @@ struct _GdkWindowImplClass2
                                  GdkTitlebarGesture  gesture);
 };
 
-#if 0
-struct GdkWindow2
+typedef struct _GdkWindow2 GdkWindow2;
+struct _GdkWindow2
 {
   GObject parent_instance;
 
@@ -852,7 +852,6 @@ struct GdkWindow2
 
   cairo_region_t *opaque_region;
 };
-#endif
 
 #define GDK_WINDOW_TYPE(d) ((((GdkWindow *)(d)))->window_type)
 #define GDK_WINDOW_DESTROYED(d) (((GdkWindow *)(d))->destroyed)

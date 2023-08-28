@@ -6,7 +6,8 @@ all: clean connection-protocol.exe
 CONNECTION_PROTO = \
 	tests.c \
 	connection-proto.c \
-	apiconnection.c
+	apiconnection.c \
+	gdk_type_window_impl_broadway.c
 
 ###
 ### Clean target, other useful targets

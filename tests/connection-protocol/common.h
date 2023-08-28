@@ -26,30 +26,8 @@
 #include <gtk/gtk.h> 
 #include "gdk_structs.h" 
 
-#if 0
+#include "gdk_type_window_impl_broadway.h"
 
-#define G_OS_UNIX
-
-#include <stdio.h>
-#include <sys/mman.h>
-
-#include <glib.h>
-#include <glib-object.h>
-
-#include <broadway-protocol.h>
-#include <cairo.h>
-
-#include <gio/gunixsocketaddress.h>
-
-#include <gdk/gdk.h>
-
-#include "gdk_structs.h"
-
-#include <gtk/gtk.h>
-
-#include <broadway-server.h>
-
-#endif
 
 struct _BroadwayServer {
   GObject parent_instance;
@@ -79,6 +57,9 @@ struct _BroadwayScreen
   int height;
 };
 
+#include "gdk_type_window_impl_broadway.h"
+
+#if 0
 typedef struct _GdkWindowImplBroadway GdkWindowImplBroadway;
 
 struct _GdkWindowImplBroadway
@@ -112,6 +93,7 @@ struct _GdkWindowImplBroadway
   GdkGeometry geometry_hints;
   GdkWindowHints geometry_hints_mask;
 };
+#endif
 
 typedef struct _GdkBroadwayScreen GdkBroadwayScreen;
 
@@ -136,7 +118,6 @@ struct _GdkBroadwayScreen
   gint navailable_types;
 };
 
-
 static inline GType common_class_init()
 {
   printf("Initialized common class\n");
@@ -152,13 +133,15 @@ broadway_req_class_init (BroadwayServerClass * class)
 }
 #endif
 
+#include "gdk_type_broadway_window.h"
+
 GType common_class_init (void);
 #define GDK_BROADWAY_SCREEN                   (common_class_init())
 #define GDK_TYPE_BROADWAY_SERVER              (common_class_init())
 #define GDK_TYPE_BROADWAY_DISPLAY             (common_class_init())
 #define GDK_TYPE_BROADWAY_SCREEN              (common_class_init())
-#define GDK_TYPE_BROADWAY_WINDOW              (common_class_init())
-#define GDK_TYPE_WINDOW_IMPL_BROADWAY         (common_class_init())
+
+////////////// These should maybe go to broadway-client ////////////////////////////////////
 
 BroadwayServer     *broadway_req_server_on_unix_socket_new       (char             *address,
 							      GError          **error);
@@ -229,11 +212,15 @@ gboolean            broadway_req_server_window_move_resize       (BroadwayServer
 							      int               height);
 void                broadway_req_server_focus_window             (BroadwayServer   *server,
                                                               gint              new_focused_window);
+
 cairo_surface_t * broadway_req_server_open_surface (BroadwayServer *server,
 						guint32 id,
 						char *name,
 						int width,
 						int height);
+
+void
+broadway_req_screen_init_root_window (GdkScreen * screen);
 
 
 BroadwayServer *

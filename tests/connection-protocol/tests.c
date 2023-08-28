@@ -3,6 +3,7 @@
 
 extern BroadwayServer *broadway_server;
 
+
 typedef struct _GdkBroadwayServer GdkBroadwayServer;
 
 struct _GdkBroadwayServer {
@@ -23,7 +24,6 @@ struct _GdkBroadwayServerClass
   GObjectClass parent_class;
 };
 
-
 typedef struct _GdkBroadwayScreen GdkBroadwayScreen;
 typedef struct _GdkBroadwayScreenClass GdkBroadwayScreenClass;
 
@@ -36,44 +36,11 @@ struct _BroadwayServerClass
 };
 
 /*
-struct _GdkWindowImplBroadway
-{
-  GdkWindowImpl parent_instance;
-
-  GdkWindow *wrapper;
-  GdkScreen *screen;
-
-  cairo_surface_t *surface;
-  cairo_surface_t *last_surface;
-  cairo_surface_t *ref_surface;
-
-  GdkCursor *cursor;
-  GHashTable *device_cursor;
-
-  int id;
-
-  gboolean visible;
-  gboolean maximized;
-  int transient_for;
-
-  int pre_maximize_x;
-  int pre_maximize_y;
-  int pre_maximize_width;
-  int pre_maximize_height;
-
-  gint8 toplevel_window_type;
-  gboolean dirty;
-  gboolean last_synced;
-
-  GdkGeometry geometry_hints;
-  GdkWindowHints geometry_hints_mask;
-};
-*/
-
 struct _GdkWindowImplBroadwayClass
 {
   GdkWindowImplClass parent_class;
 };
+*/
 
 //typedef _GdkBroadwayDisplay GdkBroadwayDisplay;
 struct _GdkBroadwayDisplay

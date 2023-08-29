@@ -130,9 +130,9 @@ broadway_screen_new (GdkDisplay *display,
 
   GdkBroadwayScreen *broadway_screen;
 
-  screen = g_object_new (GDK_TYPE_BROADWAY_SCREEN, NULL);
+  screen = g_object_new (BROADWAY_TYPE_SCREEN, NULL);
 
-  broadway_screen = g_object_new (GDK_BROADWAY_SCREEN, NULL);
+  broadway_screen = g_object_new (BROADWAY_TYPE_SCREEN, NULL);
   broadway_screen->display = display;
 
   return screen;
@@ -226,8 +226,8 @@ void test_broadway_window(GdkBroadwayDisplay *broadway_display)
     guint32 id;
     cairo_surface_t *surface;
     gboolean *visable;
-    struct GdkBroadwayWindowClass *broadway_window_class;
-    struct GdkBroadwayWindow *broadway_window;
+    //struct GdkBroadwayWindowClass *broadway_window_class;
+    //struct GdkBroadwayWindow *broadway_window;
 
     id = broadway_req_server_new_window(broadway_server,0,0,WINDOW1_WIDTH,WINDOW1_HEIGHT,0);
     

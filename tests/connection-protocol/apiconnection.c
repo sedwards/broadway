@@ -823,8 +823,8 @@ broadway_req_screen_init_root_window (GdkScreen * screen)
   GdkWindowImplBroadway *impl;
   GdkBroadwayScreen *broadway_screen;
 
-  //broadway_screen = GDK_BROADWAY_SCREEN (screen);
-  broadway_screen = g_object_new (GDK_BROADWAY_SCREEN, NULL);
+  broadway_screen = BROADWAY_SCREEN (screen);
+  broadway_screen = g_object_new (BROADWAY_TYPE_SCREEN, NULL);
 
   g_assert (broadway_screen->root_window == NULL);
 

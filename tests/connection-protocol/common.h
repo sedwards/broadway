@@ -95,8 +95,8 @@ struct _GdkWindowImplBroadway
 };
 #endif
 
+#if 0
 typedef struct _GdkBroadwayScreen GdkBroadwayScreen;
-
 struct _GdkBroadwayScreen
 {
   // GdkScreen parent_instance;
@@ -117,10 +117,12 @@ struct _GdkBroadwayScreen
   GdkVisualType available_types[6];
   gint navailable_types;
 };
+#endif
 
 static inline GType common_class_init()
 {
   printf("Initialized common class\n");
+  return 0;
 }
 
 #if 0
@@ -135,11 +137,12 @@ broadway_req_class_init (BroadwayServerClass * class)
 
 #include "gdk_type_broadway_window.h"
 
+#include "gdk_broadway_screen.h"
+
 GType common_class_init (void);
-#define GDK_BROADWAY_SCREEN                   (common_class_init())
-#define GDK_TYPE_BROADWAY_SERVER              (common_class_init())
+//#define GDK_BROADWAY_SCREEN                   (common_class_init())
 #define GDK_TYPE_BROADWAY_DISPLAY             (common_class_init())
-#define GDK_TYPE_BROADWAY_SCREEN              (common_class_init())
+//#define GDK_TYPE_BROADWAY_SCREEN              (common_class_init())
 
 ////////////// These should maybe go to broadway-client ////////////////////////////////////
 

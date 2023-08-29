@@ -7,7 +7,8 @@ CONNECTION_PROTO = \
 	tests.c \
 	connection-proto.c \
 	apiconnection.c \
-	gdk_type_window_impl_broadway.c
+	gdk_type_window_impl_broadway.c \
+	gdk_broadway_screen.c 
 
 ###
 ### Clean target, other useful targets

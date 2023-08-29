@@ -139,10 +139,12 @@ broadway_req_class_init (BroadwayServerClass * class)
 
 #include "gdk_broadway_screen.h"
 
-GType common_class_init (void);
+//GType common_class_init (void);
 //#define GDK_BROADWAY_SCREEN                   (common_class_init())
-#define GDK_TYPE_BROADWAY_DISPLAY             (common_class_init())
+//#define GDK_TYPE_BROADWAY_DISPLAY             (common_class_init())
 //#define GDK_TYPE_BROADWAY_SCREEN              (common_class_init())
+
+#include "gdk_type_broadway_display.h"
 
 ////////////// These should maybe go to broadway-client ////////////////////////////////////
 

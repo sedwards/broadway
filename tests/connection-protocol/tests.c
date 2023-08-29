@@ -138,6 +138,11 @@ broadway_screen_new (GdkDisplay *display,
   return screen;
 }
 
+GType broadway_display_get_type(void)
+{
+   printf("Stub class init broadway_display_get_type\n");
+}
+
 void test_broadway_display_open (const char *display)
 {
   GdkBroadwayDisplay *broadway_display;
@@ -145,7 +150,7 @@ void test_broadway_display_open (const char *display)
   error = NULL;
 
   display = g_object_new (GDK_TYPE_BROADWAY_DISPLAY, NULL);
-  //broadway_display = GDK_BROADWAY_DISPLAY (display);
+  broadway_display = GDK_BROADWAY_DISPLAY (display);
 
   printf("finished class init \n");
 

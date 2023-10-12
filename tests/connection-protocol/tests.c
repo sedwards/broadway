@@ -149,7 +149,7 @@ void test_broadway_display_open (const char *display)
   GError *error;
   error = NULL;
 
-  display = g_object_new (GDK_TYPE_BROADWAY_DISPLAY, NULL);
+  //display = g_object_new (GDK_TYPE_BROADWAY_DISPLAY, NULL);
   broadway_display = GDK_BROADWAY_DISPLAY (display);
 
   printf("finished class init \n");

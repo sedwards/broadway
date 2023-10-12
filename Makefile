@@ -7,7 +7,7 @@ LIBBROADWAY-GDK3=libbroadway-gdk3.a
 LIBBROADWAY-WINE=libbroadway-wine.a
 #LIBBROADWAY-WIN=libbroadway-win.a
 
-all: broadwayd-gtk3 broadwayd-gtk4 libbroadway-gdk3.a libbroadway-wine.a testsocket connection-proto
+all: broadwayd-gtk3 libbroadway-gdk3.a testsocket connection-proto
 
 SERVER_SRC = \
        broadway-server.c \
@@ -23,8 +23,8 @@ BROADWAYD3_SRC = \
 broadwayd-gtk3 :
 	gcc -o bin/$@ $(BROADWAYD3_SRC) $(CFLAGS) 
 
-broadwayd-gtk4 :
-	gcc -o bin/$@ $(BROADWAYD4_SRC) `pkg-config --libs --cflags gtk4` -fPIC -DGTK_MAJOR_VERSION=4 -Wall
+#broadwayd-gtk4 :
+#	gcc -o bin/$@ $(BROADWAYD4_SRC) `pkg-config --libs --cflags gtk4` -fPIC -DGTK_MAJOR_VERSION=4 -Wall
 
 ##############################################################################################################
 ###ls -l win/*.c | awk '{print "\t" $9 " \/"}' | awk '{sub(/.$/,"")}1'
